@@ -1,0 +1,193 @@
+<?xml version="1.0" ?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<!-- Put site-specific property overrides in this file. -->
+
+<configuration>
+
+	<!-- labels -->
+	<property>
+		<name>scent.segment.labels</name>
+		<value>ProductShow,RelativeProduct,ShopIntro,ProductSpec,ProductDetail,Comment</value>
+		<description>Notice : do not split into lines</description>
+	</property>
+
+	<!-- servers -->
+	<property>
+		<name>nutch.master</name>
+		<value>qiwur.com</value>
+	</property>
+	<property>
+		<name>nutch.server.port</name>
+		<value>8182</value>
+	</property>
+
+	<property>
+		<name>scent.net.proxy.use.proxy.pool</name>
+		<value>false</value>
+	</property>
+	<property>
+		<name>scent.net.proxy.host</name>
+		<value>localhost</value>
+	</property>
+	<property>
+		<name>scent.net.proxy.port</name>
+		<value>19080</value>
+	</property>
+	<property>
+		<name>scent.net.generate.fetch.list</name>
+		<value>false</value>
+	</property>
+
+	<property>
+		<name>scent.server.port</name>
+		<value>8282</value>
+	</property>
+
+	<property>
+		<name>scent.page.length.min</name>
+		<value>2000</value>
+	</property>
+	<property>
+		<name>scent.page.save</name>
+		<value>true</value>
+	</property>
+
+	<!-- code statistics analysis -->
+    <property>
+        <name>scent.stat.indicator.separators</name>
+        <value>:,：,|</value>
+        <description>affect -sep indicator</description>
+    </property>
+	<property>
+		<name>scent.stat.segment.item.min</name>
+		<value>3</value>
+	</property>
+	<property>
+		<name>scent.stat.segment.variance.sample.max</name>
+		<value>100</value>
+	</property>
+	<property>
+		<name>scent.stat.segment.variance.log</name>
+		<value>true</value>
+	</property>
+	<property>
+		<name>scent.stat.segment.variance.indicators</name>
+		<value>-txt-blk,-char,-a,-img</value>
+	</property>
+	<property>
+		<name>scent.stat.segment.variance.reference.value</name>
+		<value>3</value>
+	</property>
+
+	<!-- files -->
+	<property>
+		<name>scent.bad.attribute.name.file</name>
+		<value>conf/bad-attribute-names.txt</value>
+	</property>
+	<property>
+		<name>scent.bad.attribute.value.words.file</name>
+		<value>conf/bad-attribute-value-words.txt</value>
+	</property>
+	<property>
+		<name>scent.bad.page.keywords.file</name>
+		<value>conf/bad-page-keywords.txt</value>
+	</property>
+	<property>
+		<name>scent.bad.product.cate.words.file</name>
+		<value>conf/bad-product-cate-words.txt</value>
+	</property>
+	<property>
+		<name>scent.bad.product.name.words.file</name>
+		<value>conf/bad-product-name-words.txt</value>
+	</property>
+
+	<property>
+		<name>scent.block.title.feature.file</name>
+		<value>conf/block-title-feature-site.xml</value>
+	</property>
+	<property>
+		<name>scent.block.text.feature.file</name>
+		<value>conf/block-text-feature-site.xml</value>
+	</property>
+	<property>
+		<name>scent.block.stat.feature.file</name>
+		<value>conf/block-stat-feature-site.xml</value>
+	</property>
+	<property>
+		<name>scent.block.code.feature.file</name>
+		<value>conf/block-code-feature-site.xml</value>
+	</property>
+
+	<!-- classifier result weight -->
+	<property>
+		<name>scent.code.feature.classifier.weight</name>
+		<value>1.0</value>
+	</property>
+	<property>
+		<name>scent.code.structure.feature.classifier.weight</name>
+		<value>1.0</value>
+	</property>
+	<property>
+		<name>scent.block.text.feature.classifier.weight</name>
+		<value>1.0</value>
+	</property>
+	<property>
+		<name>scent.block.title.feature.classifier.weight</name>
+		<value>1.0</value>
+	</property>
+	<property>
+		<name>scent.logistic.regression.classifier.weight</name>
+		<value>1.0</value>
+	</property>
+	<property>
+		<name>scent.logistic.regression.classifier.enabled</name>
+		<value>false</value>
+	</property>
+
+	<!-- plugin properties -->
+	<property>
+		<name>plugin.folders</name>
+		<value>plugins</value>
+		<description>Directories where nutch plugins are located. Each
+			element may be a relative or absolute path. If absolute, it is used
+			as is. If relative, it is searched for on the classpath.
+		</description>
+	</property>
+
+	<property>
+		<name>plugin.auto-activation</name>
+		<value>true</value>
+		<description>Defines if some plugins that are not activated regarding
+			the plugin.includes and plugin.excludes properties must be
+			automaticaly activated if they are needed by some actived plugins.
+		</description>
+	</property>
+
+	<property>
+		<name>plugin.includes</name>
+		<value>dom-extracotr</value>
+		<description>Regular expression naming plugin directory names to
+			include. Any plugin not matching this expression is excluded.
+		</description>
+	</property>
+
+	<property>
+		<name>plugin.excludes</name>
+		<value></value>
+		<description>Regular expression naming plugin directory names to
+			exclude.
+		</description>
+	</property>
+
+	<!-- wiki -->
+	<property>
+		<name>scent.wiki.save</name>
+		<value>false</value>
+	</property>
+	<property>
+		<name>scent.wiki.upload</name>
+		<value>false</value>
+	</property>
+
+</configuration>

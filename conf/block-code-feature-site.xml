@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<block-features>
+    <!-- 区域类型计算 - 区块html特征 -->
+    <!-- DomSegment的root节点和body节点中，标签的id/class属性 -->
+    <block type="Categories">
+        <phrase name="breadcrumb" score="8" />
+        <phrase name="bread crumb" score="8" />
+    </block>
+    <block type="Gallery">
+        <phrase name="gallery" score="8" />
+        <phrase name="pic list" score="8" />
+        <phrase name="picture list" score="8" />
+        <phrase name="image list" score="8" />
+    </block>
+    <block type="ProductSpec">
+        <phrase name="attributes list" score="8" />
+        <phrase name="attribute list" score="8" />
+        <phrase name="product attributes" score="8" />
+        <phrase name="pro attributes" score="8" />
+        <phrase name="good attributes" score="8" />
+        <phrase name="attributes" score="8" />
+    </block>
+    <block type="ProductDetail">
+        <phrase name="product detail" score="8" />
+        <phrase name="pro detail" score="8" />
+        <phrase name="product content" score="8" />
+        <phrase name="pro content" score="8" />
+        <phrase name="detail all" score="8" />
+        <phrase name="detail content" score="8" />
+        <phrase name="description" score="8" />
+        <phrase name="introduction" score="8" />
+    </block>
+    <block type="RelativeProduct">
+        <phrase name="relative product" score="8" />
+        <phrase name="relative" score="8" />
+    </block>
+    <block type="Comment">
+        <phrase name="comment" score="8" />
+        <phrase name="comment list" score="8" />
+        <phrase name="comments list" score="8" />
+    </block>
+    <block type="BadBlock">
+        <phrase name="copyright" score="8" />
+        <phrase name="authentication" score="8" />
+    </block>
+</block-features>

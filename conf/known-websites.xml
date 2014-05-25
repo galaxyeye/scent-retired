@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<known-websites>
+    <website domain="jd.com">
+        <name>京东商城</name>
+    </website>
+    <website domain="yixun.com">
+        <name>易迅网</name>
+    </website>
+    <website domain="taobao.com">
+        <name>淘宝</name>
+    </website>
+    <website domain="tmail.com">
+        <name>天猫</name>
+    </website>
+    <website domain="yhd.com">
+        <name>一号店</name>
+    </website>
+    <website domain="dangdang.com">
+        <name>当当网</name>
+    </website>
+</known-websites>

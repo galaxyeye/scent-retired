@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<block-stat-features>
+    <block type="Categories">
+        <rule indicator="-char"         min="8" max="50" score="0" -score="0" />
+        <rule indicator="-txt-blk"      min="4" max="25" score="0" -score="0" />
+        <rule indicator="-own-txt-blk"  min="0" max="0"  score="0" -score="0" />
+        <rule indicator="-img"          min="0" max="0"  score="0" -score="0" />
+        <rule indicator="-a"            min="4" max="25" score="0" -score="0" />
+    </block>
+    <block type="Gallery">
+        <rule indicator="-char"         min="8" max="50" score="0" -score="0" />
+        <rule indicator="-txt-blk"      min="4" max="25" score="0" -score="0" />
+        <rule indicator="-own-txt-blk"  min="0" max="0"  score="0" -score="0" />
+        <rule indicator="-img"          min="0" max="0"  score="0" -score="0" />
+        <rule indicator="-a"            min="4" max="25" score="0" -score="0" />
+    </block>
+    <block type="ProductTitle">
+        <rule indicator="-char"         min="8" max="50" score="0" -score="0" />
+        <rule indicator="-txt-blk"      min="4" max="25" score="0" -score="0" />
+        <rule indicator="-own-txt-blk"  min="0" max="0"  score="0" -score="0" />
+        <rule indicator="-img"          min="0" max="0"  score="0" -score="0" />
+        <rule indicator="-a"            min="4" max="25" score="0" -score="0" />
+    </block>
+    <block type="ProductShow">
+        <rule>
+            <script>return ($_txt_blk - $_own_txt_blk + $_img) * 10</script>
+        </rule>
+        <rule indicator="-char"         min="8" max="50" score="0" -score="0" />
+        <rule indicator="-txt-blk"      min="4" max="25" score="0" -score="0" />
+        <rule indicator="-own-txt-blk"  min="0" max="0"  score="0" -score="0" />
+        <rule indicator="-img"          min="0" max="0"  score="0" -score="0" />
+        <rule indicator="-a"            min="4" max="25" score="0" -score="0" />
+    </block>
+    <block type="SimilarEntity">
+        <rule indicator="-char"         min="8" max="50" score="0" -score="0" />
+        <rule indicator="-txt-blk"      min="4" max="25" score="0" -score="0" />
+        <rule indicator="-own-txt-blk"  min="0" max="0"  score="0" -score="0" />
+        <rule indicator="-img"          min="0" max="0"  score="0" -score="0" />
+        <rule indicator="-a"            min="4" max="25" score="0" -score="0" />
+    </block>
+    <block type="RelativeProduct">
+        <rule indicator="-char"         min="8" max="50" score="0" -score="0" />
+        <rule indicator="-txt-blk"      min="4" max="25" score="0" -score="0" />
+        <rule indicator="-own-txt-blk"  min="0" max="0"  score="0" -score="0" />
+        <rule indicator="-img"          min="0" max="0"  score="0" -score="0" />
+        <rule indicator="-a"            min="4" max="25" score="0" -score="0" />
+    </block>
+    <block type="ShopIntro">
+        <rule indicator="-char"         min="8" max="50" score="0" -score="0" />
+        <rule indicator="-txt-blk"      min="4" max="25" score="0" -score="0" />
+        <rule indicator="-own-txt-blk"  min="0" max="0"  score="0" -score="0" />
+        <rule indicator="-img"          min="0" max="0"  score="0" -score="0" />
+        <rule indicator="-a"            min="4" max="25" score="0" -score="0" />
+    </block>
+    <block type="ProductSpec">
+        <rule indicator="-char"         min="8" max="50" score="0" -score="0" />
+        <rule indicator="-txt-blk"      min="4" max="25" score="0" -score="0" />
+        <rule indicator="-own-txt-blk"  min="0" max="0"  score="0" -score="0" />
+        <rule indicator="-img"          min="0" max="0"  score="0" -score="0" />
+        <rule indicator="-a"            min="4" max="25" score="0" -score="0" />
+    </block>
+    <block type="ProductDetail">
+        <rule indicator="-char"         min="8" max="50" score="0" -score="0" />
+        <rule indicator="-txt-blk"      min="4" max="25" score="0" -score="0" />
+        <rule indicator="-own-txt-blk"  min="0" max="0"  score="0" -score="0" />
+        <rule indicator="-img"          min="0" max="0"  score="0" -score="0" />
+        <rule indicator="-a"            min="4" max="25" score="0" -score="0" />
+    </block>
+    <block type="Comment">
+        <rule indicator="-char"         min="8" max="50" score="0" -score="0" />
+        <rule indicator="-txt-blk"      min="4" max="25" score="0" -score="0" />
+        <rule indicator="-own-txt-blk"  min="0" max="0"  score="0" -score="0" />
+        <rule indicator="-img"          min="0" max="0"  score="0" -score="0" />
+        <rule indicator="-a"            min="4" max="25" score="0" -score="0" />
+    </block>
+</block-stat-features>
