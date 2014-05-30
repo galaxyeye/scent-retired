@@ -87,7 +87,7 @@ public class Indicators implements Iterable<Indicator>, Cloneable {
   }
 
   public void clear() {
-    indicators.clear();
+    if (indicators != null) indicators.clear();
   }
 
   /**

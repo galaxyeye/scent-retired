@@ -38,8 +38,7 @@ public class Attributes implements Iterable<Attribute>, Cloneable {
     public String get(String key) {
         Validate.notEmpty(key);
 
-        if (attributes == null)
-            return "";
+        if (attributes == null) return "";
 
         Attribute attr = attributes.get(key.toLowerCase());
         return attr != null ? attr.getValue() : "";
@@ -61,8 +60,7 @@ public class Attributes implements Iterable<Attribute>, Cloneable {
      */
     public void put(Attribute attribute) {
         Validate.notNull(attribute);
-        if (attributes == null)
-             attributes = new LinkedHashMap<String, Attribute>(2);
+        if (attributes == null) attributes = new LinkedHashMap<String, Attribute>(2);
         attributes.put(attribute.getKey(), attribute);
     }
 
@@ -72,13 +70,12 @@ public class Attributes implements Iterable<Attribute>, Cloneable {
      */
     public void remove(String key) {
         Validate.notEmpty(key);
-        if (attributes == null)
-            return;
+        if (attributes == null) return;
         attributes.remove(key.toLowerCase());
     }
 
     public void clear() {
-    	attributes.clear();
+      if (attributes != null) attributes.clear();
     }
 
     /**

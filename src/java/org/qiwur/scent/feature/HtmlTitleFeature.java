@@ -10,8 +10,10 @@ import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.qiwur.scent.utils.ObjectCache;
 import org.qiwur.scent.utils.StringUtil;
 
 import com.google.common.base.Charsets;
@@ -21,7 +23,6 @@ public final class HtmlTitleFeature {
 
   static final Logger logger = LogManager.getLogger(HtmlTitleFeature.class);
 
-  //
   public static final Pattern PAT_REMOVE_CHARACTERS = Pattern.compile("[\\?？\\!！\\.。\\-\\:：]+");
 
   // 标题中常见的分隔符号，这些分隔符号往往带有一些低价值信息，
@@ -55,24 +56,26 @@ public final class HtmlTitleFeature {
 
   Set<String> TitleSuffixes = new HashSet<String>();
 
-  static HtmlTitleFeature instance = null;
-
   private HtmlTitleFeature() {
-
+    try {
+      load();
+    } catch (IOException e) {
+      logger.debug(e);
+    }
   }
 
-  public static HtmlTitleFeature getInstance() {
-    if (instance == null) {
-      instance = new HtmlTitleFeature();
+  public static HtmlTitleFeature create(Configuration conf) {
+    ObjectCache objectCache = ObjectCache.get(conf);
+    final String cacheId = HtmlTitleFeature.class.getName();
 
-      try {
-        instance.load();
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
+    if (objectCache.getObject(cacheId) != null) {
+      return (HtmlTitleFeature) objectCache.getObject(cacheId);
     }
-
-    return instance;
+    else {
+      HtmlTitleFeature feature = new HtmlTitleFeature();
+      objectCache.setObject(cacheId, feature);
+      return feature;
+    }
   }
 
   private void load() throws IOException {
@@ -83,7 +86,7 @@ public final class HtmlTitleFeature {
     TitleSuffixes.addAll(lines);
   }
 
-  public static boolean validate(String title) {
+  public boolean validate(String title) {
     // 商品标题，至少10个字符，最多200个字符
     if (title == null || title.length() <= MinProductTitleSize || title.length() >= MaxProductTitleSize) {
       return false;
@@ -93,7 +96,7 @@ public final class HtmlTitleFeature {
   }
 
   // 预处理
-  public static String preprocess(String title) {
+  public String preprocess(String title) {
     if (!validate(title))
       return "";
 
@@ -111,7 +114,7 @@ public final class HtmlTitleFeature {
     boolean removed = false;
 
     // 在词汇表中
-    for (String suffix : HtmlTitleFeature.getInstance().TitleSuffixes) {
+    for (String suffix : TitleSuffixes) {
       title = StringUtils.chomp(title, suffix);
 
       if (title.length() < lastTitleLength) {
@@ -124,7 +127,7 @@ public final class HtmlTitleFeature {
 
     // 在词汇表中
     if (!removed) {
-      for (String suffix : HtmlTitleFeature.getInstance().WebsiteNameSuffixes) {
+      for (String suffix : WebsiteNameSuffixes) {
         title = StringUtils.chomp(title, suffix);
 
         if (title.length() < lastTitleLength) {

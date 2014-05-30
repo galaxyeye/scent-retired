@@ -4,22 +4,19 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.qiwur.scent.entity.EntityAttribute;
 import org.qiwur.scent.entity.PageEntity;
 import org.qiwur.scent.jsoup.Jsoup;
-import org.qiwur.scent.jsoup.nodes.Attribute;
-import org.qiwur.scent.jsoup.nodes.Attributes;
 import org.qiwur.scent.jsoup.nodes.Document;
 import org.qiwur.scent.jsoup.nodes.Element;
 import org.qiwur.scent.utils.StringUtil;
 
 import com.google.common.collect.Multiset;
 
-public class ProductHTMLBuilder extends ProductBuilder {
+public class GalleryBuilder extends EntityBuilder {
 
-  public static final String[] labels = {
+  private static final String[] labels = {
       "Title",
       "Categories",
       "Metadata",
@@ -31,16 +28,11 @@ public class ProductHTMLBuilder extends ProductBuilder {
       "Links",
   };
 
-  public Document doc;
+  private Document doc;
 
-  public ProductHTMLBuilder(PageEntity pageEntity, Configuration conf) {
+  public GalleryBuilder(PageEntity pageEntity, Configuration conf) throws IOException {
     super(pageEntity, conf);
-
-    try {
-      doc = Jsoup.parse(new File("conf/product.template.html"), "utf-8");
-    } catch (IOException e) {
-      logger.error(e);
-    }
+    doc = Jsoup.parse(new File("conf/page-entity-gallery-template.html"), "utf-8");
   }
 
   public void process() {
@@ -77,7 +69,7 @@ public class ProductHTMLBuilder extends ProductBuilder {
         buildGallery(div, attributes);
       }
       else if (label.equals("Categories")) {
-        div.appendElement("div").html(attributes.iterator().next().value());
+        div.appendElement("div").text(attributes.iterator().next().value());
       }
       else {
         
@@ -86,8 +78,11 @@ public class ProductHTMLBuilder extends ProductBuilder {
       body.appendElement("hr");
     }
 
-    setAllImageSize(doc);
-    adjustAttributes(doc);
+    for (Element img : body.select("img")) {
+      if (getWidth(img) > 500) img.remove();
+      img.removeAttr("width");
+      img.removeAttr("height");
+    }
   }
 
   public Document doc() {
@@ -99,26 +94,14 @@ public class ProductHTMLBuilder extends ProductBuilder {
       root.append(attr.value());
     }
 
-    for (Element img : root.getElementsByTag("img")) {
-      img.removeAttr("alt");
-    }
-
     return root;
   }
 
   private Element buildImages(Element root, Collection<EntityAttribute> attributes) {
     for (EntityAttribute attr : attributes) {
-//      if (!attr.hasCategory("Links") && !attr.hasCategory("Gallery") && !attr.hasCategory("SimilarEntity")) {
-//        root.append(attr.value());
-//      }
-
-      if (attr.hasCategory("ProductDetail")) {
+      if (!attr.hasCategory("Links") && !attr.hasCategory("Gallery")) {
         root.append(attr.value());
       }
-    }
-
-    for (Element img : root.getElementsByTag("img")) {
-      img.removeAttr("alt");
     }
 
     return root;
@@ -150,46 +133,9 @@ public class ProductHTMLBuilder extends ProductBuilder {
     return table;
   }
 
-  private void setAllImageSize(Element root) {
-    for (Element img : root.select("img")) {
-      int width = getImgWidth(img);
-
-      // if it's greater than 200, just show it as it's original width
-      if (width > 200) {
-        img.attr("width", String.valueOf(width));
-      }
-
-      // probably banner ad
-      if (width > 500) {
-        img.remove();
-      }
-    }
-  }
-
-  private void adjustAttributes(Element root) {
-    for (Element ele : root.getAllElements()) {
-      Attributes validAttrs = new Attributes();
-
-      if (ele.attributes() != null) {
-        for (Attribute attr : ele.attributes()) {
-          if (ArrayUtils.contains(PermittedAttributes, attr.getKey())) {
-            validAttrs.put(attr);
-          }
-        }
-
-        ele.clearAttrs();
-        ele.attributes().addAll(validAttrs);
-      }
-      
-      if (ele.tagName().equals("a")) {
-        ele.attr("target", "_blank");
-      }
-    }
-  }
-
-  private int getImgWidth(Element image) {
+  private int getWidth(Element ele) {
     try {
-      return Integer.parseInt(image.attr("data-offset-width"));
+      return Integer.parseInt(ele.attr("width"));
     }
     catch(Exception e) {
     }

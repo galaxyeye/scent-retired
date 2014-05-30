@@ -5,16 +5,20 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
+import org.qiwur.scent.feature.LinedFeature;
 import org.qiwur.scent.feature.LinedFeatureFactory;
 
 public class BadWordFilter implements DataFilter {
 
   private final String file;
   private final Configuration conf;
+  private final LinedFeature feature;
 
   public BadWordFilter(String file, Configuration conf) {
     this.file = file;
     this.conf = conf;
+
+    feature = new LinedFeatureFactory(file, conf).get();
   }
 
   public Collection<String> filter(Collection<String> words) {
@@ -23,10 +27,8 @@ public class BadWordFilter implements DataFilter {
   }
 
   public Collection<String> filter(Collection<String> words, Collection<String> filteredWords) {
-    LinedFeatureFactory factory = new LinedFeatureFactory(file, conf);
-
     for (String word : words) {
-      for (String badWord : factory.getFeature().lines()) {
+      for (String badWord : feature.lines()) {
         if (!word.contains(badWord)) {
           filteredWords.add(word);
         }
@@ -38,9 +40,7 @@ public class BadWordFilter implements DataFilter {
 
   @Override
   public String filter(String text) {
-    LinedFeatureFactory factory = new LinedFeatureFactory(file, conf);
-
-    for (String line : factory.getFeature().lines()) {
+    for (String line : feature.lines()) {
       if (text.contains(line)) {
         return "";
       }

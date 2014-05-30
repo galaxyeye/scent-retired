@@ -50,6 +50,12 @@ public class IndicatorIndex {
     return false;
   }
 
+  public void clear() {
+    for (TreeMultimap<Double, Element> map : indexes.values()) {
+      map.clear();
+    }
+  }
+  
   @Override
   public String toString() {
     return indexes.keySet().toString();

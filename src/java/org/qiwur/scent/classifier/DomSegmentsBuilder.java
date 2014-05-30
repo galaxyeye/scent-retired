@@ -1,7 +1,6 @@
 package org.qiwur.scent.classifier;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
@@ -13,7 +12,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.qiwur.scent.block.locator.MenuLocator;
 import org.qiwur.scent.block.locator.TitleLocator;
-import org.qiwur.scent.feature.ProductNameFeature;
+import org.qiwur.scent.configuration.ScentConfiguration;
+import org.qiwur.scent.feature.EntityNameFeature;
 import org.qiwur.scent.jsoup.block.BlockLabel;
 import org.qiwur.scent.jsoup.block.BlockPattern;
 import org.qiwur.scent.jsoup.block.DomSegment;
@@ -22,7 +22,7 @@ import org.qiwur.scent.jsoup.nodes.Document;
 import org.qiwur.scent.jsoup.nodes.Element;
 import org.qiwur.scent.jsoup.nodes.Indicator;
 import org.qiwur.scent.jsoup.nodes.IndicatorIndex;
-import org.qiwur.scent.jsoup.select.ElementTreeUtil;
+import org.qiwur.scent.jsoup.select.DOMUtil;
 import org.qiwur.scent.jsoup.select.Elements;
 import org.qiwur.scent.utils.StringUtil;
 
@@ -88,7 +88,7 @@ public class DomSegmentsBuilder {
       tagBlockPatterns(segment);
     }
 
-    rebuildLabelsConfigValue();
+    ScentConfiguration.rebuildLabels(conf);
 
     // locate page menu
     DomSegment menu = new MenuLocator(doc).locate();
@@ -104,9 +104,10 @@ public class DomSegmentsBuilder {
     // TODO : since the DOM has been rebuilt, the node sequence may change
 
     // locate content title if any
-    DomSegment title = new TitleLocator(doc).locate();
+    DomSegment title = new TitleLocator(doc, conf).locate();
     if (title == null) {
-      title = TitleLocator.createTitle(doc);
+      logger.warn("no tilte found, create one");
+      title = TitleLocator.createTitle(doc, conf);
     }
     segments.add(title);
     conf.set("scent.page.title.text", title.text());
@@ -145,7 +146,7 @@ public class DomSegmentsBuilder {
       final int _txt_blk = 6;
       final int _child = 8;
       final int _descend = 15;
-      Element container = ElementTreeUtil.getContainerSatisfyAny(titleSegment.body(), _txt_blk, _child, _descend);
+      Element container = DOMUtil.getContainerSatisfyAny(titleSegment.body(), _txt_blk, _child, _descend);
 
       if (container != null) {
         DomSegment segment = new DomSegment(null, null, container);
@@ -156,16 +157,6 @@ public class DomSegmentsBuilder {
         logger.warn("can not fin product show");
       }
     }
-  }
-
-  private void rebuildLabelsConfigValue() {
-    Collection<String> labels = conf.getStringCollection("scent.segment.labels");
-    for (BlockLabel label : BlockLabel.labels) {
-      if (!labels.contains(label.text())) {
-        labels.add(label.text());
-      }
-    }
-    conf.set("scent.segment.labels", StringUtils.join(labels, ","));
   }
 
   private void removeSegmentsBefore(Element ele) {
@@ -355,7 +346,25 @@ public class DomSegmentsBuilder {
     int counter = 0;
     int counter2 = 0;
     for (Element ele : segment.body().children()) {
-      double sim = ProductNameFeature.getTitleSimilarity(title, ele.text());
+      double sim = 0.0;
+
+      if (!EntityNameFeature.validate(title) || !EntityNameFeature.validate(ele.text())) {
+        continue;
+      }
+
+      String name = StringUtils.substring(title, 0, 10);
+      String name2 = StringUtils.substring(ele.text(), 0, 10);
+
+      if (name.equals(name2)) {
+        sim = 1.0;
+      }
+      else {
+        sim = EntityNameFeature.getStandardEditSimilarity(name, name2);
+      }
+
+      if (sim > 0.5) {
+        logger.debug("ed sim : {}, {}, {}", sim, title, ele.text());
+      }
 
       if (!FuzzyProbability.maybe(sim) && ++counter > 1) {
         return false;
@@ -372,6 +381,7 @@ public class DomSegmentsBuilder {
   private boolean hasSimiliarUrl(DomSegment segment, String baseUri) {
     int counter = 0;
     int counter2 = 0;
+
     for (Element ele : segment.body().getElementsByTag("a")) {
       baseUri = StringUtils.substringBeforeLast(baseUri, "/");
       String href = ele.absUrl("href");

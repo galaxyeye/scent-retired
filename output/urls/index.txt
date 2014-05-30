@@ -334,6 +334,7 @@ http://list.jd.com/list.html?cat=737%2C794%2C880&ext=5006%3A%3A998%5E%5E&page=1
 http://list.jd.com/list.html?cat=737%2C794%2C880&ext=525512%3A%3A998%5E%5E&page=1
 http://list.jd.com/list.html?cat=737%2C794%2C880&ext=77394%3A%3A998%5E%5E&page=1
 http://list.jd.com/list.html?cat=737,794,878
+http://my.jd.com/history/list.html
 http://myjd.jd.com/opinion/list.action
 http://myjd.jd.com/repair/orderlist.action
 http://order.dangdang.com/return/re_list.aspx

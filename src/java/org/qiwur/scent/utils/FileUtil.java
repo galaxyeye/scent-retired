@@ -9,13 +9,13 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 
 public class FileUtil {
-  public static String getFileNameForPage(String url) {
-    String file = DigestUtils.md5Hex(url) + ".html";
+  public static String getFileNameFromUri(String uri) {
+    String file = DigestUtils.md5Hex(uri) + ".html";
 
     return file;
   }
 
-  public static File createTempFileForPage(String url, String directory) throws IOException {
+  public static File createTempFileForPage(String uri, String directory) throws IOException {
     StringBuilder sb = new StringBuilder();
 
     sb.append(FileUtils.getTempDirectoryPath());
@@ -31,7 +31,7 @@ public class FileUtil {
       FileUtils.forceMkdir(file);
     }
 
-    sb.append(getFileNameForPage(url));
+    sb.append(getFileNameFromUri(uri));
     file = new File(sb.toString());
 
     if (!file.exists()) {

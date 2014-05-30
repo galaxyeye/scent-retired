@@ -1,7 +1,9 @@
 package org.qiwur.scent.jsoup.block;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 public class BlockLabel implements Comparable<BlockLabel> {
   public static BlockLabel UnknownBlock = BlockLabel.fromString("UnknownBlock");
@@ -15,7 +17,8 @@ public class BlockLabel implements Comparable<BlockLabel> {
   public static BlockLabel Images = BlockLabel.fromString("Images");
   public static BlockLabel SimilarEntity = BlockLabel.fromString("SimilarEntity");
 
-  public static Set<BlockLabel> labels = new HashSet<BlockLabel>();
+  public static List<BlockLabel> labels = new ArrayList<BlockLabel>();
+  public static List<BlockLabel> noInheritLabels = new ArrayList<BlockLabel>();
 
   static {
     labels.add(UnknownBlock);
@@ -28,6 +31,11 @@ public class BlockLabel implements Comparable<BlockLabel> {
     labels.add(Links);
     labels.add(Images);
     labels.add(SimilarEntity);
+
+    noInheritLabels.add(UnknownBlock);
+    noInheritLabels.add(BadBlock);
+    noInheritLabels.add(Images);
+    noInheritLabels.add(Links);
   }
 
   private String text;
@@ -46,6 +54,29 @@ public class BlockLabel implements Comparable<BlockLabel> {
     }
 
     return null;
+  }
+
+  public static List<String> mergeLabels(String... incoming) {
+    return mergeLabels(Arrays.asList(incoming));
+  }
+
+  public static List<String> mergeLabels(Collection<String> incoming) {
+    List<String> result = new ArrayList<String>();
+
+    for (BlockLabel l : labels) {
+      result.add(l.text());
+    }
+    result.addAll(incoming);
+
+    return result;
+  }
+
+  public boolean inheritable() {
+    return !noInheritLabels.contains(this);
+  }
+
+  public static boolean inheritable(BlockLabel label) {
+    return !noInheritLabels.contains(label);
   }
 
   @Override

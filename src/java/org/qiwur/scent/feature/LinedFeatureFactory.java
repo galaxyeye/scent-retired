@@ -13,7 +13,7 @@ public class LinedFeatureFactory {
     this.conf = conf;
   }
 
-  public LinedFeature getFeature() {
+  public LinedFeature get() {
     ObjectCache objectCache = ObjectCache.get(conf);
     final String cacheId = file;
 

@@ -5,22 +5,23 @@ import java.util.ArrayList;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.qiwur.scent.entity.PageEntity;
-import org.qiwur.scent.feature.CategoriesFeature;
+import org.qiwur.scent.feature.CategoryFeature;
 import org.qiwur.scent.jsoup.block.DomSegment;
 import org.qiwur.scent.jsoup.nodes.Element;
 import org.qiwur.scent.jsoup.nodes.Indicator;
 import org.qiwur.scent.learning.EntityCategoryLearner;
-import org.qiwur.scent.utils.StringUtil;
 
 public class CategoriesExtractor extends DomSegmentExtractor {
 
   private final Configuration conf;
+  private final CategoryFeature feature;
   private final EntityCategoryLearner categoryLearner;
 
 	public CategoriesExtractor(DomSegment segment, PageEntity pageEntity, Configuration conf) {
 		super(segment, pageEntity, "Categories");
 
 		this.conf = conf;
+		this.feature = CategoryFeature.create(conf);
 		this.categoryLearner = new EntityCategoryLearner(conf);
 	}
 
@@ -33,27 +34,20 @@ public class CategoriesExtractor extends DomSegmentExtractor {
 
 		ArrayList<String> words = new ArrayList<String>();
 		for (Element e : root.getAllElements()) {
-			// 太长，可能是产品标题本身
-			String text = StringUtil.stripNonChar(e.ownText()).trim();
-			// TODO : product model may greater than 8
-			if (text.length() > 8) {
-				continue;
-			}
+			String text = feature.strip(e.ownText());
 
-			text = CategoriesFeature.preprocess(e.ownText());
-			if (text != "") {
+			if (!text.isEmpty()) {
 				words.add(text);
 			}
 		}
 
+		if (words.isEmpty()) return;
+
 		String categoryText = StringUtils.join(words.toArray(), " > ");
+    categoryText = getPrettyText(categoryText);
 
-		if (categoryText != null) {
-		  categoryText = getPrettyText(categoryText);
-      pageEntity.put(sectionLabel, categoryText, sectionLabel);
-
-      categoryLearner.learn(categoryText);
-		}
+    pageEntity.put(sectionLabel, categoryText, sectionLabel);
+    categoryLearner.learn(categoryText);
 	}
 
 	private Element adjustCategoryNavRoot(Element root) {

@@ -24,80 +24,76 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import org.apache.hadoop.conf.Configuration;
 import org.apache.mahout.classifier.sgd.AdaptiveLogisticRegression;
 import org.apache.mahout.classifier.sgd.CrossFoldLearner;
 import org.apache.mahout.classifier.sgd.ModelDissector;
 import org.apache.mahout.classifier.sgd.ModelSerializer;
 import org.apache.mahout.classifier.sgd.OnlineLogisticRegression;
+import org.apache.mahout.common.RandomUtils;
 import org.apache.mahout.ep.State;
 import org.apache.mahout.math.Matrix;
-import org.apache.mahout.math.Vector;
 import org.apache.mahout.math.function.DoubleFunction;
 import org.apache.mahout.math.function.Functions;
 import org.apache.mahout.vectorizer.encoders.Dictionary;
-import org.qiwur.scent.sgd.NewsgroupHelper;
+import org.qiwur.scent.jsoup.nodes.Indicator;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Multiset;
 
-public final class SGDHelper {
+public final class SGDDissector {
 
-  private static final String[] LEAK_LABELS = {"none", "month-year", "day-month-year"};
+  private final Configuration conf;
+  private final BlockFeatureVectorEncoder biasEncoder;
+  private final BlockFeatureVectorEncoder featureEncoder;
+  private final int probes;
+  Map<String, Set<Integer>> traceDictionary = Maps.newTreeMap();
 
-  private SGDHelper() {
+  public SGDDissector(Configuration conf) {
+    this.conf = conf;
+    biasEncoder = new BlockFeatureVectorEncoder("html-blocks", Indicator.names);
+    featureEncoder = new BlockFeatureVectorEncoder("html-blocks", Indicator.names);
+    // this.probes = conf.getInt("scent.logistic.regression.classifier.probes", 1);
+    this.probes = featureEncoder.numFeatures();
+
+    biasEncoder.setProbes(probes);
+    featureEncoder.setProbes(probes);
   }
 
-  public static void dissect(int leakType,
-                             Dictionary dictionary,
-                             AdaptiveLogisticRegression learningAlgorithm,
-                             Iterable<File> files, Multiset<String> overallCounts) throws IOException {
-    CrossFoldLearner model = learningAlgorithm.getBest().getPayload().getLearner();
-    model.close();
+  public void dissect(int leakType, Dictionary dictionary,
+      AdaptiveLogisticRegression model, Iterable<File> files) throws IOException {
+    CrossFoldLearner learner = model.getBest().getPayload().getLearner();
+    learner.close();
 
-    Map<String, Set<Integer>> traceDictionary = Maps.newTreeMap();
-    ModelDissector md = new ModelDissector();
+    ModelDissector dissector = new ModelDissector();
 
-    NewsgroupHelper helper = new NewsgroupHelper();
-    helper.getEncoder().setTraceDictionary(traceDictionary);
-    helper.getBias().setTraceDictionary(traceDictionary);
+    biasEncoder.setTraceDictionary(traceDictionary);
+    featureEncoder.setTraceDictionary(traceDictionary);
 
-    for (File file : permute(files, helper.getRandom()).subList(0, 500)) {
-      String ng = file.getParentFile().getName();
-      int actual = dictionary.intern(ng);
-
+    for (File file : permute(files, RandomUtils.getRandom()).subList(0, 500)) {
+      int actualCategory = dictionary.intern(file.getParentFile().getName());
       traceDictionary.clear();
-      Vector v = helper.encodeFeatureVector(file, actual, leakType, overallCounts);
-      md.update(v, traceDictionary, model);
+      dissector.update(featureEncoder.encode(file), traceDictionary, learner);
     }
 
-    List<String> ngNames = Lists.newArrayList(dictionary.values());
-    List<ModelDissector.Weight> weights = md.summary(100);
+    List<String> categoryNames = Lists.newArrayList(dictionary.values());
+    List<ModelDissector.Weight> weights = dissector.summary(100);
     System.out.println("============");
     System.out.println("Model Dissection");
     for (ModelDissector.Weight w : weights) {
       System.out.printf("%s\t%.1f\t%s\t%.1f\t%s\t%.1f\t%s%n",
-                        w.getFeature(), w.getWeight(), ngNames.get(w.getMaxImpact() + 1),
-                        w.getCategory(1), w.getWeight(1), w.getCategory(2), w.getWeight(2));
+          w.getFeature(),
+          w.getWeight(),
+          categoryNames.get(w.getMaxImpact() + 1),
+          w.getCategory(1),
+          w.getWeight(1),
+          w.getCategory(2),
+          w.getWeight(2));
     }
   }
 
-  public static List<File> permute(Iterable<File> files, Random rand) {
-    List<File> r = Lists.newArrayList();
-    for (File file : files) {
-      int i = rand.nextInt(r.size() + 1);
-      if (i == r.size()) {
-        r.add(file);
-      } else {
-        r.add(r.get(i));
-        r.set(i, file);
-      }
-    }
-    return r;
-  }
-
-  public static void analyzeState(SGDInfo info, int leakType, int k, State<AdaptiveLogisticRegression.Wrapper,
-      CrossFoldLearner> best) throws IOException {
+  public static void analyzeState(SGDInfo info, int leakType, int k,
+      State<AdaptiveLogisticRegression.Wrapper, CrossFoldLearner> best) throws IOException {
     int bump = info.getBumps()[(int) Math.floor(info.getStep()) % info.getBumps().length];
     int scale = (int) Math.pow(10, Math.floor(info.getStep() / info.getBumps().length));
 
@@ -126,6 +122,7 @@ public final class SGDHelper {
           return Math.abs(v) > 1.0e-6 ? 1 : 0;
         }
       });
+
       positive = beta.aggregate(Functions.PLUS, new DoubleFunction() {
         @Override
         public double apply(double v) {
@@ -145,15 +142,30 @@ public final class SGDHelper {
 
     if (k % (bump * scale) == 0) {
       if (best != null) {
-        ModelSerializer.writeBinary("/tmp/news-group-" + k + ".model",
-                best.getPayload().getLearner().getModels().get(0));
+        ModelSerializer.writeBinary("/tmp/html-blocks-" + k + ".model", best.getPayload().getLearner().getModels().get(0));
       }
 
       info.setStep(info.getStep() + 0.25);
       System.out.printf("%.2f\t%.2f\t%.2f\t%.2f\t%.8g\t%.8g\t", maxBeta, nonZeros, positive, norm, lambda, mu);
-      System.out.printf("%d\t%.3f\t%.2f\t%s%n",
-        k, info.getAverageLL(), info.getAverageCorrect() * 100, LEAK_LABELS[leakType % 3]);
+      System.out.printf("%d\t%.3f\t%.2f\t", k, info.getAverageLL(), info.getAverageCorrect() * 100);
+      System.out.println();
     }
+  }
+
+  public static List<File> permute(Iterable<File> files, Random rand) {
+    List<File> r = Lists.newArrayList();
+
+    for (File file : files) {
+      int i = rand.nextInt(r.size() + 1);
+      if (i == r.size()) {
+        r.add(file);
+      } else {
+        r.add(r.get(i));
+        r.set(i, file);
+      }
+    }
+
+    return r;
   }
 
 }

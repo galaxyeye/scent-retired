@@ -217,8 +217,8 @@ public final class StringUtil {
   }
 
   // 完整的判断中文汉字和符号
-  public static boolean isChinese(String strName) {
-    char[] ch = strName.toCharArray();
+  public static boolean isChinese(String text) {
+    char[] ch = text.toCharArray();
     for (int i = 0; i < ch.length; i++) {
       char c = ch[i];
       if (isChinese(c)) {
@@ -227,6 +227,26 @@ public final class StringUtil {
     }
 
     return false;
+  }
+
+  public static boolean isMainlyChinese(String text, double percentage) {
+    if (text == null || text == "") return false;
+
+    return 1.0 * countChinese(text) / text.length() >= percentage;
+  }
+
+  public static int countChinese(String text) {
+    if (text == null || text == "") return 0;
+
+    int count = 0;
+    char[] ch = text.toCharArray();
+    for (int i = 0; i < ch.length; i++) {
+      if (isChinese(ch[i])) {
+        ++count;
+      }
+    }
+
+    return count;
   }
 
   // 只能判断部分CJK字符（CJK统一汉字）

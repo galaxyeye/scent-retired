@@ -12,6 +12,7 @@ import org.apache.mahout.math.SparseMatrix;
 import org.apache.mahout.math.function.DoubleFunction;
 import org.qiwur.scent.jsoup.block.BlockLabel;
 import org.qiwur.scent.jsoup.block.DomSegment;
+import org.qiwur.scent.jsoup.select.DOMUtil;
 import org.qiwur.scent.utils.MatrixUtil;
 
 public abstract class BlockClassifier {
@@ -67,6 +68,8 @@ public abstract class BlockClassifier {
   }
 
   public void process() {
+    if (weight == 0.0) return;
+
     for (int row = 0; row < segments.length; ++row) {
       for (int col = 0; col < labels.length; ++col) {
         double score = getScore(segments[row], labels[col]);
@@ -85,12 +88,35 @@ public abstract class BlockClassifier {
     return scoreMatrix;
   }
 
-  protected void tagSegments() {
+  protected void label() {
     for (int row = 0; row < segments.length; ++row) {
       for (int col = 0; col < labels.length; ++col) {
         double likelihood = scoreMatrix.get(row, col);
         if (likelihood >= 0.6) {
           segments[row].tag(BlockLabel.fromString(labels[col]), likelihood);
+        }
+      }
+    }
+  }
+
+  protected void inheritLabel() {
+    final double tolerance = 3; // TODO : configuration
+
+    for (DomSegment segment : segments) {
+      for (DomSegment segment2 : segments) {
+        if (DOMUtil.isAncestor(segment2, segment)) {
+          // segment2 is a decendant of segment, copy all labels from the ancestor
+          for (BlockLabel label : segment.labelTracker().keySet()) {
+            // TODO : delayed feature
+//            double likelihood = segment.likelihood(segment2, tolerance);
+//            if (FuzzyProbability.veryLikely(likelihood)) {
+//              segment2.unTag(label);
+//            }
+
+            if (label.inheritable()) {
+              segment2.tag(label, segment.labelTracker().get(label));
+            }
+          }
         }
       }
     }

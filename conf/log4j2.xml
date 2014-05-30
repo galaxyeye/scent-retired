@@ -32,6 +32,10 @@
       <AppenderRef ref="StatFile"/>
     </Logger>
 
+    <Logger name="org.qiwur.scent.classifier.sgd.BlockFeatureVectorEncoder" level="debug" additivity="false">
+      <AppenderRef ref="StatFile"/>
+    </Logger>
+
     <Logger name="org.qiwur.scent.classifier.statistics.BlockVarianceCalculator" level="debug" additivity="false">
       <AppenderRef ref="StatFile"/>
     </Logger>

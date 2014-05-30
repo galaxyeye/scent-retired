@@ -6,8 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.qiwur.scent.jsoup.block.DomSegments;
+import org.qiwur.scent.jsoup.parser.IndicatorCalculator;
+import org.qiwur.scent.jsoup.parser.IndicatorIndexer;
 import org.qiwur.scent.jsoup.parser.Tag;
+import org.qiwur.scent.jsoup.select.ElementTraversor;
 import org.qiwur.scent.jsoup.select.Elements;
+import org.qiwur.scent.jsoup.select.NodeTraversor;
 import org.qiwur.scent.utils.StringUtil;
 import org.qiwur.scent.utils.Validate;
 
@@ -173,6 +177,12 @@ public class Document extends Element {
     normaliseStructure("body", htmlEl);
 
     return this;
+  }
+
+  public void rebuildIndicators() {
+    // calculate indicators
+    new NodeTraversor(new IndicatorCalculator()).traverse(this);
+    new ElementTraversor(new IndicatorIndexer(this.indicatorIndex())).traverse(this);
   }
 
   // does not recurse.

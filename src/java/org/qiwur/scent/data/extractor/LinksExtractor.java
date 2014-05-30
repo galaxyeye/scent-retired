@@ -26,22 +26,22 @@ public final class LinksExtractor extends DomSegmentExtractor {
     for (Element ele : element().getElementsByTag("a")) {
       String href = ele.attr("href");
       if (!href.startsWith("#") && !href.contains("javascript")) {
-        links.add(extractLink(ele));
+        links.add(Link.create(ele));
       }
 		}
 
     if (!links.isEmpty()) {
-      pageEntity.put(sectionLabel, formatLinks(), sectionLabel);
+      pageEntity.put(sectionLabel, formatLinks(), segment.labelTracker().getLabels());
     }
 	}
 
   protected String formatLinks() {
     StringBuilder sb = new StringBuilder();
 
-    String cls = segment.labelTracker().getLabelsAsString();
-    cls = StringUtil.csslize(cls);
+    String cls = StringUtil.csslize(segment.labelTracker().getLabelsAsString());
+    String clazz = StringUtil.csslize(getClass().getSimpleName());
 
-    sb.append("<div class='" + cls + "'>");
+    sb.append(String.format("<div class='%s' data-extractor='%s'>", cls, clazz));
     for (Link link : links) {
       sb.append(link.toString());
     }

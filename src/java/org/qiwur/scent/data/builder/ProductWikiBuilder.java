@@ -3,6 +3,7 @@ package org.qiwur.scent.data.builder;
 import java.io.IOException;
 import java.util.Arrays;
 
+import org.apache.hadoop.conf.Configuration;
 import org.qiwur.scent.data.builder.template.MiniTemplator;
 import org.qiwur.scent.data.builder.template.MiniTemplator.TemplateSyntaxException;
 import org.qiwur.scent.entity.EntityAttribute;
@@ -21,8 +22,8 @@ public class ProductWikiBuilder extends ProductBuilder {
 	String pageEntityName = null;
 	String pageEntityCategory = null;
 
-	public ProductWikiBuilder(PageEntity pageEntity) {
-		super(pageEntity);
+	public ProductWikiBuilder(PageEntity pageEntity, Configuration conf) {
+		super(pageEntity, conf);
 
 		pageEntityTitle = buildProductTitle();
 		pageEntityName = buildProductName(pageEntityTitle);
@@ -63,7 +64,7 @@ public class ProductWikiBuilder extends ProductBuilder {
 			}
 
 			final String[] ignoredBaseInfo = {"产品名称", "产品分类"};
-			for (EntityAttribute attribute : pageEntity.getByCategory("基本信息")) {
+			for (EntityAttribute attribute : pageEntity.getCategorized("基本信息")) {
 				if (!Arrays.asList(ignoredBaseInfo).contains(attribute.name())) {
 					template.setVariable("属性名", attribute.name());
 					template.setVariable("属性值", attribute.value());
@@ -71,7 +72,7 @@ public class ProductWikiBuilder extends ProductBuilder {
 				}
 			}
 
-			for (EntityAttribute attribute : pageEntity.getByCategory("规格参数")) {
+			for (EntityAttribute attribute : pageEntity.getCategorized("规格参数")) {
 				template.setVariable("属性名", attribute.name());
 				template.setVariable("属性值", attribute.value());
 				template.addBlock("规格参数");
@@ -104,23 +105,23 @@ public class ProductWikiBuilder extends ProductBuilder {
 			page.summery(title);
 
 			template.setVariable("产品名称", pageEntityName);
-			template.setVariable("交易平台名称", pageEntity.text("交易平台名称"));
-			template.setVariable("交易平台域名", pageEntity.text("交易平台域名"));
-			template.setVariable("销售价", pageEntity.text("销售价"));
+			template.setVariable("交易平台名称", pageEntity.firstText("交易平台名称"));
+			template.setVariable("交易平台域名", pageEntity.firstText("交易平台域名"));
+			template.setVariable("销售价", pageEntity.firstText("销售价"));
 
 			template.setVariable("可选颜色", pageEntity.join("颜色"));
 			template.setVariable("可选版本", pageEntity.join("版本"));
 
-			template.setVariable("售后服务", pageEntity.text("售后服务"));
-			template.setVariable("物流信息", pageEntity.text("物流信息"));
-			template.setVariable("支付说明", pageEntity.text("支付说明"));
+			template.setVariable("售后服务", pageEntity.firstText("售后服务"));
+			template.setVariable("物流信息", pageEntity.firstText("物流信息"));
+			template.setVariable("支付说明", pageEntity.firstText("支付说明"));
 
 			template.setVariable("商品详细介绍", buildProductIntroducePageTitle(pageEntityTitle));
 
 			template.setVariable("网页标题", pageEntityTitle);
-			template.setVariable("网页摘要", pageEntity.text("网页摘要"));
+			template.setVariable("网页摘要", pageEntity.firstText("网页摘要"));
 			template.setVariable("网页关键词", pageEntity.join("网页关键词"));
-			template.setVariable("网页链接", pageEntity.text("购买链接"));
+			template.setVariable("网页链接", pageEntity.firstText("购买链接"));
 
 			page.text(template.generateOutput());
 		} catch (TemplateSyntaxException | IOException e) {
@@ -143,7 +144,7 @@ public class ProductWikiBuilder extends ProductBuilder {
 			page.summery(title);
 
 			template.setVariable("产品名称", pageEntityName);
-			template.setVariable("商品详细介绍", html2wiki(pageEntity.text("商品详细介绍")));
+			template.setVariable("商品详细介绍", html2wiki(pageEntity.firstText("商品详细介绍")));
 
 			page.text(template.generateOutput());
 		} catch (TemplateSyntaxException | IOException e) {

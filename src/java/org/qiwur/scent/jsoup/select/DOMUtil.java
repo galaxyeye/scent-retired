@@ -5,12 +5,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.collections.ComparatorUtils;
+import org.qiwur.scent.jsoup.block.DomSegment;
 import org.qiwur.scent.jsoup.nodes.Element;
 import org.qiwur.scent.jsoup.nodes.Indicator;
 
 import com.google.common.collect.TreeMultimap;
 
-public class ElementTreeUtil {
+public class DOMUtil {
 
   // 判断两个元素是否相邻
   // 相邻的定义是具有某代以内的相同祖先
@@ -37,13 +38,23 @@ public class ElementTreeUtil {
     return null;
   }
 
+  static public boolean isAncestor(DomSegment child, DomSegment ancestor) {
+    if (child == null || ancestor == null) return false;
+    return isAncestor(child.root(), ancestor.root(), 1000000);
+  }
+
+  static public boolean isAncestor(Element child, Element ancestor) {
+    return isAncestor(child, ancestor, 1000000);
+  }
+
   // 是否generation代以内的先祖
   static public boolean isAncestor(Element child, Element ancestor, int generation) {
-    if (ancestor == null || child == null)
-      return false;
+    if (ancestor == null || child == null) return false;
 
     while (child != null && generation-- > 0) {
       child = child.parent();
+
+      // TODO : check depth?
 
       if (ancestor == child) {
         return true;

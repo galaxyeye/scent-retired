@@ -13,17 +13,17 @@ public class EntityAttrValueFilter extends BadWordFilter {
 
 	public String[] DontFilterAttributes = {"交易平台名称"};
 	
-	private final PageEntity product;
+	private final PageEntity pageEntity;
 
-	public EntityAttrValueFilter(PageEntity product, Configuration conf) {
+	public EntityAttrValueFilter(PageEntity pageEntity, Configuration conf) {
 	  super("conf/bad-attribute-name.txt", conf);
-		this.product = product;
+		this.pageEntity = pageEntity;
 	}
 
 	public void process() {
 		List<String> DontFilterAttributeList = Arrays.asList(DontFilterAttributes);
 		// 删除敏感词
-		for (EntityAttribute attribute : product.attributes().values()) {
+		for (EntityAttribute attribute : pageEntity.attributes()) {
 			if (DontFilterAttributeList.contains(attribute.name())) continue;
 
 			String value = EntityAttrValueFeature.preprocess(attribute.value());

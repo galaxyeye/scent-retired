@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.Validate;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.qiwur.scent.classifier.statistics.StatIndicator;
@@ -19,6 +20,7 @@ import org.qiwur.scent.jsoup.Jsoup;
 import org.qiwur.scent.jsoup.nodes.Document;
 import org.qiwur.scent.jsoup.nodes.Element;
 import org.qiwur.scent.jsoup.parser.Parser;
+import org.qiwur.scent.utils.ObjectCache;
 import org.qiwur.scent.utils.StringUtil;
 
 import com.google.common.collect.LinkedListMultimap;
@@ -27,6 +29,8 @@ import com.google.common.collect.Multimap;
 public class BlockStatFeature {
 
   protected static final Logger logger = LogManager.getLogger(BlockStatFeature.class);
+
+  public static final String defaultConfigFile = "conf/block-stat-feature-default.xml";
 
   private List<String> configFiles = new ArrayList<String>();
 
@@ -38,11 +42,7 @@ public class BlockStatFeature {
 
   private int maxPlaceholders = 10;
 
-  BlockStatFeature() {
-    
-  }
-
-  BlockStatFeature(String... configFiles) {
+  private BlockStatFeature(String... configFiles) {
     Validate.notNull(configFiles);
     Validate.notEmpty(configFiles);
 
@@ -50,6 +50,19 @@ public class BlockStatFeature {
     
     for (String file : this.configFiles) {
       load(file);
+    }
+  }
+
+  public static BlockStatFeature create(String configFile, Configuration conf) {
+    ObjectCache objectCache = ObjectCache.get(conf);
+    final String cacheId = configFile;
+
+    if (objectCache.getObject(cacheId) != null) {
+      return (BlockStatFeature) objectCache.getObject(cacheId);
+    } else {
+      BlockStatFeature feature = new BlockStatFeature(defaultConfigFile, configFile);
+      objectCache.setObject(cacheId, feature);
+      return feature;
     }
   }
 

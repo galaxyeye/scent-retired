@@ -28,7 +28,7 @@ public class WikiPropertyBuilder {
 
   public static void main(String[] args) throws IOException {
     Configuration conf = ScentConfiguration.create();
-    EntityAttributeLearner learner = new EntityAttributeLearner(conf);
+    EntityAttributeLearner learner = EntityAttributeLearner.create(conf);
 
     for (String fullName : learner.words()) {
       buildPropertyPage(fullName);

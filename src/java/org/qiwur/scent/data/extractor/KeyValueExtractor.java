@@ -7,7 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.qiwur.scent.jsoup.nodes.Element;
 import org.qiwur.scent.jsoup.nodes.Indicator;
-import org.qiwur.scent.jsoup.select.ElementTreeUtil;
+import org.qiwur.scent.jsoup.select.DOMUtil;
 import org.qiwur.scent.jsoup.select.Elements;
 import org.qiwur.scent.utils.StringUtil;
 
@@ -101,8 +101,8 @@ public class KeyValueExtractor implements DataExtractor {
 		Elements trs = table.getElementsByTag("tr");
 
 		for (Element tr : trs) {
-			Element name = ElementTreeUtil.findFirstChildHasText(tr, null, false);
-			Element value = ElementTreeUtil.findSecondChildHasText(tr, null, false);
+			Element name = DOMUtil.findFirstChildHasText(tr, null, false);
+			Element value = DOMUtil.findSecondChildHasText(tr, null, false);
 
 			tryCollectKeyValuePair(name, value);
 		}
@@ -146,7 +146,7 @@ public class KeyValueExtractor implements DataExtractor {
 		if (root == null) return;
 
 		TreeMultimap<Double, Element> map = 
-				ElementTreeUtil.findMostChildrenElement(root, minChildren, desiredTags);
+				DOMUtil.findMostChildrenElement(root, minChildren, desiredTags);
 
 //		for (Integer key : map.keySet()) {
 //			logger.debug("child number : {}, element count : {}", key, map.get(key).size());
@@ -223,8 +223,8 @@ public class KeyValueExtractor implements DataExtractor {
 
 					// logger.debug("k : {}, e : {}, child : {}", k, root.prettyName(), pair.prettyName());
 
-					Element nameElement = ElementTreeUtil.findFirstChildHasText(pair, null, false);
-					Element valueElement = ElementTreeUtil.findSecondChildHasText(pair, null, false);
+					Element nameElement = DOMUtil.findFirstChildHasText(pair, null, false);
+					Element valueElement = DOMUtil.findSecondChildHasText(pair, null, false);
 
 					tryCollectKeyValuePair(nameElement, valueElement);
 				} // for

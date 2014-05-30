@@ -6,111 +6,94 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang.Validate;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.mahout.classifier.sgd.AdaptiveLogisticRegression;
-import org.apache.mahout.classifier.sgd.CrossFoldLearner;
 import org.apache.mahout.classifier.sgd.L1;
 import org.apache.mahout.classifier.sgd.ModelSerializer;
-import org.apache.mahout.ep.State;
-import org.apache.mahout.math.Vector;
 import org.apache.mahout.vectorizer.encoders.Dictionary;
 import org.qiwur.scent.configuration.ScentConfiguration;
-import org.qiwur.scent.jsoup.Jsoup;
-import org.qiwur.scent.jsoup.block.DomSegment;
-import org.qiwur.scent.jsoup.nodes.Document;
-import org.qiwur.scent.sgd.NewsgroupHelper;
+import org.qiwur.scent.jsoup.nodes.Indicator;
 
-import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Multiset;
-import com.google.common.collect.Ordering;
 
 public class LogisticRegressionTrainer {
 
-  private final Configuration conf;
+  static final Logger logger = LogManager.getLogger(LogisticRegressionTrainer.class);
 
-  protected final String[] labels;
+  private final Configuration conf;
+  private final Dictionary categories = new Dictionary();
+  private final List<File> files = Lists.newArrayList();
+  private final String modelFile;
+  private final String sampleBaseDir;
+  private final int leakType = 0;
+  private final int probes;
+  private final BlockFeatureVectorEncoder featureEncoder;
+  private final AdaptiveLogisticRegression model;
 
   public LogisticRegressionTrainer(Configuration conf) {
     this.conf = conf;
-    this.labels = conf.getStrings("scent.segment.labels");
+    this.modelFile = conf.get("scent.sgd.train.base.dir") + File.separator + "html-blocks-sgd.model";
+    this.sampleBaseDir = conf.get("scent.sgd.train.base.dir") + File.separator + "segment";
+
+    // this.probes = conf.getInt("scent.logistic.regression.classifier.probes", 10);
+
+    featureEncoder = new BlockFeatureVectorEncoder("html-blocks", Indicator.names);
+    this.probes = featureEncoder.numFeatures();
+    featureEncoder.setProbes(this.probes);
+
+    initFiles();
+
+    model = new AdaptiveLogisticRegression(categories.size(), featureEncoder.numFeatures(), new L1());
+
+    logger.info(String
+        .format("\nmode file : %s\nsample base dir : %s\nprobes : %d\n", modelFile, sampleBaseDir, probes));
+    logger.info("{} categories : {}", categories.size(), categories.values());
+    logger.info("{} features : {}", featureEncoder.numFeatures(), featureEncoder.getFeatures());
+
+    // TODO : configurable
+    // model.setInterval(800);
+    // model.setAveragingWindow(500);
   }
 
   public void train() throws IOException {
-    Multiset<String> overallCounts = HashMultiset.create();
+    Validate.notEmpty(files);
 
-    int leakType = 0;
-//    if (args.length > 1) {
-//      leakType = Integer.parseInt(args[1]);
-//    }
-
-    Dictionary segments = new Dictionary();
-
-//    helper.getEncoder().setProbes(2);
-    // TODO : load category number from configuration
-    AdaptiveLogisticRegression learningAlgorithm = 
-        new AdaptiveLogisticRegression(labels.length, NewsgroupHelper.FEATURES, new L1());
-    learningAlgorithm.setInterval(800);
-    learningAlgorithm.setAveragingWindow(500);
-
-    List<File> files = Lists.newArrayList();
-    File base = new File(conf.get("scent.sgd.train.base.dir"));
-    for (File segment : base.listFiles()) {
-      if (segment.isDirectory()) {
-        segments.intern(segment.getName());
-        files.addAll(Arrays.asList(segment.listFiles()));
-      }
-    }
-
-    Collections.shuffle(files);
-    System.out.println(files.size() + " training files");
+    logger.info(files.size() + " training files");
     SGDInfo info = new SGDInfo();
 
     int k = 0;
     for (File file : files) {
-      String ng = file.getParentFile().getName();
-      int actual = segments.intern(ng);
+      int actualCategory = categories.intern(file.getParentFile().getName());
+      model.train(actualCategory, featureEncoder.encode(file));
 
-      Document doc = Jsoup.parse(file, "utf-8");
-      DomSegment segment = new DomSegment(doc.getElementById("bodyElement"));
+      SGDDissector.analyzeState(info, leakType, ++k, model.getBest());
 
-      Vector v = new BlockFeatureVectorEncoder("segments").addToVector(segment);
-      // Vector v = helper.encodeFeatureVector(file, actual, leakType, overallCounts);
-      learningAlgorithm.train(actual, v);
-
-      k++;
-      State<AdaptiveLogisticRegression.Wrapper, CrossFoldLearner> best = learningAlgorithm.getBest();
-
-      SGDHelper.analyzeState(info, leakType, k, best);
+//      if (++k > 10)
+//        break;
     } // for
 
-    learningAlgorithm.close();
-    SGDHelper.dissect(leakType, segments, learningAlgorithm, files, overallCounts);
-    System.out.println("exiting main");
+    new SGDDissector(conf).dissect(leakType, categories, model, files);
 
-    ModelSerializer.writeBinary("/tmp/scent-document-segments.model",
-        learningAlgorithm.getBest().getPayload().getLearner().getModels().get(0));
+    ModelSerializer.writeBinary(modelFile, model.getBest().getPayload().getLearner().getModels().get(0));
+  }
 
-    List<Integer> counts = Lists.newArrayList();
-    System.out.println("Word counts");
-    for (String count : overallCounts.elementSet()) {
-      counts.add(overallCounts.count(count));
-    }
-
-    Collections.sort(counts, Ordering.natural().reverse());
-    k = 0;
-    for (Integer count : counts) {
-      System.out.println(k + "\t" + count);
-      k++;
-      if (k > 1000) {
-        break;
+  private void initFiles() {
+    for (File categorizedDir : new File(sampleBaseDir).listFiles()) {
+      if (categorizedDir.isDirectory()) {
+        categories.intern(categorizedDir.getName());
+        files.addAll(Arrays.asList(categorizedDir.listFiles()));
       }
     }
+    Collections.shuffle(files);
   }
 
   public static void main(String[] args) throws IOException {
     Configuration conf = ScentConfiguration.create();
 
+    logger.info("begin to train...");
     LogisticRegressionTrainer trainer = new LogisticRegressionTrainer(conf);
     trainer.train();
   }

@@ -3,66 +3,31 @@ package org.qiwur.scent.entity;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Multimap;
-
-// PAttribute 被设计为name和<alias, category>是unique id
 public class EntityAttribute implements Comparable<EntityAttribute> {
-  private String name;
+  private final String name;
   private String value = "";
 
-  private Multimap<String, EntityCategory> categories = LinkedListMultimap.create();
-  private Set<String> aliases = new HashSet<String>();
-  private Pattern valuePattern = null;
-
-  public EntityAttribute(String name, Pattern valuePattern, EntityCategory... categories) {
-    Validate.notEmpty(name);
-
-    this.name = name;
-    this.valuePattern = valuePattern;
-
-    if (categories != null) {
-      for (EntityCategory category : categories) {
-        if (category != null) {
-          this.categories.put(category.name(), category);
-        }
-      }
-    }
-  }
+  private Set<EntityCategory> categories = new HashSet<EntityCategory>();
 
   public EntityAttribute(String name, String value) {
     Validate.notEmpty(name);
     Validate.notNull(value);
 
     this.name = name;
-    this.value = value;    
+    this.value = value;
   }
 
-  public EntityAttribute(String name, String value, String... categories) {
-    Validate.notEmpty(name);
-    Validate.notNull(value);
-
-    this.name = name;
-    this.value = value;
-
-    if (categories != null) {
-      for (String category : categories) {
-        if (!StringUtils.isEmpty(category)) {
-          this.categories.put(category, new EntityCategory(category));
-        }
-      }
-    }
+  public EntityAttribute(String name, String value, String category) {
+    this(name, value);
+    categorize(category);
   }
 
-  public EntityAttribute(String name, String value, EntityCategory... categories) {
-    this(name, (Pattern) null, categories);
-    this.value = value;
+  public EntityAttribute(String name, String value, Collection<String> categories) {
+    this(name, value);
+    categorize(categories);
   }
 
   public EntityAttribute(EntityAttribute other) {
@@ -70,23 +35,11 @@ public class EntityAttribute implements Comparable<EntityAttribute> {
 
     this.name = other.name;
     this.value = other.value;
-    this.categories = LinkedListMultimap.create(other.categories);
-
-    if (other.aliases != null) {
-      this.aliases = new HashSet<String>(other.aliases);
-    }
-
-    if (other.valuePattern != null) {
-      this.valuePattern = other.valuePattern;
-    }
+    this.categories.addAll(other.categories);
   }
 
   public String name() {
     return name;
-  }
-
-  public void name(String name) {
-    this.name = name;
   }
 
   public String fullName() {
@@ -108,31 +61,50 @@ public class EntityAttribute implements Comparable<EntityAttribute> {
   }
 
   public void value(String value) {
-    this.value = getValue(value);
+    this.value = value;
   }
 
-  public Pattern valuePattern() {
-    return valuePattern;
+  public void categorize(EntityCategory category) {
+    if (category == null) return;
+
+    this.categories.add(category);
+  }
+
+  public void categorizeAll(Collection<EntityCategory> categories) {
+    if (categories == null) return;
+
+    for (EntityCategory category : categories) {
+        categorize(category);
+    }
+  }
+
+  public void categorize(String category) {
+    if (category != null)
+    this.categories.add(new EntityCategory(category));
+  }
+
+  public void categorize(Collection<String> categories) {
+    if (categories == null) return;
+
+    for (String category : categories) {
+      categorize(category);
+    }
   }
 
   public boolean hasCategory(String name) {
-    return categories.containsKey(name);
+    for (EntityCategory category : categories) {
+      if (category.name().equals(name)) return true;
+    }
+
+    return false;
   }
 
   public boolean uncategorized() {
     return categories.isEmpty();
   }
 
-  public Set<String> aliases() {
-    return aliases;
-  }
-
-  public void aliases(Set<String> aliases) {
-    this.aliases = aliases;
-  }
-
-  public Collection<EntityCategory> categories() {
-    return categories.values();
+  public Set<EntityCategory> categories() {
+    return categories;
   }
 
   @Override
@@ -141,37 +113,35 @@ public class EntityAttribute implements Comparable<EntityAttribute> {
   }
 
   public String simpleCategoriesString() {
-    if (categories.isEmpty()) return "";
-    return categories.keySet().toString();
-  }
+    StringBuilder sb = new StringBuilder();
 
-  public String simpleAliasesString() {
-    if (aliases.isEmpty()) return "";
-    return aliases.toString();
+    int i = 0;
+    for (EntityCategory category : categories) {
+      if (i++ > 0) {
+        sb.append(',');
+      }
+      sb.append(category.name());
+    }
+
+    return sb.toString();
   }
 
   @Override
   public String toString() {
-    String s = name + " : " + value + "\t";
-
-    if (!aliases.isEmpty()) s += "| aliases : " + aliases.toString() + "\t";
-    if (!categories.isEmpty()) s += "| categories : " + categories.keySet().toString() + "\t";
-
-    return s;
+    return fullName();
   }
 
-  private String getValue(String value) {
-    if (valuePattern == null) {
-      return value;
-    }
+  /**
+   * Compares the specified EntityAttributes Two EntityAttribute are equal when
+   * the following fileds are all equal : 1. name 2. value 3. categories
+   * */
+  @Override
+  public boolean equals(Object attribute) {
+    if (!(attribute instanceof EntityAttribute))
+      return false;
 
-    Matcher matcher = valuePattern.matcher(value);
-
-    if (matcher.find()) {
-      value = matcher.group();
-    }
-
-    return value;
+    EntityAttribute a = (EntityAttribute) attribute;
+    return name.equals(a.name) && value.equals(a.value) && categories.equals(a.categories);
   }
 
   @Override
@@ -179,7 +149,7 @@ public class EntityAttribute implements Comparable<EntityAttribute> {
     int r = name.compareTo(other.name);
     if (r == 0) {
       return value.compareTo(other.value);
-    }
-    else return r;
+    } else
+      return r;
   }
 }

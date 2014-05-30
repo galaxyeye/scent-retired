@@ -90,6 +90,34 @@ public class DomSegment implements Comparable<DomSegment> {
     return titleText() != "";
   }
 
+  public String outerHtml() {
+    if (root == null)
+      return "";
+
+    return root.outerHtml();
+  }
+
+  public String html() {
+    if (root == null)
+      return "";
+
+    return root.html();
+  }
+
+  public String text() {
+    if (root == null)
+      return "";
+
+    return root.text();
+  }
+
+  /**
+   * return a value between [0, 1]
+   * */
+  public double likelihood(DomSegment other, double tolerance) {
+    return body.likelihood(other.body(), tolerance, Indicator.SEQ);
+  }
+
   public void tag(BlockLabel label) {
     tag(label, FuzzyProbability.VERY_LIKELY.floor());
   }
@@ -102,6 +130,10 @@ public class DomSegment implements Comparable<DomSegment> {
     labelTracker().set(label, sim);
   }
 
+  public void unTag(BlockLabel label) {
+    labelTracker().remove(label);
+  }
+
   public void tag(BlockPattern pattern) {
     tag(pattern, FuzzyProbability.VERY_LIKELY.floor());
   }
@@ -112,6 +144,10 @@ public class DomSegment implements Comparable<DomSegment> {
 
   public void tag(BlockPattern pattern, Double sim) {
     patternTracker().set(pattern, sim);
+  }
+
+  public void unTag(BlockPattern pattern) {
+    patternTracker().remove(pattern);
   }
 
   // 打出及格分，使用默认及格线
@@ -146,27 +182,6 @@ public class DomSegment implements Comparable<DomSegment> {
 
   public BlockPatternTracker patternTracker() {
     return patternTracker;
-  }
-
-  public String outerHtml() {
-    if (root == null)
-      return "";
-
-    return root.outerHtml();
-  }
-
-  public String html() {
-    if (root == null)
-      return "";
-
-    return root.html();
-  }
-
-  public String text() {
-    if (root == null)
-      return "";
-
-    return root.text();
   }
 
   public BlockLabel primaryLabel() {

@@ -28,8 +28,8 @@ public class StatRule {
 
   public StatRule(StatIndicator indicator, double min, double max, double score, double nag_score) {
     this.indicator = indicator;
-    this.min = min;
-    this.max = max;
+    this.min = min < -10000 ? -10000 : min;
+    this.max = max >  10000 ?  10000 : max;
     this.score = score;
     this.nag_score = nag_score;
 
@@ -79,12 +79,13 @@ public class StatRule {
     }
 
     for (String indicator : Indicator.names) {
-      engine.put("$" + indicator.replaceAll("-", "_"), ele.indic(indicator));
+      engine.put(variablize(indicator), ele.indic(indicator));
     }
 
     // reference variables : $_1, $_2, $_3, ... 
     for (Entry<String, String> entry : references.entrySet()) {
-      engine.put(entry.getKey(), engine.get(entry.getValue()));
+      String var = variablize(entry.getValue());
+      engine.put(entry.getKey(), engine.get(var));
     }
 
     try {
@@ -101,23 +102,25 @@ public class StatRule {
     return result;
   }
 
+  private String variablize(String indicator) {
+    return "$" + indicator.replaceAll("-", "_");
+  }
+
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder();
+    String report = String.format("min : %6.2f max : %6.2f score : %6.2f -score : %6.2f\n" 
+          + " indicators : %s\n"
+          + " variables : %s\n"
+          + " references : %s",
+        min, 
+        max, 
+        score, 
+        nag_score, 
+        indicator.toString(), 
+        variables.toString(), 
+        references.toString()
+    );
 
-    sb.append("[min : ");
-    sb.append(min);
-    sb.append(", max : ");
-    sb.append(max);
-    sb.append(", score : ");
-    sb.append(score);
-    sb.append(", nag_score : ");
-    sb.append(nag_score);
-    sb.append(", indicator : [");
-    sb.append(indicator);
-    sb.append("]");
-    sb.append("]");
-
-    return sb.toString();
+    return report;
   }
 }

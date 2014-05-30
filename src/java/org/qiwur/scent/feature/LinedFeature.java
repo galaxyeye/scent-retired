@@ -1,7 +1,5 @@
 package org.qiwur.scent.feature;
 
-import java.io.IOException;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.qiwur.scent.utils.FiledLines;
@@ -18,12 +16,11 @@ public class LinedFeature {
 
   public LinedFeature(String file) {
     this.file = file;
+    filedLines = new FiledLines(StringUtil.LongerFirstComparator, file);
+  }
 
-    try {
-      filedLines = new FiledLines(StringUtil.LongerFirstComparator, file);
-    } catch (IOException e) {
-      logger.error(e);
-    }
+  public void setPreprocessor(FiledLines.Preprocessor preprocessor) {
+    filedLines.setPreprocessor(preprocessor);
   }
 
   public boolean contains(String text) {

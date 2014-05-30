@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>product</title>
+<style type="text/css">
+body,input,button,select,textarea {
+	color: #090909; font-family: Arial; font-size: 12px;
+}
+
+a.link.image {
+	display: block; width: 50%
+}
+
+a.link.text {
+	display: block; width: 50%
+}
+
+div.extraction {
+	margin: 0 auto; width: 960px;
+}
+
+div.extraction div {
+    margin: 20px 0;
+}
+
+div.extraction form {
+    margin-top:200px;
+}
+
+div.extraction form input[type=text] {
+    background: none repeat scroll 0 0 #FFFFFF;
+    font: 16px/22px arial;
+    height: 22px;
+    margin: 5px 0 0 7px;
+    outline: 0 none;
+    width: 405px;
+}
+div.extraction form input[type=submit] {
+    background-color: #DDDDDD;
+    background-position: 0 -48px;
+    cursor: pointer;
+    font-size: 14px;
+    height: 32px;
+    width: 95px;
+}
+</style>
+</head>
+
+<body class="scent">
+	<div class="extraction">
+        <h1>Scent网页抽取系统</h1>
+		<form target="_blank" action="/scent/extract/extract" method="get">
+            <input type="text" name="target" value="输入商品详情页URL">
+			<input type="submit" value="立即抽取" />
+		</form>
+        <div>目前暂时仅支持商品详细页抽取</div>
+	</div>
+</body>
+</html>

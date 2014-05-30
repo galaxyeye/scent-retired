@@ -1,5 +1,6 @@
 package org.qiwur.scent.classifier.sgd;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Arrays;
@@ -8,17 +9,26 @@ import java.util.Collection;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.mahout.classifier.sgd.ModelSerializer;
 import org.apache.mahout.classifier.sgd.OnlineLogisticRegression;
+import org.apache.mahout.math.RandomAccessSparseVector;
 import org.apache.mahout.math.Vector;
 import org.qiwur.scent.classifier.BlockClassifier;
 import org.qiwur.scent.jsoup.block.DomSegment;
+import org.qiwur.scent.jsoup.nodes.Indicator;
 
 public class LogisticRegressionClassifier extends BlockClassifier {
 
   private final String modelFile;
+  private final int probes;
+  private final BlockFeatureVectorEncoder featureEncoder;
 
   public LogisticRegressionClassifier(DomSegment[] segments, String[] labels, Configuration conf) {
     super(segments, labels, conf);
-    this.modelFile = conf.get("scent.logistic.regression.mode.file");
+    this.modelFile = conf.get("scent.sgd.train.base.dir") + File.separator + "html-blocks-sgd.model";
+
+    // this.probes = conf.getInt("scent.logistic.regression.classifier.probes", 2);
+    featureEncoder = new BlockFeatureVectorEncoder("html-blocks", Indicator.names);
+    this.probes = featureEncoder.numFeatures();
+    featureEncoder.setProbes(probes);
 
     double weight = conf.getFloat("scent.logistic.regression.classifier.weight", 1.0f);
     this.weight(weight);
@@ -43,8 +53,7 @@ public class LogisticRegressionClassifier extends BlockClassifier {
     for (int i = 0; i < segments.length; ++i) {
       DomSegment segment = segments[i];
 
-      Vector input = new BlockFeatureVectorEncoder("segments").addToVector(segment);
-      Vector result = classifier.classifyFull(input);
+      Vector result = classifier.classifyFull(featureEncoder.encode(segment.outerHtml()));
       scoreMatrix.assignRow(i++, result);
 
       // int cat = result.maxValueIndex();

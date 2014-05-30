@@ -23,15 +23,6 @@ public class ProductExtractor extends PageExtractor {
   }
 
   @Override
-  protected void rebuild() {
-    super.rebuild();
-
-    rebuildPrice();
-    rebuildModelNumber();
-    rebuildManufacturer();
-  }
-
-  @Override
   protected void installExtractors() {
     super.installExtractors();
 
@@ -41,21 +32,4 @@ public class ProductExtractor extends PageExtractor {
       }
     }
   }
-
-  private void rebuildPrice() {
-    if (!pageEntity.contains("价格") && pageEntity.contains("销售价")) {
-      pageEntity.put("价格", pageEntity.first("销售价").value(), "ProductShow");
-    }
-
-    if (!pageEntity.contains("销售价") && pageEntity.contains("价格")) {
-      pageEntity.put("销售价", pageEntity.first("价格").value(), "ProductShow");
-    }
-  }
-
-  private void rebuildModelNumber() {
-  }
-
-  private void rebuildManufacturer() {
-  }
-
 }

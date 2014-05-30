@@ -21,10 +21,10 @@ public abstract class BlockLocator {
   public DomSegment locate() {
     DomSegment segment = quickLocate();
 
-    if (segment == null) {
-      logger.warn("deep locate for {}", targetLabel);
-      segment = deepLocate();
-    }
+//    if (segment == null) {
+//      logger.warn("deep locate for {}", targetLabel);
+//      segment = deepLocate();
+//    }
 
     return segment;
   }

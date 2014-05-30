@@ -1,4 +1,4 @@
 scent
 =====
 
-new web analysis language, W &amp; web extraction algorithms
+scent : a powerful web data extraction method

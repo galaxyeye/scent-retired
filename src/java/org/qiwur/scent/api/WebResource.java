@@ -16,22 +16,22 @@
  ******************************************************************************/
 package org.qiwur.scent.api;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.restlet.resource.Get;
 import org.restlet.resource.ServerResource;
 
-public class APIInfoResource extends ServerResource {
-  private static final List<String[]> info = new ArrayList<String[]>();
-  
-  static {
-    info.add(new String[]{AdminResource.PATH, AdminResource.DESCR});
-  }
+public class WebResource extends ServerResource {
 
-  @Get("json")
-  public List<String[]> retrieve() throws IOException {
-    return info;
+  public static final String PATH = "s";
+  public static final String DESCR = "Service admin actions";
+  public static String wwwroot = "wwwroot";
+
+  @Get("html")
+  public String retrieve() throws IOException {
+    String home = wwwroot + File.separator + "scent.html";
+    return FileUtils.readFileToString(new File(home));
   }
 }

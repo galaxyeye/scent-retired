@@ -105,10 +105,10 @@ final class EntityAttributeBuilderImpl {
   private void buildIndex() {
     for (EntityAttribute pattribute : pattributes) {
       name2attribute.put(pattribute.name(), pattribute);
-
-      for (String aliase : pattribute.aliases()) {
-        alias2attribute.put(aliase, pattribute);
-      }
+      //
+      // for (String aliase : pattribute.aliases()) {
+      // alias2attribute.put(aliase, pattribute);
+      // }
     }
   }
 
@@ -143,12 +143,15 @@ final class EntityAttributeBuilderImpl {
     String name = attribute.attr("name");
     Pattern pattern = Pattern.compile(attribute.attr("patterm"));
 
-    EntityAttribute entityAttribute = new EntityAttribute(name, pattern, parentCategory);
+    // EntityAttribute entityAttribute = new EntityAttribute(name, pattern,
+    // parentCategory);
+    EntityAttribute entityAttribute = new EntityAttribute(name, "");
+    entityAttribute.categorize(parentCategory);
     Set<String> aliasSet = new HashSet<String>();
     for (Element aliases : attribute.select("attribute > aliases > alias")) {
       aliasSet.add(aliases.text());
     }
-    entityAttribute.aliases(aliasSet);
+    // entityAttribute.aliases(aliasSet);
 
     return entityAttribute;
   }

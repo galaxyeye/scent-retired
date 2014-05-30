@@ -7,14 +7,10 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 
-import com.google.common.collect.Multimap;
-import com.google.common.collect.TreeMultimap;
-
 public class EntityCategory implements Comparable<EntityCategory> {
 
-  private String name;
-  private Multimap<String, EntityCategory> categories = TreeMultimap.create();
-  private Set<String> aliases = new HashSet<String>();
+  private final String name;
+  private Set<EntityCategory> categories = new HashSet<EntityCategory>();
 
   public EntityCategory(String name) {
     Validate.notEmpty(name);
@@ -25,43 +21,28 @@ public class EntityCategory implements Comparable<EntityCategory> {
     Validate.notEmpty(name);
 
     this.name = name;
-    if (categories != null) {
-      for (String category : categories) {
-        if (StringUtils.isEmpty(category)) {
-          this.categories.put(category, new EntityCategory(category));
-        }
-      }
-    }
+    categorize(categories);
   }
 
   public EntityCategory(String name, EntityCategory... categories) {
     Validate.notEmpty(name);
 
     this.name = name;
-    if (categories != null) {
-      for (EntityCategory category : categories) {
-        if (category != null) {
-          this.categories.put(category.name(), category);
-        }
-      }
-    }
+    categorize(categories);
   }
 
   public EntityCategory(EntityCategory other) {
     Validate.notNull(other);
 
     this.name = other.name;
-    this.categories = TreeMultimap.create(other.categories);
-
-    if (other.aliases != null) {
-      this.aliases = new HashSet<String>(other.aliases);
-    }
+    this.categories.addAll(other.categories);
   }
 
   public String name() {
     return name;
   }
 
+  // TODO : what if there is a ring in category graph?
   public String fullName() {
     if (categories.size() > 0) {
       StringBuilder fullName = new StringBuilder();
@@ -76,41 +57,50 @@ public class EntityCategory implements Comparable<EntityCategory> {
     return name;
   }
 
-  public Collection<EntityCategory> categories() {
-    return categories.values();
+  public void categorize(Collection<EntityCategory> categories) {
+    if (categories == null) return;
+    this.categories.addAll(categories);
   }
 
-  public Set<String> aliases() {
-    return aliases;
+  public void categorize(EntityCategory... categories) {
+    if (categories == null) return;
+
+    for (EntityCategory category : categories) {
+      this.categories.add(category);
+    }
   }
 
-  public void aliases(Set<String> aliases) {
-    this.aliases = aliases;
+  public void categorize(String... categories) {
+    if (categories == null) return;
+
+    for (String category : categories) {
+      if (!StringUtils.isEmpty(category)) {
+        this.categories.add(new EntityCategory(category));
+      }
+    }
   }
 
-  public String categoryString() {
-    if (categories.isEmpty()) return "";
-    return categories.toString();
+  public Set<EntityCategory> categories() {
+    return categories;
   }
 
-  public String aliasesString() {
-    if (aliases.isEmpty()) return "";
-    return aliases.toString();
+  public String simpleCategoriesString() {
+    StringBuilder sb = new StringBuilder();
+
+    int i = 0;
+    for (EntityCategory category : categories) {
+      if (i++ > 0) {
+        sb.append(',');
+      }
+      sb.append(category.name());
+    }
+
+    return sb.toString();
   }
 
   @Override
   public String toString() {
-    String s = "name : " + name + "\t";
-
-    if (aliases != null) {
-      s += "aliases : " + aliases.toString();
-    }
-
-    if (categories != null) {
-      s += "categories : " + categories.toString();
-    }
-
-    return s;
+    return fullName();
   }
 
   @Override
@@ -125,12 +115,7 @@ public class EntityCategory implements Comparable<EntityCategory> {
     }
 
     EntityCategory c = (EntityCategory) category;
-
-    boolean equal = false;
-    equal |= name.equals(c.name);
-    equal |= categories.equals(c.categories);
-
-    return equal;
+    return name.equals(c.name) && categories.equals(c.categories);
   }
 
   @Override

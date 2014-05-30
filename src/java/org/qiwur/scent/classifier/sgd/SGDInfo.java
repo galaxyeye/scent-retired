@@ -55,5 +55,4 @@ public final class SGDInfo {
   void setBumps(int[] bumps) {
     this.bumps = bumps;
   }
-
 }

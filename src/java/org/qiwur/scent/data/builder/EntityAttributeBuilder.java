@@ -56,7 +56,10 @@ public class EntityAttributeBuilder {
       category = new EntityCategory(categoryName);
     }
 
-    return new EntityAttribute(alias, value, category);
+    EntityAttribute attr = new EntityAttribute(alias, value);    
+    attr.categorize(category);
+
+    return attr;
   }
 
   public List<EntityAttribute> build(Multimap<String, String> attributes, String categoryName) {

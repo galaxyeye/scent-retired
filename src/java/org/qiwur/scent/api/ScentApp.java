@@ -24,6 +24,7 @@ public class ScentApp extends Application {
   public static ScentServer server;
   public static long started;
 
+
   /**
    * Creates a root Restlet that will receive all incoming calls.
    */
@@ -35,7 +36,9 @@ public class ScentApp extends Application {
       //router.getLogger().setLevel(Level.FINEST);
 
       // admin
-      router.attach("/", APIInfoResource.class);
+      router.attach("/", WebResource.class);
+      router.attach("/" + WebResource.PATH + "/{" + Params.CMD + "}", WebResource.class);
+
       router.attach("/" + AdminResource.PATH, AdminResource.class);
       router.attach("/" + AdminResource.PATH + "/{" + Params.CMD + "}", AdminResource.class);
 

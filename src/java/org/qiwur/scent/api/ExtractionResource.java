@@ -19,14 +19,14 @@ package org.qiwur.scent.api;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.qiwur.scent.classifier.statistics.BlockVarianceCalculator;
+import org.qiwur.scent.data.builder.ProductHTMLBuilder;
 import org.qiwur.scent.data.extractor.PageExtractor;
 import org.qiwur.scent.data.extractor.ProductExtractor;
 import org.qiwur.scent.data.extractor.WebExtractor;
-import org.qiwur.scent.data.extractor.WebExtractorFactory;
 import org.qiwur.scent.entity.PageEntity;
 import org.qiwur.scent.jsoup.nodes.Document;
-import org.qiwur.scent.wiki.Page;
+import org.restlet.data.Form;
+import org.restlet.representation.Representation;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
@@ -42,29 +42,32 @@ public class ExtractionResource extends ServerResource {
 
   public ExtractionResource() {
     this.conf = ScentApp.server.conf;
-    extractor = new WebExtractorFactory(conf).getWebExtractor();
+    extractor = WebExtractor.create(conf);
   }
 
-  @Get("json|xml")
+  @Get("json|xml|html")
   public Object execute() {
     String cmd = (String) getRequestAttributes().get(Params.CMD);
     String args = (String) getRequestAttributes().get(Params.ARGS);
 
-    String url = args;
-    Document doc = extractor.getWebLoader().load(url);
-
-    if (doc == null) {
-      return "invalid doc";
-    }
-
     if ("extract".equalsIgnoreCase(cmd)) {
+      String url = getQuery().getValues("target");
+      Document doc = extractor.getWebLoader().load(url);
+
+      if (doc == null) {
+        return "invalid doc";
+      }
+
       PageExtractor extractorImpl = new ProductExtractor(doc, conf);
       PageEntity pageEntity = extractor.extract(extractorImpl);
 
-      return "";
+      ProductHTMLBuilder builder = new ProductHTMLBuilder(pageEntity, conf);
+      builder.process();
+
+      return builder.doc().toString();
       // return extractor.generateWiki(pageEntity, Page.ProductPage);
     } else if ("statistics".equalsIgnoreCase(cmd)) {
-      new BlockVarianceCalculator(doc, conf).process();
+      // new BlockVarianceCalculator(doc, conf).process();
     } else if ("segment".equalsIgnoreCase(cmd)) {
 
     } else if ("tag".equalsIgnoreCase(cmd)) {
@@ -79,9 +82,4 @@ public class ExtractionResource extends ServerResource {
     return "Unknown command " + cmd;
   }
 
-  @Post("json")
-  public Object acceptPost(String content) {
-    String cmd = (String) getRequestAttributes().get(Params.CMD);
-    return cmd;
-  }
 }

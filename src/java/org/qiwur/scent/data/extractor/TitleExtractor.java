@@ -18,7 +18,7 @@ public class TitleExtractor extends DomSegmentExtractor {
 	public void process() {
     if (!valid()) return;
 
-    pageEntity.put(sectionLabel, getPrettyText(segment.text()), sectionLabel);
+    pageEntity.put(sectionLabel, getPrettyText(segment.text()), segment.labelTracker().getLabels());
 	}
 
 	@Override

@@ -26,21 +26,42 @@ public class FiledLines {
 
   private Map<String, TreeMultiset<String>> filedLines = new HashMap<String, TreeMultiset<String>>();
 
+  private Preprocessor preprocessor = new DefaultPreprocessor();
+
+  public interface Preprocessor {
+    public String process(String line);
+  }
+
+  public class DefaultPreprocessor implements Preprocessor {
+    @Override
+    public String process(String line) {
+      return line.startsWith("#") ? "" : line.trim();
+    }
+  };
+
   public FiledLines() {
-
   }
 
-  public FiledLines(String... files) throws IOException {
-    if (files.length > 0) load(files);
+  public FiledLines(String... files) {
+    Validate.notNull(files);
+    try {
+      load(files);
+    } catch (IOException e) {
+      logger.error(e);
+    }
   }
 
-  public FiledLines(Comparator<String> wordsComparator, String... files) throws IOException {
+  public FiledLines(Comparator<String> wordsComparator, String... files) {
+    this(files);
     this.wordsComparator = wordsComparator;
-    if (files.length > 0) load(files);
   }
 
-  public FiledLines(Comparator<String> wordsComparator) {
-    this.wordsComparator = wordsComparator;
+  public Preprocessor getPreprocessor() {
+    return preprocessor;
+  }
+
+  public void setPreprocessor(Preprocessor preprocessor) {
+    this.preprocessor = preprocessor;
   }
 
   public Multiset<String> getLines(String file) {
@@ -48,8 +69,7 @@ public class FiledLines {
   }
 
   public Multiset<String> firstFileLines() {
-    if (filedLines.isEmpty())
-      return TreeMultiset.create();
+    if (filedLines.isEmpty()) return TreeMultiset.create();
 
     return filedLines.values().iterator().next();
   }
@@ -94,29 +114,18 @@ public class FiledLines {
 
   public void load(String... files) throws IOException {
     if (files.length == 0) {
-      logger.error("file not set");
+      logger.error("no file to load");
     }
-
-    // logger.info("load files : {}", Arrays.asList(files));
 
     for (String file : files) {
       if (file != null && file.length() > 0) {
-        TreeMultiset<String> values = TreeMultiset.create();
-  
-        if (wordsComparator != null) {
-          values = TreeMultiset.create(wordsComparator);
-        }
-  
+        TreeMultiset<String> values = TreeMultiset.create(wordsComparator);
         List<String> lines = Files.readLines(new File(file), Charsets.UTF_8);
 
         for (String line : lines) {
-          line = line.trim();
-          if (!line.startsWith("#")) {
-            values.add(line);
-          }
+          line = preprocessor.process(line);
+          if (line != null && !line.isEmpty()) values.add(line);
         }
-
-        // logger.debug("load file {} with lines : \n{}", file, values);
 
         filedLines.put(file, values);
       }

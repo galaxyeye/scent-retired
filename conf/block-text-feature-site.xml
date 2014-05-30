@@ -30,18 +30,5 @@
         <phrase name="会员"    score="2" />
     </block>
     <block type="BadBlock">
-        <phrase name="购物指南" score="10" />
-        <phrase name="特色栏目" score="10" />
-        <phrase name="自助服务" score="10" />
-        <phrase name="企业采购" score="10" />
-        <phrase name="关键字" score="10" />
-        <phrase name="公司简介" score="10" />
-        <phrase name="扫描我" score="10" />
-        <phrase name="关于我们" score="10" />
-        <phrase name="联系我们" score="10" />
-        <phrase name="人才招聘" score="10" />
-        <phrase name="商家入驻" score="10" />
-        <phrase name="友情链接" score="10" />
-        <phrase name="备案编号" score="10" />
     </block>
 </block-features>

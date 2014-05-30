@@ -208,11 +208,7 @@ public class ProxyPool {
   public static List<String> getConfiguredProxyList() {
     List<String> result = new ArrayList<String>();
 
-    try {
-      result.addAll(new FiledLines(ProxyListFile).getLines(ProxyListFile));
-    } catch (IOException e) {
-      logger.error(e.toString());
-    }
+    result.addAll(new FiledLines(ProxyListFile).getLines(ProxyListFile));
 
     return result;
   }

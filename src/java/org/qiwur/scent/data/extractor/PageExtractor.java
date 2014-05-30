@@ -3,16 +3,11 @@ package org.qiwur.scent.data.extractor;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.logging.log4j.LogManager;
@@ -20,9 +15,6 @@ import org.apache.logging.log4j.Logger;
 import org.qiwur.scent.data.builder.WebsiteFactory;
 import org.qiwur.scent.entity.EntityAttribute;
 import org.qiwur.scent.entity.PageEntity;
-import org.qiwur.scent.feature.EntityAttrValueFeature;
-import org.qiwur.scent.feature.LinedFeature;
-import org.qiwur.scent.feature.LinedFeatureFactory;
 import org.qiwur.scent.jsoup.block.BlockLabel;
 import org.qiwur.scent.jsoup.block.DomSegment;
 import org.qiwur.scent.jsoup.block.DomSegments;
@@ -38,8 +30,6 @@ public class PageExtractor implements DataExtractor {
   protected final PageEntity pageEntity = new PageEntity();
   protected final Configuration conf;
   protected final Document doc;
-
-  protected final LinedFeature badPageKeywords;
   protected final EntityAttributeLearner attrLearner;
 
   protected List<DomSegmentExtractor> extractors = new ArrayList<DomSegmentExtractor>();
@@ -63,21 +53,20 @@ public class PageExtractor implements DataExtractor {
 
     this.doc = doc;
     this.conf = conf;
-    this.attrLearner = new EntityAttributeLearner(conf);
-
-    String file = conf.get("scent.bad.page.keywords.file");
-    badPageKeywords = new LinedFeatureFactory(file, conf).getFeature();
+    this.attrLearner = EntityAttributeLearner.create(conf);
   }
 
   @Override
   public void process() {
     Validate.notNull(doc);
 
+    // must be done before extractors are installed. extractors are segment specified : one segment, one extractor
     removeBadBlocks();
 
     installExtractors();
 
     extract();
+
     learn();
   }
 
@@ -140,18 +129,8 @@ public class PageExtractor implements DataExtractor {
     return pageEntity;
   }
 
-  protected void rebuild() {
-//    rebuildColors();
-//    rebuildKeywords();
-  }
-
-  protected void filter() {
-    // 过滤敏感词
-//    new EntityAttrValueFilter(pageEntity, conf).process();
-  }
-
   protected void learn() {
-    attrLearner.learn(pageEntity.getAll());
+    attrLearner.learn(pageEntity.attributes());
   }
 
   // 未分类属性集
@@ -183,61 +162,12 @@ public class PageExtractor implements DataExtractor {
 
   private EntityAttribute getPageKeywords() {
     Elements meta = doc.select("html head meta[name=keywords]");
-    return new EntityAttribute("page-keyword", meta.attr("content"), "Metadata");
+    return new EntityAttribute("page-keywords", meta.attr("content"), "Metadata");
   }
 
   private EntityAttribute getPageDescription() {
     Elements meta = doc.select("html head meta[name=description]");
     return new EntityAttribute("page-description", meta.attr("content"), "Metadata");
-  }
-
-  private void rebuildColors() {
-    final String AttributeName = "color";
-
-    Set<String> colorStrings = new HashSet<String>();
-
-    Collection<EntityAttribute> colorAttributes = pageEntity.get(AttributeName);
-    for (EntityAttribute colorAttribute : colorAttributes) {
-      colorStrings.addAll(Arrays.asList(StringUtils.split(colorAttribute.value())));
-    }
-    pageEntity.removeAll(AttributeName);
-
-    // 颜色属性和可选颜色属性
-    for (String text : colorStrings) {
-      for (String color : EntityAttrValueFeature.knownColors()) {
-        if (text.contains(color)) {
-          pageEntity.put(new EntityAttribute(AttributeName, color));
-        }
-      }
-    }
-  }
-
-  // 将网页关键词分解成多个独立的属性
-  private void rebuildKeywords() {
-    final String AttributeName = "page-keyword";
-
-    Set<String> keywordStrings = new HashSet<String>();
-    Collection<EntityAttribute> keywordAttributes = pageEntity.get(AttributeName);
-
-    for (EntityAttribute keywordAttribute : keywordAttributes) {
-      String value = keywordAttribute.value();
-
-      for (String word : badPageKeywords.lines()) {
-        value = value.replaceAll(word, "");
-      }
-
-      String[] keywords = StringUtils.split(value, ",，、|");
-
-      for (String keyword : keywords) {
-        keywordStrings.add(StringUtils.trimToEmpty(keyword));
-      }
-    }
-
-    // rebuild
-    pageEntity.removeAll(AttributeName);
-    for (String keyword : keywordStrings) {
-      pageEntity.put(new EntityAttribute(AttributeName, keyword));
-    }
   }
 
   protected DomSegments getSegments(String label) {

@@ -2,21 +2,25 @@ package org.qiwur.scent.entity;
 
 import java.util.Collection;
 import java.util.Formatter;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 import org.apache.commons.collections.ComparatorUtils;
 import org.apache.commons.lang.StringUtils;
 import org.qiwur.scent.utils.StringUtil;
 
-import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Multiset;
 import com.google.common.collect.TreeMultimap;
+import com.google.common.collect.TreeMultiset;
 
+// TODO : add multimap interface ?
 public class PageEntity {
 
-  protected final LinkedListMultimap<String, EntityAttribute> attributes = LinkedListMultimap.create();
+  // TODO : consider sorting by full name
+  protected final Multiset<EntityAttribute> attributes = TreeMultiset.create();
+  private final Set<String> values = new HashSet<String>();
 
   public PageEntity() {
   }
@@ -33,14 +37,23 @@ public class PageEntity {
     return put(new EntityAttribute(name, value, label));
   }
 
+  // put : do not put attribute with both name and value are the same
+  public EntityAttribute put(String name, String value, Collection<String> labels) {
+    if (StringUtils.isEmpty(name) || StringUtils.isEmpty(value))
+      return null;
+
+    return put(new EntityAttribute(name, value, labels));
+  }
+
   public EntityAttribute put(EntityAttribute attribute) {
     if (attribute == null) {
       return null;
     }
 
-    boolean ok = attributes.put(attribute.name(), attribute);
+    values.add(attribute.value());
+    attributes.add(attribute);
 
-    return ok ? attribute : null;
+    return attribute;
   }
 
   public boolean putAll(Collection<EntityAttribute> attributes) {
@@ -54,18 +67,50 @@ public class PageEntity {
     return changed;
   }
 
-  public List<EntityAttribute> get(String name) {
-    return attributes.get(name);
+  public Multiset<EntityAttribute> attributes() {
+    return attributes;
   }
 
-  public List<EntityAttribute> getAll() {
-    return attributes.values();
+  public Multiset<EntityAttribute> get(String name) {
+    Multiset<EntityAttribute> results = TreeMultiset.create();
+
+    for (EntityAttribute attr : attributes) {
+      if (attr.name().equals(name)) {
+        results.add(attr);
+      }
+    }
+
+    return results;
   }
 
-  public List<EntityAttribute> getByCategory(String category) {
-    LinkedList<EntityAttribute> results = new LinkedList<EntityAttribute>();
+  public Multiset<EntityAttribute> get(String name, String value) {
+    Multiset<EntityAttribute> results = TreeMultiset.create();
 
-    for (EntityAttribute attribute : attributes.values()) {
+    for (EntityAttribute attr : attributes) {
+      if (attr.name().equals(name) && attr.value().equals(value)) {
+        results.add(attr);
+      }
+    }
+
+    return results;
+  }
+
+  public Multiset<EntityAttribute> get(String name, String value, String category) {
+    Multiset<EntityAttribute> results = TreeMultiset.create();
+
+    for (EntityAttribute attr : attributes) {
+      if (attr.name().equals(name) && attr.value().equals(value) && attr.hasCategory(category)) {
+        results.add(attr);
+      }
+    }
+
+    return results;
+  }
+
+  public Multiset<EntityAttribute> getCategorized(String category) {
+    Multiset<EntityAttribute> results = TreeMultiset.create();
+
+    for (EntityAttribute attribute : attributes) {
       if (attribute.hasCategory(category)) {
         results.add(attribute);
       }
@@ -74,10 +119,10 @@ public class PageEntity {
     return results;
   }
 
-  public List<EntityAttribute> getUncategorized() {
-    List<EntityAttribute> results = new LinkedList<EntityAttribute>();
+  public Multiset<EntityAttribute> getUncategorized() {
+    Multiset<EntityAttribute> results = TreeMultiset.create();
 
-    for (EntityAttribute attribute : attributes.values()) {
+    for (EntityAttribute attribute : attributes) {
       if (attribute.uncategorized()) {
         results.add(attribute);
       }
@@ -86,21 +131,53 @@ public class PageEntity {
     return results;
   }
 
+  public EntityAttribute first(String name) {
+    Collection<EntityAttribute> attrs = get(name);
+
+    if (!attrs.isEmpty())
+      return get(name).iterator().next();
+
+    return null;
+  }
+
+  public String firstValue(String name) {
+    EntityAttribute attr = first(name);
+    return attr == null ? null : attr.value();
+  }
+
+  public String firstText(String name) {
+    String text = firstValue(name);
+    return text == null ? null : text;
+  }
+
   public int size() {
     return attributes.size();
   }
 
   public int count(String name) {
-    return attributes.get(name).size();
+    return get(name).size();
   }
 
-  public String text(String name) {
-    Collection<EntityAttribute> attrs = get(name);
+  /**
+   * TODO : check bug
+   * combine by category and make the collection unique
+   * */
+  public PageEntity getCombined() {
+    PageEntity other = new PageEntity();
 
-    if (!attrs.isEmpty())
-      return get(name).iterator().next().value();
+    for (EntityAttribute attr : attributes) {
+      String name = attr.name();
+      String value = attr.value();
 
-    return "";
+      if (!other.contains(name, value)) {
+        other.put(attr);
+      }
+      else {
+        other.get(name, value).iterator().next().categorizeAll(attr.categories());
+      }
+    }
+
+    return other;
   }
 
   public String join(String name) {
@@ -123,50 +200,23 @@ public class PageEntity {
   }
 
   public boolean contains(String name) {
-    return attributes.containsKey(name);
+    return !get(name).isEmpty();
   }
 
   public boolean contains(String name, String value) {
-    Collection<EntityAttribute> attrs = get(name);
-
-    for (EntityAttribute attr : attrs) {
-      if (attr.value().equals(value))
-        return true;
-    }
-
-    return false;
+    return !get(name, value).isEmpty();
   }
 
-  public boolean contains(String name, String value, String label) {
-    Collection<EntityAttribute> attrs = get(name);
-
-    for (EntityAttribute attr : attrs) {
-      if (attr.value().equals(value) && attr.categories().contains(label))
-        return true;
-    }
-
-    return false;
-  }
-
-  public EntityAttribute first(String name) {
-    Collection<EntityAttribute> attrs = get(name);
-
-    if (!attrs.isEmpty())
-      return get(name).iterator().next();
-
-    return null;
+  public boolean contains(String name, String value, String category) {
+    return !get(name, value, category).isEmpty();
   }
 
   public boolean remove(EntityAttribute attribute) {
-    return attributes.remove(attribute.name(), attribute);
+    return attributes.remove(attribute);
   }
 
-  public Collection<EntityAttribute> removeAll(String name) {
-    return attributes.removeAll(name);
-  }
-
-  public Multimap<String, EntityAttribute> attributes() {
-    return attributes;
+  public boolean removeAll(String name) {
+    return attributes.removeAll(get(name));
   }
 
   @Override
@@ -180,7 +230,7 @@ public class PageEntity {
     @SuppressWarnings("unchecked")
     Multimap<String, EntityAttribute> categorySortedattributes = TreeMultimap.create(
         ComparatorUtils.reversedComparator(ComparatorUtils.NATURAL_COMPARATOR), ComparatorUtils.NATURAL_COMPARATOR);
-    for (EntityAttribute attr : attributes.values()) {
+    for (EntityAttribute attr : attributes) {
       if (!attr.categories().isEmpty()) ++counter;
       categorySortedattributes.put(attr.simpleCategoriesString(), attr);
     }

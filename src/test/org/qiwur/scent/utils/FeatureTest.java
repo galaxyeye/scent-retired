@@ -7,7 +7,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.qiwur.scent.configuration.ScentConfiguration;
 import org.qiwur.scent.feature.BlockStatFeature;
-import org.qiwur.scent.feature.BlockStatFeatureFactory;
 import org.qiwur.scent.feature.PhraseFeature;
 import org.qiwur.scent.feature.PhraseFeatureFactory;
 
@@ -19,7 +18,7 @@ public class FeatureTest {
     Configuration conf = ScentConfiguration.create();
 
     String file = conf.get("scent.block.stat.feature.file");
-    BlockStatFeature feature = new BlockStatFeatureFactory(file, conf).getFeature();
+    BlockStatFeature feature = BlockStatFeature.create(file, conf);
     logger.debug("feature : {}", feature);
 
     file = conf.get("scent.block.code.feature.file");

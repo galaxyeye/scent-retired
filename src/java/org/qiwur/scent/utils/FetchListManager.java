@@ -50,11 +50,7 @@ public class FetchListManager {
   }
 
   private void init() {
-    try {
-      lines = new FiledLines(SeedUrlFile, IndexUrlFile, DetailUrlFile, ProcessedUrlFile);
-    } catch (IOException e) {
-      logger.error(e);
-    }
+    lines = new FiledLines(SeedUrlFile, IndexUrlFile, DetailUrlFile, ProcessedUrlFile);
   }
 
   public Multiset<String> seeds() {

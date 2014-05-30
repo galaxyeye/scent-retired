@@ -34,9 +34,18 @@
 		<name>scent.net.proxy.port</name>
 		<value>19080</value>
 	</property>
+    <property>
+        <name>scent.local.file.cache.expires</name>
+        <value>0</value>
+        <description>
+        eg : 
+        0 = no cache
+        30min = 108000
+        </description>
+    </property>
 	<property>
 		<name>scent.net.generate.fetch.list</name>
-		<value>false</value>
+		<value>true</value>
 	</property>
 
 	<property>
@@ -79,6 +88,12 @@
 		<name>scent.stat.segment.variance.reference.value</name>
 		<value>3</value>
 	</property>
+
+    <!-- learning -->
+    <property>
+        <name>scent.sgd.train.base.dir</name>
+        <value>output/learning</value>
+    </property>
 
 	<!-- files -->
 	<property>

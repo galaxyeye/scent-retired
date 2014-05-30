@@ -18,7 +18,6 @@ import org.qiwur.scent.data.builder.ProductWikiBuilder;
 import org.qiwur.scent.data.extractor.PageExtractor;
 import org.qiwur.scent.data.extractor.ProductExtractor;
 import org.qiwur.scent.data.extractor.WebExtractor;
-import org.qiwur.scent.data.extractor.WebExtractorFactory;
 import org.qiwur.scent.data.extractor.WebLoader;
 import org.qiwur.scent.entity.PageEntity;
 import org.qiwur.scent.jsoup.Connection.Response;
@@ -39,6 +38,7 @@ public class ProductPageBuilder {
   private final boolean savePage;
   private final boolean saveWiki;
   private final boolean uploadWiki;
+  private final long localFileCacheExpires;
 
   private FetchListManager fetchListManager = new FetchListManager();
 
@@ -50,8 +50,9 @@ public class ProductPageBuilder {
     savePage = conf.getBoolean("scent.page.save", false);
     uploadWiki = conf.getBoolean("scent.wiki.upload", false);
     saveWiki = conf.getBoolean("scent.wiki.save", false);
+    localFileCacheExpires = conf.getLong("scent.local.file.cache.expires", 3 * 60 * 1000);
 
-    extractor = new WebExtractorFactory(conf).getWebExtractor();
+    extractor = WebExtractor.create(conf);
   }
 
   public void process() {
@@ -82,6 +83,12 @@ public class ProductPageBuilder {
       return;
     }
 
+    // cache mechanism
+    File file = new File(FileUtil.getFileNameFromUri(uri));
+    if (checkLocalCacheAvailable(file, localFileCacheExpires)) {
+      uri = "file://" + file.getAbsolutePath();
+    }
+
     if (uri.startsWith("http")) {
       WebLoader loader = extractor.getWebLoader();
 
@@ -89,8 +96,7 @@ public class ProductPageBuilder {
       if (response == null)
         return;
 
-      if (savePage)
-        savePage(uri, response.body());
+      if (savePage) savePage(uri, response.body(), "original");
 
       doc = loader.parse(response);
 
@@ -116,7 +122,7 @@ public class ProductPageBuilder {
       logger.info("网页转换耗时 : {}s\n\n", time / 1000.0);
 
       Document page = generateHtml(pageEntity);
-      savePage(page.baseUri(), page.toString());
+      savePage(page.baseUri(), page.toString(), "generated");
 
       // Page page = generateWiki(product, Page.ProductPage);
       //
@@ -125,9 +131,9 @@ public class ProductPageBuilder {
     }
   }
 
-  public void savePage(String url, String content) {
+  public void savePage(String url, String content, String dir) {
     try {
-      File file = FileUtil.createTempFileForPage(url, "web");
+      File file = FileUtil.createTempFileForPage(url, "web/" + dir);
       FileUtils.writeStringToFile(file, content);
     } catch (IOException e) {
       logger.error(e);
@@ -153,6 +159,20 @@ public class ProductPageBuilder {
     page.upload();
   }
 
+  private boolean checkLocalCacheAvailable(File file, long expires) {
+    if (file.exists()) {
+      long modified = file.lastModified();
+      if (System.currentTimeMillis() - modified < expires) {
+        return true;
+      }
+      else {
+        file.delete();
+      }
+    }
+
+    return false;
+  }
+
   private String getOutputFile(String title) {
     return "output/wiki/" + DigestUtils.md5Hex(title);
   }
@@ -160,22 +180,17 @@ public class ProductPageBuilder {
   private Page generateWiki(PageEntity pageEntity, String pageType) {
     Validate.notNull(pageEntity);
 
-    return new ProductWikiBuilder(pageEntity).build(pageType);
+    return new ProductWikiBuilder(pageEntity, conf).build(pageType);
   }
 
   private Document generateHtml(PageEntity pageEntity) {
     Validate.notNull(pageEntity);
 
-    ProductHTMLBuilder builder = null;
-    try {
-      builder = new ProductHTMLBuilder(pageEntity);
-      builder.process();
-      return builder.doc();
-    } catch (IOException e) {
-      logger.error(e);
-    }
+    ProductHTMLBuilder 
+    builder = new ProductHTMLBuilder(pageEntity, conf);
+    builder.process();
 
-    return null;
+    return builder.doc();
   }
 
   public static void main(String[] args) throws IOException {

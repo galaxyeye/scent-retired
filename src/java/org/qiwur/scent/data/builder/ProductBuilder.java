@@ -1,36 +1,23 @@
 package org.qiwur.scent.data.builder;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.Validate;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.hadoop.conf.Configuration;
 import org.qiwur.scent.entity.EntityAttribute;
 import org.qiwur.scent.entity.PageEntity;
 import org.qiwur.scent.utils.StringUtil;
 
-public class ProductBuilder implements Builder {
+public class ProductBuilder extends EntityBuilder {
 
-	static final Logger logger = LogManager.getLogger(ProductBuilder.class);
-
-	PageEntity pageEntity = null;
-
-	ProductBuilder(PageEntity pageEntity) {
-	  Validate.notNull(pageEntity);
-
-		this.pageEntity = pageEntity;
+	ProductBuilder(PageEntity pageEntity, Configuration conf) {
+	  super(pageEntity, conf);
 	}
 
 	@Override
 	public void process() {
-		// logger.debug(pageEntity);
-	}
-
-	public PageEntity pageEntity() {
-		return pageEntity;
 	}
 
 	protected String buildProductName(String pageEntityTitle) {
-		String pageEntityName = pageEntity.text("产品名称");
+		String pageEntityName = pageEntity.firstText("产品名称");
 
 		if (pageEntityName.isEmpty()) {
 			pageEntityName = pageEntityTitle;
@@ -43,7 +30,7 @@ public class ProductBuilder implements Builder {
 		StringBuilder sb = new StringBuilder();
 
 		if (pageEntity.contains("产品分类")) {
-			String[] categories = StringUtils.split(pageEntity.text("产品分类"), " > ");
+			String[] categories = StringUtils.split(pageEntity.firstText("产品分类"), " > ");
 
 			for (int i = 0; i < categories.length; ++i) {
 				sb.append("[[:Category:");
@@ -110,8 +97,8 @@ public class ProductBuilder implements Builder {
 	}
 
 	protected String buildProductTradePageTitle(String pageEntityTitle) {
-		String platform = pageEntity.text("交易平台名称");
-		if (platform.isEmpty()) platform = pageEntity.text("交易平台域名");
+		String platform = pageEntity.firstText("交易平台名称");
+		if (platform.isEmpty()) platform = pageEntity.firstText("交易平台域名");
 
 		String title = "购物通道：" + platform + " - " + pageEntityTitle;
 
@@ -123,4 +110,21 @@ public class ProductBuilder implements Builder {
 
 		return title;
 	}
+
+	protected void rebuildPrice() {
+    if (!pageEntity.contains("价格") && pageEntity.contains("销售价")) {
+      pageEntity.put("价格", pageEntity.first("销售价").value(), "ProductShow");
+    }
+
+    if (!pageEntity.contains("销售价") && pageEntity.contains("价格")) {
+      pageEntity.put("销售价", pageEntity.first("价格").value(), "ProductShow");
+    }
+  }
+
+	protected void rebuildModelNumber() {
+  }
+
+	protected void rebuildManufacturer() {
+  }
+	
 }

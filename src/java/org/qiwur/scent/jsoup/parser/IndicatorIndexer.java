@@ -11,6 +11,7 @@ public class IndicatorIndexer extends InterruptiveElementVisitor {
 
   public IndicatorIndexer(IndicatorIndex index) {
     this.index = index;
+    index.clear();
   }
 
   @Override

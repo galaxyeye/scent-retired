@@ -34,8 +34,9 @@ public final class WordsLearner {
       // ProductAttribute -> output/learning/product-property.txt
       String[] parts = domain.text().split("(?=\\p{Upper})");
       String fileName = StringUtils.join(parts, "-").toLowerCase();
-      if (fileName.startsWith("-"))
+      if (fileName.startsWith("-")) {
         fileName = fileName.substring(1);
+      }
       fileName += ".txt";
       fileName = LearningFileDir + File.separator + fileName;
 
@@ -52,13 +53,9 @@ public final class WordsLearner {
       featureFiles.put(domain, fileName);
     }
 
-    try {
-      String[] files = new String[featureFiles.values().size()];
-      featureFiles.values().toArray(files);
-      filedLines = new FiledLines(files);
-    } catch (IOException e) {
-      logger.error(e);
-    }
+    String[] files = new String[featureFiles.values().size()];
+    featureFiles.values().toArray(files);
+    filedLines = new FiledLines(files);
   }
 
   public String featureFile(LearningDomain domain) {

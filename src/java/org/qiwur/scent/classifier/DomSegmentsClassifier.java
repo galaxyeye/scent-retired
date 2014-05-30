@@ -42,7 +42,10 @@ public class DomSegmentsClassifier extends BlockClassifier {
 
     report();
 
-    tagSegments();
+    label();
+
+    // TODO : buggy
+    // inheritLabel();
   }
 
   public void report() {

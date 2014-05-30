@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.math3.stat.StatUtils;
 import org.qiwur.scent.jsoup.parser.Parser;
 import org.qiwur.scent.jsoup.select.NodeTraversor;
 import org.qiwur.scent.jsoup.select.NodeVisitor;
@@ -22,7 +24,7 @@ import org.qiwur.scent.utils.Validate;
 public abstract class Node implements Cloneable, Comparable<Node> {
   Node parentNode;
   List<Node> childNodes;
-  Attributes attributes;
+  Attributes attributes = new Attributes();
   Indicators indicators = new Indicators();
 
   String baseUri;
@@ -215,6 +217,25 @@ public abstract class Node implements Cloneable, Comparable<Node> {
     }
 
     return this;
+  }
+
+  public double likelihood(Node other, double tolerance, String... exceptIndicators) {
+    double[] values = new double[Indicator.names.length];
+    for (int i = 0; i < Indicator.names.length; ++i) {
+      values[i] = 0.0;
+
+      String name = Indicator.names[i];
+      if (!ArrayUtils.contains(exceptIndicators, name)) {
+        values[i] = Math.abs(indic(name) - other.indic(name));
+        if (values[i] > tolerance) values[i] -= tolerance;
+        if (values[i] <= tolerance) values[i] = 0;
+      }
+    }
+
+    double sd = StatUtils.variance(values) / tolerance;
+    if (sd > 1) return 0.0;
+
+    return 1 - sd;
   }
 
   public int sequence() {

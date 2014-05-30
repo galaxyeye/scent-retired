@@ -8,7 +8,7 @@ import org.qiwur.scent.entity.EntityCategory;
 import com.google.common.collect.Multiset;
 
 public class EntityCategoryLearner implements Learner {
-  public static final LearningDomain domain = LearningDomain.ProductCategory;
+  public static final LearningDomain domain = LearningDomain.EntityCategory;
 
   private final Configuration conf;
   private final WordsLearner wordsLearner;

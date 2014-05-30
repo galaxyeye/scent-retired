@@ -24,21 +24,21 @@ public final class ImagesExtractor extends DomSegmentExtractor {
     if (!valid()) return;
 
     for (Element ele : element().getElementsByTag("img")) {
-      images.add(extractImage(ele));
+      images.add(Image.create(ele));
 		}
 
     if (!images.isEmpty()) {
-      pageEntity.put(sectionLabel, formatImages(), sectionLabel);
+      pageEntity.put(sectionLabel, formatImages(), segment.labelTracker().getLabels());
     }
 	}
 
   protected String formatImages() {
     StringBuilder gallery = new StringBuilder();
 
-    String cls = segment.labelTracker().getLabelsAsString();
-    cls = StringUtil.csslize(cls);
+    String cls = StringUtil.csslize(segment.labelTracker().getLabelsAsString());
+    String clazz = StringUtil.csslize(getClass().getSimpleName());
 
-    gallery.append("<div class='" + cls + "'>");
+    gallery.append(String.format("<div class='%s' data-extractor='%s'>", cls, clazz));
     for (Image image : images) {
       gallery.append(image.toString());
     }

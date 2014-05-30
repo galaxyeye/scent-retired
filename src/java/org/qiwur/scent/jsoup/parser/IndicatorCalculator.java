@@ -17,6 +17,7 @@ public class IndicatorCalculator extends InterruptiveNodeVisitor {
       return;
     }
 
+    node.indicators().clear();
     calcSelfIndicator(node);
   }
 

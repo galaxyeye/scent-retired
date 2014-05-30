@@ -18,10 +18,13 @@
 package org.qiwur.scent.configuration;
 
 import java.util.Map.Entry;
+import java.util.Collection;
 import java.util.Properties;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
+import org.qiwur.scent.jsoup.block.BlockLabel;
 import org.qiwur.scent.jsoup.nodes.Indicator;
 
 /**
@@ -96,6 +99,16 @@ public class ScentConfiguration {
     return conf;
   }
 
+  public static void rebuildLabels(Configuration conf) {
+    Collection<String> labels = conf.getStringCollection("scent.segment.labels");
+    for (BlockLabel label : BlockLabel.labels) {
+      if (!labels.contains(label.text())) {
+        labels.add(label.text());
+      }
+    }
+    conf.set("scent.segment.labels", StringUtils.join(labels, ","));
+  }
+  
   /**
    * Add the standard Scent resources to {@link Configuration}.
    * 

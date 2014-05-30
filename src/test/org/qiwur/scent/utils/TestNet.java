@@ -51,9 +51,9 @@ public class TestNet {
 	}
 
 	public static void main(String s[]) throws Exception {
-		String url = "http://sinorelo.com/";
+    String url = "http://sinorelo.com/";
 
-    	Response res = Jsoup.connect(url, "http://qiwur.com/", 19080).execute();
-    	System.out.println(res.body());
+    Response res = Jsoup.connect(url, "http://qiwur.com/", 19080).execute();
+    System.out.println(res.body());
 	}
 }

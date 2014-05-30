@@ -26,13 +26,14 @@ build-in simple indicators :
 <?xml version="1.0"?>
 <block-features>
     <block type="Gallery">
-        <rule indicator="title-distance"  range="-20,400"  score="2" -score="-10" />
+        <rule indicator="title-distance"  range="-20,100"  score="0"  -score="-10" />
+        <rule indicator="title-distance"  range="-10,10"   score="2"  -score="0" />
         <rule indicator="-char"           range="0,20"     score="2"  -score="-10" />
         <rule indicator="-char"           range="0,0"      score="2"  -score="0" />
         <rule indicator="-img"            range="1,20"     score="0"  -score="-10" />
-        <rule indicator="-img"            range="4,"       score="4"  -score="0" />
+        <rule indicator="-img"            range="4,"       score="2"  -score="0" />
         <rule indicator="delta"           range="0,2"      score="2"  -score="0"  _1="-img" _2="-a" />
-        <rule indicator="delta"           range=",-4"      score="10" -score="0"  _1="-img" _2="-a" />
+        <rule indicator="delta"           range=",-4"      score="3" -score="0"  _1="-img" _2="-a" />
     </block>
     <block type="ProductShow">
         <rule indicator="title-distance"  range="0,50"      score="4" -score="-10" />
@@ -60,7 +61,7 @@ build-in simple indicators :
         <rule indicator="-img"            range="4,"      score="2" -score="0" />
         <rule indicator="delta"           range="4,"      score="4" -score="0"  _1="-a" _2="-img" />
         <rule indicator="delta"           range="8,"      score="4" -score="0"  _1="-a" _2="-img" />
-        <rule indicator="delta"           range="5,"      score="0" -score="-10" _1="-a" _2="-img" />
+        <rule indicator="delta"           range="2,"      score="0" -score="-10" _1="-a" _2="-img" />
     </block>
     <block type="Comment">
         <rule indicator="-char"           range="200,"    score="2" -score="-10" />

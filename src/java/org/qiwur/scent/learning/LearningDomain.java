@@ -1,8 +1,8 @@
 package org.qiwur.scent.learning;
 
 public enum LearningDomain {
-	ProductAttribute("ProductAttribute"),
-	ProductCategory("ProductCategory"),
+	EntityAttribute("EntityAttribute"),
+	EntityCategory("EntityCategory"),
 	BlockTitle("BlockTitle"),
 	Website("Website");
 

@@ -11,12 +11,12 @@ import org.apache.logging.log4j.Logger;
 import org.qiwur.scent.classifier.DomSegmentsBuilder;
 import org.qiwur.scent.classifier.DomSegmentsClassifier;
 import org.qiwur.scent.classifier.statistics.BlockVarianceCalculator;
-import org.qiwur.scent.data.builder.ProductWikiBuilder;
 import org.qiwur.scent.entity.PageEntity;
 import org.qiwur.scent.jsoup.block.DomSegment;
 import org.qiwur.scent.jsoup.nodes.Document;
+import org.qiwur.scent.learning.BlockFeatureRecorder;
 import org.qiwur.scent.printer.BlockLabelPrinter;
-import org.qiwur.scent.wiki.Page;
+import org.qiwur.scent.utils.ObjectCache;
 
 import ruc.irm.similarity.word.hownet2.concept.BaseConceptParser;
 
@@ -27,7 +27,7 @@ public class WebExtractor {
   private final Configuration conf;
   private final WebLoader loader;
 
-  public WebExtractor(Configuration conf) {
+  private WebExtractor(Configuration conf) {
     this.conf = conf;
     this.loader = new WebLoader(conf);
 
@@ -39,6 +39,19 @@ public class WebExtractor {
       BaseConceptParser.load(conceptFile);
     } catch (IOException e) {
       logger.error(e);
+    }
+  }
+
+  static public WebExtractor create(Configuration conf) {
+    ObjectCache objectCache = ObjectCache.get(conf);
+    String cacheId = WebExtractor.class.getName();
+
+    if (objectCache.getObject(cacheId) != null) {
+      return (WebExtractor) objectCache.getObject(cacheId);
+    } else {
+      WebExtractor extractor = new WebExtractor(conf);
+      objectCache.setObject(cacheId, extractor);
+      return extractor;
     }
   }
 
@@ -65,11 +78,12 @@ public class WebExtractor {
     // logger.info("打印已标注的标签");
     new BlockLabelPrinter(doc, conf).process();
 
+    new BlockFeatureRecorder(doc, conf).process();
+
     // logger.info("实体抽取");
     extractorImpl.process();
     PageEntity pageEntity = extractorImpl.pageEntity();
 
     return pageEntity;
   }
-
 }

@@ -1,10 +1,14 @@
 package org.qiwur.scent.entity;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import org.apache.commons.lang.Validate;
+import org.qiwur.scent.jsoup.nodes.Attribute;
+import org.qiwur.scent.jsoup.nodes.Element;
 
 public class Image {
 
@@ -28,15 +32,54 @@ public class Image {
     return attributes;
   }
 
+  public static Image create(Element ele) {
+    if (ele == null || ele.tagName() != "img")
+      return null;
+
+    Image image = new Image();
+
+    final List<String> ignoredAttrs = Arrays.asList("id", "class", "style");
+
+    String lazySrc = null;
+    for (Attribute attr : ele.attributes()) {
+      String name = attr.getKey();
+      String value = attr.getValue();
+
+      if (ignoredAttrs.contains(name)) {
+        continue;
+      }
+
+      if (Link.maybeUrl(name, value)) {
+        if (name.contains("lazy")) {
+          lazySrc = ele.absUrl(name);
+        }
+
+        value = ele.absUrl(name);
+      }
+
+      if (!name.isEmpty() && !value.isEmpty()) {
+        image.putAttribute(name, value);
+      }
+    }
+
+    if (lazySrc != null) {
+      image.putAttribute("src", lazySrc);
+    }
+
+    return image;
+  }
+
   @Override
   public String toString() {
     StringBuilder img = new StringBuilder();
     img.append("<img ");
 
     for (Entry<String, String> attr : attributes.entrySet()) {
-      img.append(attr.getKey());
+      String name = attr.getKey();
+
+      img.append(name);
       img.append("='");
-      img.append(attr.getValue().replaceAll("\"", "'"));
+      img.append(attr.getValue());
       img.append("\' ");
     }
     img.append("/>");

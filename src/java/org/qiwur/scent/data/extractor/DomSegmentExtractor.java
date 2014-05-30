@@ -1,19 +1,13 @@
 package org.qiwur.scent.data.extractor;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
-import org.qiwur.scent.entity.Image;
-import org.qiwur.scent.entity.Link;
 import org.qiwur.scent.entity.PageEntity;
 import org.qiwur.scent.jsoup.block.BlockLabel;
 import org.qiwur.scent.jsoup.block.DomSegment;
-import org.qiwur.scent.jsoup.nodes.Attribute;
-import org.qiwur.scent.jsoup.nodes.Element;
-import org.qiwur.scent.jsoup.select.Elements;
+import org.qiwur.scent.utils.StringUtil;
 
 import com.google.common.collect.Multimap;
 
@@ -56,7 +50,7 @@ public class DomSegmentExtractor extends KeyValueExtractor {
     }
 
     if (attrs.isEmpty() && StringUtils.isNotEmpty(sectionLabel)) {
-      pageEntity.put(sectionLabel, segment.outerHtml(), sectionLabel);
+      pageEntity.put(sectionLabel, getExtractedValue(segment, sectionLabel), segment.labelTracker().getLabels());
     }
   }
 
@@ -83,94 +77,26 @@ public class DomSegmentExtractor extends KeyValueExtractor {
     return name.trim();
   }
 
-  protected Image extractImage(Element ele) {
-    if (ele == null || ele.tagName() != "img")
-      return null;
-
-    Image image = new Image();
-
-    final List<String> ignoredAttrs = Arrays.asList("id", "class", "style");
-
-    String lazySrc = null;
-    for (Attribute attr : ele.attributes()) {
-      String name = attr.getKey();
-      String value = attr.getValue();
-
-      if (ignoredAttrs.contains(name)) {
-        continue;
-      }
-
-      if (maybeUrl(name, value)) {
-        if (name.contains("lazy")) {
-          lazySrc = ele.absUrl(name);
-        }
-
-        value = ele.absUrl(name);
-      }
-
-      if (!name.isEmpty() && !value.isEmpty()) {
-        image.putAttribute(name, value);
-      }
-    }
-
-    if (lazySrc != null) {
-      image.putAttribute("src", lazySrc);
-    }
-
-    return image;
+  protected String getExtractedValue(String text) {
+    return getExtractedValue(text, sectionLabel);
   }
 
-  protected Link extractLink(Element ele) {
-    if (ele.tagName() != "a")
-      return null;
-
-    Link link = new Link();
-
-    Element image = ele.getElementsByTag("img").first();
-    if (image != null) {
-      link.setImage(extractImage(image));
-    }
-
-    // sniff link text
-    String text = StringUtils.trimToNull(ele.text());
-    if (text == null) text = StringUtils.trimToNull(ele.attr("title"));
-    if (text == null && image != null) text = StringUtils.trimToNull(image.attr("alt"));
-    link.setText(text);
-
-    final List<String> ignoredAttrs = Arrays.asList("id", "class", "style", "_target", "target");
-
-    for (Attribute attr : ele.attributes()) {
-      String name = attr.getKey();
-      String value = attr.getValue();
-
-      if (ignoredAttrs.contains(name)) {
-        continue;
-      }
-
-      if (maybeUrl(name, value)) {
-        // TODO : better sniff strategy
-        value = ele.absUrl(name);
-      }
-
-      if (!name.isEmpty() && !value.isEmpty()) {
-        link.putAttribute(name, value);
-      }
-    }
-
-    return link;
+  protected String getExtractedValue(String text, String label) {
+    String content = String.format("<div class='%s' data-extractor='%s'>%s</div>",
+        StringUtil.csslize(label),
+        StringUtil.csslize(getClass().getSimpleName()),
+        getPrettyText(text)
+    );
+    return content;
   }
-  
-  private boolean maybeUrl(String name, String value) {
-    final List<String> urlAttrs = Arrays.asList("src", "url", "data-url");
 
-    if (urlAttrs.contains(name))
-      return true;
-    if (value.contains("http://"))
-      return true;
-    if (StringUtils.countMatches(value, "/") > 3)
-      return true;
+  protected String getExtractedValue(DomSegment segment) {
+    return getExtractedValue(segment, sectionLabel);
+  }
 
-    return false;
+  protected String getExtractedValue(DomSegment segment, String label) {
+    Validate.notNull(segment);
+    return getExtractedValue(segment.body().outerHtml(), label);
   }
 
 }

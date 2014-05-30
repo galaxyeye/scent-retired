@@ -1,10 +1,15 @@
 package org.qiwur.scent.entity;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
+import org.qiwur.scent.jsoup.nodes.Attribute;
+import org.qiwur.scent.jsoup.nodes.Element;
 
 public class Link {
 
@@ -39,20 +44,66 @@ public class Link {
     return attributes;
   }
 
+  public static Link create(Element ele) {
+    if (ele.tagName() != "a")
+      return null;
+
+    Link link = new Link();
+
+    Element image = ele.getElementsByTag("img").first();
+    if (image != null) {
+      link.setImage(Image.create(image));
+    }
+
+    // sniff link text
+    String text = StringUtils.trimToNull(ele.text());
+    if (text == null) text = StringUtils.trimToNull(ele.attr("title"));
+    if (text == null && image != null) text = StringUtils.trimToNull(image.attr("alt"));
+    link.setText(text);
+
+    final List<String> ignoredAttrs = Arrays.asList("id", "class", "style", "_target", "target");
+
+    for (Attribute attr : ele.attributes()) {
+      String name = attr.getKey();
+      String value = attr.getValue();
+
+      if (ignoredAttrs.contains(name)) {
+        continue;
+      }
+
+      if (maybeUrl(name, value)) {
+        // TODO : better sniff strategy
+        value = ele.absUrl(name);
+      }
+
+      if (!name.isEmpty() && !value.isEmpty()) {
+        link.putAttribute(name, value);
+      }
+    }
+
+    return link;
+  }
+
+  public static boolean maybeUrl(String attrName, String attrValue) {
+    final List<String> urlAttrs = Arrays.asList("src", "url", "data-url");
+
+    if (urlAttrs.contains(attrName)) return true;
+    if (attrValue.contains("http://")) return true;
+    if (StringUtils.countMatches(attrValue, "/") > 3) return true;
+
+    return false;
+  }
+
   @Override
   public String toString() {
-    String cls = "class='link";
-    if (text.length() > 10) cls += " text";
-    cls += "' ";
-
     StringBuilder link = new StringBuilder();
     if (image != null) link.append(image.toString());
 
-    link.append("<a " + cls);
+    link.append("<a ");
     for (Entry<String, String> attr : attributes.entrySet()) {
       link.append(attr.getKey());
       link.append("=\"");
-      link.append(attr.getValue().replaceAll("\"", "'"));
+      link.append(attr.getValue());
       link.append("\" ");
     }
     link.append(">");

@@ -41,6 +41,6 @@
     </block>
     <block type="BadBlock">
         <phrase name="copyright" score="8" />
-        <phrase name="authentication" score="8" />
+        <phrase name="authentication" score="8" />        
     </block>
 </block-features>
