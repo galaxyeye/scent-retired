@@ -65,7 +65,7 @@ public final class TitleLocator extends BlockLocator {
     double sim = 0.0;
     for (Element h : candidates) {
       if (!FuzzyProbability.veryLikely(sim)) {
-        sim = EntityNameFeature.getSimilarity(h.ownText(), potentialTitles);
+        sim = EntityNameFeature.getMaxSimilarity(h.ownText(), potentialTitles);
       }
 
       if (FuzzyProbability.veryLikely(sim)) {
@@ -125,7 +125,7 @@ public final class TitleLocator extends BlockLocator {
 
     HtmlTitleFeature titleFeature = HtmlTitleFeature.create(conf);
     title = titleFeature.removeSuffix(title);
-    title = titleFeature.preprocess(title);
+    title = titleFeature.trim(title);
     ele.text(title);
 
     DomSegment segment = new DomSegment(null, null, ele);

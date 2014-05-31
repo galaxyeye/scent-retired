@@ -24,8 +24,8 @@ div.extraction div {
     margin: 20px 0;
 }
 
-div.extraction form {
-    margin-top:200px;
+div.extraction h1 {
+    margin:200px 0 25px 0;
 }
 
 div.extraction form input[type=text] {
@@ -49,12 +49,12 @@ div.extraction form input[type=submit] {
 
 <body class="scent">
 	<div class="extraction">
-        <h1>Scent网页抽取系统</h1>
+        <h1>Scent网页抽取系统 version 0.8</h1>
 		<form target="_blank" action="/scent/extract/extract" method="get">
             <input type="text" name="target" value="输入商品详情页URL">
 			<input type="submit" value="立即抽取" />
 		</form>
-        <div>目前暂时仅支持商品详细页抽取</div>
+        <div>目前暂时仅支持商品详细页抽取，由于需要模拟人类行为访问目标网页，因此加载过程会较慢，请耐心等待</div>
 	</div>
 </body>
 </html>

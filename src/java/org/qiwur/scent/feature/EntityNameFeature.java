@@ -59,12 +59,12 @@ public final class EntityNameFeature extends FiledLines {
   public static double getQuickSimilarity(String text, String text2) {
     Set<String> set = new HashSet<String>();
     set.add(text2);
-    return getQuickSimilarity(text, set);
+    return getQuickMaxSimilarity(text, set);
   }
 
   // 由于相似度计算性能太差，所以使用一些加速的方法
   // 只要一个潜在标题是目标项的字串并且长度是目标项的70%，那么认为目标项是标题项
-  public static double getQuickSimilarity(final String text, Set<String> potentialTitles) {
+  public static double getQuickMaxSimilarity(final String text, Set<String> potentialTitles) {
     if (!validate(text)) return 0.0;
 
     double sim = 0.0;
@@ -72,16 +72,38 @@ public final class EntityNameFeature extends FiledLines {
     // 由于相似度计算性能太差，所以使用一些加速的方法
     // 只要一个潜在标题是目标项的字串并且长度是目标项的70%，那么认为目标项是标题项
     for (String potentialTitle : potentialTitles) {
-      String text2 = StringUtil.stripNonChar(text).toLowerCase();
-      potentialTitle = StringUtil.stripNonChar(potentialTitle).toLowerCase();
+      String text2 = StringUtil.stripNonChar(potentialTitle).toLowerCase();
+      String text3 = StringUtil.stripNonChar(text).toLowerCase();
 
-      if (validate(text2) && text2.contains(potentialTitle)) {
-        sim = potentialTitle.length() / (double) text2.length() + 0.1;
+      if (text2.length() < text3.length()) {
+        String tmp = text2;
+        text2 = text3;
+        text3 = tmp;
+      }
 
-        logger.debug("sim by length : {}, protential : {}, header : {}", sim, potentialTitle, text2);
+      if (validate(text2) && text2.contains(text3)) {
+        sim = text3.length() / (double) text2.length() + 0.15;
+
+        logger.debug("sim by length : {}, {} -|- {}", sim, text2, text3);
 
         if (FuzzyProbability.veryLikely(sim)) {
-          return sim;
+          break;
+        }
+      }
+    }
+
+    // 计算标准编辑距离
+    if (!FuzzyProbability.veryLikely(sim)) {
+      for (String potentialTitle : potentialTitles) {
+        String text2 = StringUtil.stripNonChar(potentialTitle).toLowerCase();
+        String text3 = StringUtil.stripNonChar(text).toLowerCase();
+
+        sim = getStandardEditSimilarity(text2, text3);
+
+        logger.debug("sim by standard edition : {}, {} -|- {}", sim, text2, text3);
+
+        if (FuzzyProbability.veryLikely(sim)) {
+          break;
         }
       }
     }
@@ -90,21 +112,19 @@ public final class EntityNameFeature extends FiledLines {
   }
 
   public static double getStandardEditSimilarity(String text, String text2) {
-    if (Math.abs(text2.length() - text.length()) > 5) return 0.0;
-
     return new StandardEditDistance().getSimilarity(text, text2);
   }
 
   public static double getSimilarity(String text, String text2) {
     Set<String> set = new HashSet<String>();
     set.add(text2);
-    return getSimilarity(text, set);
+    return getMaxSimilarity(text, set);
   }
 
-  public static double getSimilarity(final String text, Set<String> potentialTitles) {
+  public static double getMaxSimilarity(final String text, Set<String> potentialTitles) {
     if (!validate(text)) return 0.0;
 
-    double sim = getQuickSimilarity(text, potentialTitles);
+    double sim = getQuickMaxSimilarity(text, potentialTitles);
     if (FuzzyProbability.veryLikely(sim)) return sim;
 
     // 句子包含方法没有找到，使用语义计算方法
@@ -115,8 +135,8 @@ public final class EntityNameFeature extends FiledLines {
         continue;
       }
 
-      String text2 = StringUtil.stripNonChar(text).toLowerCase();
-      potentialTitle = StringUtil.stripNonChar(potentialTitle).toLowerCase();
+      // TODO : need preprocess?
+      String text2 = text;
 
       // 耗时子过程，原因是相似度计算效率太差，一个典型的句子（譬如商品标题）相似度计算需耗时半秒钟
       sim = MorphoSimilarity.getInstance().getSimilarity(potentialTitle, text2);
@@ -125,7 +145,7 @@ public final class EntityNameFeature extends FiledLines {
 
       // 已经找到标题项
       if (FuzzyProbability.veryLikely(sim)) {
-        return sim;
+        break;
       }
     }
 

@@ -61,6 +61,8 @@ public class ExtractionResource extends ServerResource {
       PageExtractor extractorImpl = new ProductExtractor(doc, conf);
       PageEntity pageEntity = extractor.extract(extractorImpl);
 
+      logger.debug(pageEntity);
+
       ProductHTMLBuilder builder = new ProductHTMLBuilder(pageEntity, conf);
       builder.process();
 

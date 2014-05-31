@@ -96,7 +96,7 @@ public final class HtmlTitleFeature {
   }
 
   // 预处理
-  public String preprocess(String title) {
+  public String trim(String title) {
     if (!validate(title))
       return "";
 
@@ -174,36 +174,44 @@ public final class HtmlTitleFeature {
       return potentialTitles;
     }
 
+    // step 1. add the whole original title
+    potentialTitles.add(title);
+
     // 移除后缀的 -xx网
     title = removeSuffix(title);
-
     // 移除无效字符
-    title = preprocess(title);
+    title = trim(title);
 
     if (!validate(title)) {
       return potentialTitles;
     }
 
-    potentialTitles.add(title);
+    // preprocessing finished
+    String candidate = title;
 
+    // step 2. add the whole title preprocessed title
+    potentialTitles.add(candidate);
+
+    // step 3, split by patterns, find out the longest part for each pattern
     for (Pattern pattern : PotentialTitlePatterns) {
-      String p = StringUtil.getLongestPart(title, pattern);
+      String p = StringUtil.getLongestPart(candidate, pattern);
       if (validate(p)) {
         potentialTitles.add(p);
       }
     }
 
+    // step 4, remove text in brackets, and then split by patterns, find out the longest part for each pattern
     // 将括号中的部分去除，然后分解
-    title = PAT_REMOVE_COMMENT_POTION.matcher(title).replaceAll("").trim();
+    candidate = PAT_REMOVE_COMMENT_POTION.matcher(title).replaceAll("").trim();
 
-    if (!validate(title)) {
+    if (!validate(candidate)) {
       return potentialTitles;
     }
 
-    potentialTitles.add(title);
+    potentialTitles.add(candidate);
 
     for (Pattern pattern : PotentialTitlePatterns) {
-      String p = StringUtil.getLongestPart(title, pattern);
+      String p = StringUtil.getLongestPart(candidate, pattern);
       if (validate(p)) {
         potentialTitles.add(p);
       }

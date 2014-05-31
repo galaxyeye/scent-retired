@@ -64,7 +64,7 @@ public class ProductHTMLBuilder extends ProductBuilder {
 
         doc.title(title);
       }
-      else if (StringUtil.in(label, "ProductSpec", "ProductShow", "Metadata")) {
+      else if (StringUtil.in(label, "ProductShow", "Metadata")) {
         buildTable(div, attributes);
       }
       else if (label.equals("Images")) {
@@ -135,10 +135,6 @@ public class ProductHTMLBuilder extends ProductBuilder {
   private Element buildTable(Element root, Collection<EntityAttribute> attributes) {
     Element table = root.appendElement("table");
     for (EntityAttribute attr : attributes) {
-      if (attr.value().length() > 50) {
-        continue;
-      }
-
       Element tr = table.appendElement("tr");
       Element th = tr.appendElement("td");
       Element td = tr.appendElement("td");
