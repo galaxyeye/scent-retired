@@ -177,7 +177,7 @@ public class PluginManifestParser {
     PluginDescriptor pluginDescriptor = 
         new PluginDescriptor(id, version, name, providerName, pluginClazz, pPath, this.conf);
     LOG.debug("plugin: id=" + id + " name=" + name + " version=" + version 
-        + " provider=" + providerName + "class=" + pluginClazz);
+        + " provider=" + providerName + " class=" + pluginClazz);
     parseExtension(rootElement, pluginDescriptor);
     parseExtensionPoints(rootElement, pluginDescriptor);
     parseLibraries(rootElement, pluginDescriptor);

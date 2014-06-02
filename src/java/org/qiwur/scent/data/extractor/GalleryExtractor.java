@@ -18,7 +18,7 @@ public final class GalleryExtractor extends DomSegmentExtractor {
 	private Set<Image> images = new HashSet<Image>();
 
 	public GalleryExtractor(DomSegment segment, PageEntity pageEntity, Configuration conf) {
-    super(segment, pageEntity, BlockLabel.Gallery);
+	  super(segment, pageEntity, BlockLabel.Gallery);
 	}
 
 	@Override

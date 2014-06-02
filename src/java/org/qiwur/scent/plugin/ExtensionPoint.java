@@ -117,5 +117,4 @@ public class ExtensionPoint {
   public Extension[] getExtensions() {
     return fExtensions.toArray(new Extension[fExtensions.size()]);
   }
-
 }

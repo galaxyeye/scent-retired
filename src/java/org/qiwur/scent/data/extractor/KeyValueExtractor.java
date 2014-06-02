@@ -1,21 +1,24 @@
 package org.qiwur.scent.data.extractor;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
+import org.apache.hadoop.conf.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.qiwur.scent.jsoup.nodes.Element;
 import org.qiwur.scent.jsoup.nodes.Indicator;
 import org.qiwur.scent.jsoup.select.DOMUtil;
 import org.qiwur.scent.jsoup.select.Elements;
+import org.qiwur.scent.storage.WebPage.Field;
 import org.qiwur.scent.utils.StringUtil;
 
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.TreeMultimap;
 
-public class KeyValueExtractor implements DataExtractor {
+public class KeyValueExtractor {
 
 	static final Logger logger = LogManager.getLogger(KeyValueExtractor.class);
 

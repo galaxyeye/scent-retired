@@ -1,0 +1,141 @@
+#!/bin/bash
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# The Scent command script
+#
+# Environment Variables
+#
+#   SCENT_JAVA_HOME The java implementation to use.  Overrides JAVA_HOME.
+#
+#   SCENT_HEAPSIZE  The maximum amount of heap to use, in MB. 
+#                   Default is 1000.
+#
+#   SCENT_OPTS      Extra Java runtime options.
+#
+
+# resolve links - $0 may be a softlink
+THIS="$0"
+while [ -h "$THIS" ]; do
+  ls=`ls -ld "$THIS"`
+  link=`expr "$ls" : '.*-> \(.*\)$'`
+  if expr "$link" : '.*/.*' > /dev/null; then
+    THIS="$link"
+  else
+    THIS=`dirname "$THIS"`/"$link"
+  fi
+done
+
+# if no args specified, show usage
+if [ $# = 0 ]; then
+  echo "Usage: scent COMMAND"
+  echo "where COMMAND is one of:"
+  echo " extract    extract pages in details.txt"
+  echo " build-categories build categories from learned categories"
+  echo " build-properties build properties from learned properties"
+  echo " scentserver    run a (local) Scent server on a user defined port"
+  echo " junit         	runs the given JUnit test"
+  echo " or"
+  echo " CLASSNAME 	run the class named CLASSNAME"
+  echo "Most commands print help when invoked w/o parameters."
+  exit 1
+fi
+
+# get arguments
+COMMAND=$1
+shift
+
+# some directories
+THIS_DIR=`dirname "$THIS"`
+SCENT_HOME=`cd "$THIS_DIR/.." ; pwd`
+
+# some Java parameters
+if [ "$SCENT_JAVA_HOME" != "" ]; then
+  #echo "run java in $SCENT_JAVA_HOME"
+  JAVA_HOME=$SCENT_JAVA_HOME
+fi
+
+if [ "$JAVA_HOME" = "" ]; then
+  echo "Error: JAVA_HOME is not set."
+  exit 1
+fi
+
+# SCENT_JOB
+if [ -f ${SCENT_HOME}/*scent*.job ]; then
+    local=false
+  for f in $SCENT_HOME/*scent*.job; do
+    SCENT_JOB=$f;
+  done
+else
+  local=true
+fi
+
+JAVA=$JAVA_HOME/bin/java
+JAVA_HEAP_MAX=-Xmx1000m 
+
+# check envvars which might override default args
+if [ "$SCENT_HEAPSIZE" != "" ]; then
+  #echo "run with heapsize $SCENT_HEAPSIZE"
+  JAVA_HEAP_MAX="-Xmx""$SCENT_HEAPSIZE""m"
+  #echo $JAVA_HEAP_MAX
+fi
+
+# CLASSPATH initially contains $SCENT_CONF_DIR, or defaults to $SCENT_HOME/conf
+CLASSPATH=${SCENT_CONF_DIR:=$SCENT_HOME/conf}
+CLASSPATH=${CLASSPATH}:$JAVA_HOME/lib/tools.jar
+
+# so that filenames w/ spaces are handled correctly in loops below
+IFS=
+
+# add libs to CLASSPATH
+if $local; then
+  for f in $SCENT_HOME/lib/*.jar; do
+   CLASSPATH=${CLASSPATH}:$f;
+  done
+  # local runtime
+  # add plugins to classpath
+  if [ -d "$SCENT_HOME/plugins" ]; then
+     CLASSPATH=${SCENT_HOME}:${CLASSPATH}
+  fi
+fi
+
+# restore ordinary behaviour
+unset IFS
+
+if [ "x$JAVA_LIBRARY_PATH" != "x" ]; then
+  SCENT_OPTS="$SCENT_OPTS -Djava.library.path=$JAVA_LIBRARY_PATH"
+fi
+
+# echo $CLASSPATH
+
+# figure out which class to run
+if [ "$COMMAND" = "extract" ] ; then
+CLASS=org.qiwur.scent.app.ProductPageBuilder
+elif [ "$COMMAND" = "plugin" ] ; then
+CLASS=org.qiwur.scent.plugin.PluginRepository
+elif [ "$COMMAND" = "scentserver" ] ; then
+CLASS=org.qiwur.scent.api.ScentServer
+elif [ "$COMMAND" = "junit" ] ; then
+  CLASSPATH=$CLASSPATH:$SCENT_HOME/test/classes/
+  CLASS=junit.textui.TestRunner
+else
+CLASS=$COMMAND
+fi
+
+EXEC_CALL="$JAVA $JAVA_HEAP_MAX $SCENT_OPTS -classpath $CLASSPATH"
+
+# run it
+exec $EXEC_CALL $CLASS "$@"

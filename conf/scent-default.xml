@@ -181,7 +181,7 @@
 
 	<property>
 		<name>plugin.includes</name>
-		<value>dom-extracotr</value>
+		<value>block-locator|data-extractor</value>
 		<description>Regular expression naming plugin directory names to
 			include. Any plugin not matching this expression is excluded.
 		</description>

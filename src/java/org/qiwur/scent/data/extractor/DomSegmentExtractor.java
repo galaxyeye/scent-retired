@@ -1,18 +1,22 @@
 package org.qiwur.scent.data.extractor;
 
+import java.util.Collection;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
+import org.apache.hadoop.conf.Configuration;
 import org.qiwur.scent.entity.PageEntity;
 import org.qiwur.scent.jsoup.block.BlockLabel;
 import org.qiwur.scent.jsoup.block.DomSegment;
+import org.qiwur.scent.storage.WebPage.Field;
 import org.qiwur.scent.utils.StringUtil;
 
 import com.google.common.collect.Multimap;
 
-public class DomSegmentExtractor extends KeyValueExtractor {
+public class DomSegmentExtractor extends KeyValueExtractor implements DataExtractor {
 
+  protected Configuration conf;
   protected final DomSegment segment;
   protected final PageEntity pageEntity;
   protected final String sectionLabel;
@@ -98,5 +102,21 @@ public class DomSegmentExtractor extends KeyValueExtractor {
     Validate.notNull(segment);
     return getExtractedValue(segment.body().outerHtml(), label);
   }
+
+	@Override
+	public Collection<Field> getFields() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Configuration getConf() {
+		return conf;
+	}
+
+	@Override
+	public void setConf(Configuration conf) {
+		this.conf = conf;
+	}
 
 }

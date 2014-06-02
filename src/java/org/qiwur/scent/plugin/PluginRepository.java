@@ -66,7 +66,6 @@ public class PluginRepository {
     this.conf = conf;
     this.auto = conf.getBoolean("plugin.auto-activation", true);
 
-    @SuppressWarnings("unchecked")
     String[] pluginFolders = conf.getStrings("plugin.folders");
 
     PluginManifestParser manifestParser = new PluginManifestParser(conf, this);
@@ -94,7 +93,7 @@ public class PluginRepository {
   public static synchronized PluginRepository get(Configuration conf) {
     String uuid = ScentConfiguration.getUUID(conf).toString();
     if (uuid == null) {
-      uuid = "nonNutchConf@" + conf.hashCode(); // fallback
+      uuid = "nonScentConf@" + conf.hashCode(); // fallback
     }
     PluginRepository result = CACHE.get(uuid);
     if (result == null) {

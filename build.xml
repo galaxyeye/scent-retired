@@ -27,8 +27,8 @@
 	<property name="release.dir" value="${build.dir}/release" />
 
 	<!-- define Maven coordinates, repository url and artifacts name etc -->
-	<property name="groupId" value="org.apache.nutch" />
-	<property name="artifactId" value="nutch" />
+	<property name="groupId" value="org.apache.scent" />
+	<property name="artifactId" value="scent" />
 	<property name="maven-repository-url" value="https://repository.apache.org/service/local/staging/deploy/maven2" />
 	<property name="maven-repository-id" value="apache.releases.https" />
 	<property name="maven-jar" value="${release.dir}/${artifactId}-${version}.jar" />
@@ -101,13 +101,13 @@
 	</target>
 
 	<!-- ================================================================== -->
-	<!-- Make nutch.jar -->
+	<!-- Make scent.jar -->
 	<!-- ================================================================== -->
 	<!-- -->
 	<!-- ================================================================== -->
-	<target name="jar" depends="compile-core" description="--> make nutch.jar">
-		<copy file="${conf.dir}/nutch-default.xml" todir="${build.classes}" />
-		<copy file="${conf.dir}/nutch-site.xml" todir="${build.classes}" />
+	<target name="jar" depends="compile-core" description="--> make scent.jar">
+		<copy file="${conf.dir}/scent-default.xml" todir="${build.classes}" />
+		<copy file="${conf.dir}/scent-site.xml" todir="${build.classes}" />
 		<jar jarfile="${build.dir}/${final.name}.jar" basedir="${build.classes}">
 			<manifest>
 			</manifest>
@@ -120,8 +120,8 @@
 	<!-- -->
 	<!-- ================================================================== -->
 	<target name="release" depends="compile-core" description="--> generate the release distribution">
-		<copy file="${conf.dir}/nutch-default.xml" todir="${build.classes}" />
-		<copy file="${conf.dir}/nutch-site.xml" todir="${build.classes}" />
+		<copy file="${conf.dir}/scent-default.xml" todir="${build.classes}" />
+		<copy file="${conf.dir}/scent-site.xml" todir="${build.classes}" />
 
 		<!-- build the main artifact -->
 		<jar jarfile="${maven-jar}" basedir="${build.classes}" />
@@ -132,7 +132,6 @@
 			<arg value="${javadoc.proxy.port}" />
 
 			<packageset dir="${src.dir}" />
-			<packageset dir="${plugins.dir}/creativecommons/src/java" />
 
 			<link href="${javadoc.link.java}" />
 			<link href="${javadoc.link.lucene}" />
@@ -146,6 +145,9 @@
 			</classpath>
 
 			<group title="Core" packages="org.qiwur.scent.*" />
+            <group title="Plugins API" packages="${plugins.api}" />
+            <group title="Data Extractor" packages="${plugins.data-extractor}" />
+			<!--
 			<group title="Plugins API" packages="${plugins.api}" />
 			<group title="Protocol Plugins" packages="${plugins.protocol}" />
 			<group title="URL Filter Plugins" packages="${plugins.urlfilter}" />
@@ -153,6 +155,7 @@
 			<group title="Parse Plugins" packages="${plugins.parse}" />
 			<group title="Indexing Filter Plugins" packages="${plugins.index}" />
 			<group title="Misc. Plugins" packages="${plugins.misc}" />
+			-->
 		</javadoc>
 		<jar jarfile="${maven-javadoc-jar}">
 			<fileset dir="${release.dir}/javadoc" />
@@ -215,13 +218,13 @@
 	<!-- ================================================================== -->
 	<!-- -->
 	<!-- ================================================================== -->
-	<target name="job" depends="compile" description="--> make nutch.job jar">
+	<target name="job" depends="compile" description="--> make scent.job jar">
 		<jar jarfile="${build.dir}/${final.name}.job">
 			<!-- 
-               If the build.classes has the nutch config files because the jar command 
+               If the build.classes has the scent config files because the jar command 
                command has run, exclude them. The conf directory has them. 
                -->
-			<zipfileset dir="${build.classes}" excludes="nutch-default.xml,nutch-site.xml" />
+			<zipfileset dir="${build.classes}" excludes="scent-default.xml,scent-site.xml" />
 			<zipfileset dir="${conf.dir}" excludes="*.template,hadoop*.*" />
 			<!-- 
                need to exclude hsqldb.jar due to a conflicting version already present 
@@ -235,29 +238,38 @@
 	<target name="local" depends="compile, jar" description="--> default target for running Nutch">
 		<mkdir dir="${runtime.dir}" />
 		<mkdir dir="${runtime.local}" />
-		<!-- local area -->
-		<copy file="${build.dir}/${final.name}.jar" todir="${runtime.local}/lib" />
-		<copy todir="${runtime.local}/lib/native">
-			<fileset dir="lib/native" />
-		</copy>
-		<copy todir="${runtime.local}/conf">
-			<fileset dir="${conf.dir}" excludes="*.template" />
-		</copy>
-		<copy todir="${runtime.local}/bin">
-			<fileset dir="src/bin" />
-		</copy>
-		<chmod perm="ugo+x" type="file">
-			<fileset dir="${runtime.local}/bin" />
-		</chmod>
-		<copy todir="${runtime.local}/lib">
-			<fileset dir="${build.dir}/lib" excludes="ant*.jar,jasper*.jar,jsp-*.jar,hadoop*test*.jar,hbase*test*.jar" />
-		</copy>
-		<copy todir="${runtime.local}/plugins">
-			<fileset dir="${build.dir}/plugins" />
-		</copy>
-		<copy todir="${runtime.local}/test">
-			<fileset dir="${build.dir}/test" />
-		</copy>
+        <!-- local area -->
+        <copy file="${build.dir}/${final.name}.jar" todir="${runtime.local}/lib" />
+        <copy todir="${runtime.local}/lib/native">
+            <fileset dir="lib/native" />
+        </copy>
+        <copy todir="${runtime.local}/conf">
+            <fileset dir="${conf.dir}" excludes="*.template" />
+        </copy>
+        <copy todir="${runtime.local}/output">
+            <fileset dir="${output.dir}" />
+        </copy>
+        <copy todir="${runtime.local}/wwwroot">
+            <fileset dir="${wwwroot.dir}" />
+        </copy>
+        <copy todir="${runtime.local}/models">
+            <fileset dir="${models.dir}" />
+        </copy>
+        <copy todir="${runtime.local}/bin">
+            <fileset dir="src/bin" />
+        </copy>
+        <chmod perm="ugo+x" type="file">
+            <fileset dir="${runtime.local}/bin" />
+        </chmod>
+        <copy todir="${runtime.local}/lib">
+            <fileset dir="${build.dir}/lib" excludes="ant*.jar,jasper*.jar,jsp-*.jar,hadoop*test*.jar,hbase*test*.jar" />
+        </copy>
+        <copy todir="${runtime.local}/plugins">
+            <fileset dir="${build.dir}/plugins" />
+        </copy>
+        <copy todir="${runtime.local}/test">
+            <fileset dir="${build.dir}/test" />
+        </copy>
 	</target>
 
 	<target name="runtime" depends="jar, job" description="--> default target for running Nutch">
@@ -280,6 +292,15 @@
 		<copy todir="${runtime.local}/conf">
 			<fileset dir="${conf.dir}" excludes="*.template" />
 		</copy>
+        <copy todir="${runtime.local}/output">
+            <fileset dir="${output.dir}" />
+        </copy>
+        <copy todir="${runtime.local}/wwwroot">
+            <fileset dir="${wwwroot.dir}" />
+        </copy>
+        <copy todir="${runtime.local}/models">
+            <fileset dir="${models.dir}" />
+        </copy>
 		<copy todir="${runtime.local}/bin">
 			<fileset dir="src/bin" />
 		</copy>
@@ -301,43 +322,10 @@
 	<!-- Compile test code -->
 	<!-- ================================================================== -->
 	<target name="compile-core-test" depends="compile-core, resolve-test" description="--> compile test code">
-		<javac encoding="${build.encoding}" srcdir="${test.src.dir}" includes="org/apache/nutch*/**/*.java" destdir="${test.build.classes}" debug="${javac.debug}" optimize="${javac.optimize}" target="${javac.version}" source="${javac.version}" deprecation="${javac.deprecation}">
+		<javac encoding="${build.encoding}" srcdir="${test.src.dir}" includes="org/apache/scent*/**/*.java" destdir="${test.build.classes}" debug="${javac.debug}" optimize="${javac.optimize}" target="${javac.version}" source="${javac.version}" deprecation="${javac.deprecation}">
 			<compilerarg value="-Xlint:-path" />
 			<classpath refid="test.classpath" />
 		</javac>
-	</target>
-
-	<!-- ================================================================== -->
-	<!-- Run Nutch proxy -->
-	<!-- ================================================================== -->
-
-	<target name="proxy" depends="job, compile-core-test" description="--> run nutch proxy">
-		<java classname="org.apache.nutch.tools.proxy.TestbedProxy" fork="true">
-			<classpath refid="test.classpath" />
-			<arg value="-fake" />
-			<!-- 
-               <arg value="-delay"/> 
-               <arg value="-200"/> 
-               -->
-			<jvmarg line="-Djavax.xml.parsers.DocumentBuilderFactory=com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl" />
-		</java>
-	</target>
-
-	<!-- ================================================================== -->
-	<!-- Run Nutch benchmarking analysis -->
-	<!-- ================================================================== -->
-
-	<target name="benchmark" description="--> run nutch benchmarking analysis">
-		<java classname="org.apache.nutch.tools.Benchmark" fork="true">
-			<classpath refid="test.classpath" />
-			<jvmarg line="-Xmx512m -Djavax.xml.parsers.DocumentBuilderFactory=com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl" />
-			<arg value="-maxPerHost" />
-			<arg value="10" />
-			<arg value="-seeds" />
-			<arg value="1" />
-			<arg value="-depth" />
-			<arg value="5" />
-		</java>
 	</target>
 
 	<!-- ================================================================== -->
@@ -354,7 +342,7 @@
 		<copy todir="${test.build.data}">
 			<fileset dir="src/testresources" includes="**/*" />
 		</copy>
-		<copy file="${test.src.dir}/nutch-site.xml" todir="${test.build.classes}" />
+		<copy file="${test.src.dir}/scent-site.xml" todir="${test.build.classes}" />
 
 		<copy file="${test.src.dir}/log4j.properties" todir="${test.build.classes}" />
 
@@ -476,7 +464,6 @@
 			<arg value="${javadoc.proxy.port}" />
 
 			<packageset dir="${src.dir}" />
-			<packageset dir="${plugins.dir}/creativecommons/src/java" />
 
 			<link href="${javadoc.link.java}" />
 			<link href="${javadoc.link.lucene}" />
@@ -489,7 +476,8 @@
 				</fileset>
 			</classpath>
 
-			<group title="Core" packages="org.apache.nutch.*" />
+			<group title="Core" packages="org.apache.scent.*" />
+			<!--
 			<group title="Plugins API" packages="${plugins.api}" />
 			<group title="Protocol Plugins" packages="${plugins.protocol}" />
 			<group title="URL Filter Plugins" packages="${plugins.urlfilter}" />
@@ -497,13 +485,14 @@
 			<group title="Parse Plugins" packages="${plugins.parse}" />
 			<group title="Indexing Filter Plugins" packages="${plugins.index}" />
 			<group title="Misc. Plugins" packages="${plugins.misc}" />
+			-->
 		</javadoc>
 		<!-- Copy the plugin.dtd file to the plugin doc-files dir -->
-		<copy file="${plugins.dir}/plugin.dtd" todir="${build.javadoc}/org/apache/nutch/plugin/doc-files" />
+		<copy file="${plugins.dir}/plugin.dtd" todir="${build.javadoc}/org/apache/scent/plugin/doc-files" />
 	</target>
 
 	<target name="default-doc" description="--> generate default Nutch documentation">
-		<style basedir="${conf.dir}" destdir="${docs.dir}" includes="nutch-default.xml" style="conf/nutch-conf.xsl" />
+		<style basedir="${conf.dir}" destdir="${docs.dir}" includes="scent-default.xml" style="conf/scent-conf.xsl" />
 	</target>
 
 	<!-- ================================================================== -->
@@ -710,31 +699,6 @@
 	</target>
 
 	<!-- ================================================================== -->
-	<!-- SONAR targets -->
-	<!-- ================================================================== -->
-
-	<!-- Define the Sonar task if this hasn't been done in a common script -->
-	<taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
-		<classpath path="${ant.library.dir}" />
-		<classpath path="${mysql.library.dir}" />
-	</taskdef>
-
-	<!-- Add the target -->
-	<target name="sonar" description="--> run SONAR analysis">
-
-		<!-- list of mandatory source directories (required) -->
-		<property name="sonar.sources" value="${src.dir}" />
-
-		<!-- list of properties (optional) -->
-		<property name="sonar.projectName" value="Nutchgora Branch Sonar Analysis" />
-		<property name="sonar.binaries" value="${build.dir}/classes" />
-		<property name="sonar.binaries" value="${build.dir}/plugins" />
-		<property name="sonar.tests" value="${test.src.dir}" />
-
-		<sonar:sonar workDir="${base.dir}" key="org.apache.nutch:branch" version="2.0-SNAPSHOT" xmlns:sonar="antlib:org.sonar.ant" />
-	</target>
-
-	<!-- ================================================================== -->
 	<!-- Eclipse targets                                                    -->
 	<!-- ================================================================== -->
 
@@ -787,8 +751,8 @@
 
 				<source path="${basedir}/src/java/" />
 				<source path="${basedir}/src/test/" />
-				<source path="${basedir}/src/plugin/creativecommons/src/java/" />
-				<source path="${basedir}/src/plugin/creativecommons/src/test/" />
+                <source path="${basedir}/src/plugin/data-extractor/src/java/" />
+                <source path="${basedir}/src/plugin/data-extractor/src/test/" />
 				<output path="${basedir}/build/classes" />
 			</classpath>
 		</eclipse>

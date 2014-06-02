@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
+import org.qiwur.scent.jsoup.select.Evaluator;
 
 /**
  * A minimal String utility class. Designed for internal jsoup use only.
@@ -48,7 +49,7 @@ public final class StringUtil {
    * @return joined string
    */
   public static String join(Collection strings, String sep) {
-    return join(strings.iterator(), sep);
+	return join(strings.iterator(), sep);
   }
 
   /**

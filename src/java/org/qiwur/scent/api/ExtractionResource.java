@@ -20,15 +20,13 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.qiwur.scent.data.builder.ProductHTMLBuilder;
+import org.qiwur.scent.data.extractor.DataExtractorFactory;
+import org.qiwur.scent.data.extractor.DataExtractorNotFound;
 import org.qiwur.scent.data.extractor.PageExtractor;
-import org.qiwur.scent.data.extractor.ProductExtractor;
 import org.qiwur.scent.data.extractor.WebExtractor;
 import org.qiwur.scent.entity.PageEntity;
 import org.qiwur.scent.jsoup.nodes.Document;
-import org.restlet.data.Form;
-import org.restlet.representation.Representation;
 import org.restlet.resource.Get;
-import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
 
 public class ExtractionResource extends ServerResource {
@@ -39,14 +37,16 @@ public class ExtractionResource extends ServerResource {
 
   private final Configuration conf;
   private final WebExtractor extractor;
+  private final DataExtractorFactory dataExtractorFactory;
 
   public ExtractionResource() {
     this.conf = ScentApp.server.conf;
+    dataExtractorFactory = new DataExtractorFactory(conf);
     extractor = WebExtractor.create(conf);
   }
 
   @Get("json|xml|html")
-  public Object execute() {
+  public Object execute() throws DataExtractorNotFound {
     String cmd = (String) getRequestAttributes().get(Params.CMD);
     String args = (String) getRequestAttributes().get(Params.ARGS);
 
@@ -58,7 +58,7 @@ public class ExtractionResource extends ServerResource {
         return "invalid doc";
       }
 
-      PageExtractor extractorImpl = new ProductExtractor(doc, conf);
+      PageExtractor extractorImpl = (PageExtractor)dataExtractorFactory.getDataExtractor("ProductExtractor");
       PageEntity pageEntity = extractor.extract(extractorImpl);
 
       logger.debug(pageEntity);

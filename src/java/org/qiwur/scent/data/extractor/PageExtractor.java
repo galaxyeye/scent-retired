@@ -3,6 +3,7 @@ package org.qiwur.scent.data.extractor;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,7 @@ import org.qiwur.scent.jsoup.block.DomSegments;
 import org.qiwur.scent.jsoup.nodes.Document;
 import org.qiwur.scent.jsoup.select.Elements;
 import org.qiwur.scent.learning.EntityAttributeLearner;
+import org.qiwur.scent.storage.WebPage.Field;
 import org.qiwur.scent.utils.NetUtil;
 
 public class PageExtractor implements DataExtractor {
@@ -28,7 +30,7 @@ public class PageExtractor implements DataExtractor {
   protected static final Logger logger = LogManager.getLogger(PageExtractor.class);
 
   protected final PageEntity pageEntity = new PageEntity();
-  protected final Configuration conf;
+  protected Configuration conf;
   protected final Document doc;
   protected final EntityAttributeLearner attrLearner;
 
@@ -198,4 +200,19 @@ public class PageExtractor implements DataExtractor {
 
     return extractor;
   }
+
+	@Override
+	public Collection<Field> getFields() {
+		return null;
+	}
+
+	@Override
+	public Configuration getConf() {
+		return conf;
+	}
+
+	@Override
+	public void setConf(Configuration conf) {
+		this.conf = conf;
+	}
 }
