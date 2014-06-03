@@ -19,7 +19,7 @@
 
   <target name="deploy-core">
     <ant target="compile-core" inheritall="false" dir="../.."/>
-    <ant target="deploy"/>
+    <ant target="deploy" />
   </target>
 
   <!-- ====================================================== -->

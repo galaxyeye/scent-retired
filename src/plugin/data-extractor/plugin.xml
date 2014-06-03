@@ -19,20 +19,21 @@
 
    <runtime>
       <library name="data-extractor.jar">
-         <export name="*"/>
+         <export name="*" />
       </library>
    </runtime>
 
    <requires>
-      <import plugin="scent-extensionpoints"/>
+      <import plugin="scent-extensionpoints" />
    </requires>
 
-   <extension id="org.qiwur.scent.data.extractor"
+   <extension id="org.qiwur.scent.entity.extractor"
               name="DataExtractor"
               point="org.qiwur.scent.data.extractor.DataExtractor">
 
-      <implementation id="org.qiwur.scent.data.extractor.ProductExtractor"
-                      class="org.qiwur.scent.data.extractor.ProductExtractor">
+       <implementation id="org.qiwur.scent.entity.extractor.ProductExtractor"
+                      class="org.qiwur.scent.entity.extractor.ProductExtractor">
+        <parameter name="extractorName" value="product"/>
       </implementation>
 
    </extension>

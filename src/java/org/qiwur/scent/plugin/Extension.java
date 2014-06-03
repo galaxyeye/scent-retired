@@ -20,6 +20,8 @@ import java.util.HashMap;
 
 import org.apache.hadoop.conf.Configurable;
 import org.apache.hadoop.conf.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An <code>Extension</code> is a kind of listener descriptor that will be
@@ -27,6 +29,7 @@ import org.apache.hadoop.conf.Configuration;
  * Publisher.
  */
 public class Extension {
+
   private PluginDescriptor fDescriptor;
   private String fId;
   private String fTargetPoint;
@@ -151,6 +154,9 @@ public class Extension {
     synchronized (getId()) {
       try {
         PluginClassLoader loader = fDescriptor.getClassLoader();
+
+        // logger.debug(fDescriptor.);
+
         Class<?> extensionClazz = loader.loadClass(getClazz());
         // lazy loading of Plugin in case there is no instance of the plugin
         // already.
@@ -187,5 +193,14 @@ public class Extension {
    */
   public void setDescriptor(PluginDescriptor pDescriptor) {
     fDescriptor = pDescriptor;
+  }
+  
+  @Override
+  public String toString() {
+	  return "fId : " + fId + "\t" 
+	  		+ "fTargetPoint : " 
+	  		+ fTargetPoint + "\t" 
+	  		+ "fClazz : " + fClazz + "\t" 
+	  		+ "fAttributes : " + fAttributes.toString();
   }
 }

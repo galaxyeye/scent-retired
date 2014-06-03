@@ -17,11 +17,6 @@
 
 package org.qiwur.scent.data.extractor;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Collection;
-import java.util.HashSet;
-
 import org.apache.hadoop.conf.Configuration;
 import org.qiwur.scent.plugin.Extension;
 import org.qiwur.scent.plugin.ExtensionPoint;
@@ -40,7 +35,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DataExtractorFactory {
 
-  public static final Logger LOG = LoggerFactory.getLogger(DataExtractorFactory.class);
+  public static final Logger logger = LoggerFactory.getLogger(DataExtractorFactory.class);
 
   private final ExtensionPoint extensionPoint;
 
@@ -64,7 +59,7 @@ public class DataExtractorFactory {
    * @throws DataExtractorNotFound
    *           when DataExtractor can not be found for extractorName
    */
-  public DataExtractor getDataExtractor(String extractorName) throws DataExtractorNotFound {
+  public DataExtractor getExtractor(String extractorName) throws DataExtractorNotFound {
     ObjectCache objectCache = ObjectCache.get(conf);
     try {
       String cacheId = DataExtractor.X_POINT_ID + extractorName;
@@ -77,11 +72,10 @@ public class DataExtractorFactory {
           throw new DataExtractorNotFound(extractorName);
         }
 
-        DataExtractor protocol = (DataExtractor) extension.getExtensionInstance();
+        DataExtractor extractor = (DataExtractor) extension.getExtensionInstance();
+        objectCache.setObject(cacheId, extractor);
 
-        objectCache.setObject(cacheId, protocol);
-
-        return protocol;
+        return extractor;
       }
     } catch (PluginRuntimeException e) {
       throw new DataExtractorNotFound(extractorName, e.toString());
@@ -93,19 +87,13 @@ public class DataExtractorFactory {
 
     for (int i = 0; i < extensions.length; i++) {
       Extension extension = extensions[i];
-      if (contains(name, extension.getAttribute("extractorName")))
-        return extension;
-    }
-    return null;
-  }
 
-  boolean contains(String what, String where) {
-    String parts[] = where.split("[, ]");
-    for (int i = 0; i < parts.length; i++) {
-      if (parts[i].equals(what))
-        return true;
+      if (extension.getAttribute("extractorName").contains(name)) {
+    	  return extension;
+      }
     }
-    return false;
+
+    return null;
   }
 
 //  public Collection<WebPage.Field> getFields() {

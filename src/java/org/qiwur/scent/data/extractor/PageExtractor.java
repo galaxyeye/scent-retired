@@ -31,8 +31,8 @@ public class PageExtractor implements DataExtractor {
 
   protected final PageEntity pageEntity = new PageEntity();
   protected Configuration conf;
-  protected final Document doc;
-  protected final EntityAttributeLearner attrLearner;
+  protected Document doc;
+  protected EntityAttributeLearner attrLearner;
 
   protected List<DomSegmentExtractor> extractors = new ArrayList<DomSegmentExtractor>();
   protected List<DomSegment> processedSegments = new ArrayList<DomSegment>();
@@ -47,6 +47,10 @@ public class PageExtractor implements DataExtractor {
     configuratedExtractors.put(BlockLabel.Links.text(), LinksExtractor.class.getName());
     configuratedExtractors.put(BlockLabel.Images.text(), ImagesExtractor.class.getName());
     configuratedExtractors.put(BlockLabel.SimilarEntity.text(), SimilarEntityExtractor.class.getName());
+  }
+
+  public PageExtractor() {
+    
   }
 
   public PageExtractor(Document doc, Configuration conf) {
@@ -70,6 +74,10 @@ public class PageExtractor implements DataExtractor {
     extract();
 
     learn();
+  }
+
+  public void doc(Document doc) {
+    this.doc = doc;
   }
 
   public Document doc() {

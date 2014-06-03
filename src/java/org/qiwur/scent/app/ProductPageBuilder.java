@@ -18,6 +18,7 @@ import org.qiwur.scent.data.builder.ProductWikiBuilder;
 import org.qiwur.scent.data.extractor.DataExtractorFactory;
 import org.qiwur.scent.data.extractor.DataExtractorNotFound;
 import org.qiwur.scent.data.extractor.PageExtractor;
+import org.qiwur.scent.data.extractor.PageExtractorFactory;
 import org.qiwur.scent.data.extractor.WebExtractor;
 import org.qiwur.scent.data.extractor.WebLoader;
 import org.qiwur.scent.entity.PageEntity;
@@ -117,9 +118,7 @@ public class ProductPageBuilder {
     if (doc != null) {
       long time = System.currentTimeMillis();
 
-      // String clazz = "org.qiwur.scent.data.extractor.ProductExtractor";
-
-      PageExtractor extractorImpl = (PageExtractor)dataExtractorFactory.getDataExtractor("ProductExtractor");
+      PageExtractor extractorImpl = new PageExtractorFactory(conf).getExtractor("product", doc);
       PageEntity pageEntity = extractor.extract(extractorImpl);
       logger.info(pageEntity);
 
@@ -191,15 +190,15 @@ public class ProductPageBuilder {
   private Document generateHtml(PageEntity pageEntity) {
     Validate.notNull(pageEntity);
 
-    ProductHTMLBuilder 
-    builder = new ProductHTMLBuilder(pageEntity, conf);
+    ProductHTMLBuilder builder = new ProductHTMLBuilder(pageEntity, conf);
     builder.process();
 
     return builder.doc();
   }
 
-  public static void main(String[] args) throws IOException {
+  public static void main(String[] args) throws IOException, DataExtractorNotFound {
     Configuration conf = ScentConfiguration.create();
+
     ProductPageBuilder builder = new ProductPageBuilder(conf);
     builder.process();
   }

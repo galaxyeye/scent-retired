@@ -21,14 +21,15 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The <code>PluginDescriptor</code> provide access to all meta information of
@@ -39,6 +40,9 @@ import org.apache.logging.log4j.Logger;
  * mechanism.
  */
 public class PluginDescriptor {
+
+  public static final Logger logger = LoggerFactory.getLogger(PluginDescriptor.class);
+
   private String fPluginPath;
   private String fPluginClass = Plugin.class.getName();
   private String fPluginId;
@@ -52,7 +56,6 @@ public class PluginDescriptor {
   private ArrayList<URL> fNotExportedLibs = new ArrayList<URL>();
   private ArrayList<Extension> fExtensions = new ArrayList<Extension>();
   private PluginClassLoader fClassLoader;
-  public static final Logger LOG = LogManager.getLogger(PluginDescriptor.class);
   private Configuration fConf;
 
   /**
@@ -270,20 +273,26 @@ public class PluginDescriptor {
   public PluginClassLoader getClassLoader() {
     if (fClassLoader != null)
       return fClassLoader;
+
     ArrayList<URL> arrayList = new ArrayList<URL>();
     arrayList.addAll(fExportedLibs);
     arrayList.addAll(fNotExportedLibs);
     arrayList.addAll(getDependencyLibs());
     File file = new File(getPluginPath());
+
     try {
       for (File file2 : file.listFiles()) {
         if (file2.getAbsolutePath().endsWith("properties"))
           arrayList.add(file2.getParentFile().toURI().toURL());
       }
     } catch (MalformedURLException e) {
-      LOG.debug(getPluginId() + " " + e.toString());
+      logger.debug(getPluginId() + " " + e.toString());
     }
+
+    // logger.debug("{}", Arrays.asList(urls));
+    
     URL[] urls = arrayList.toArray(new URL[arrayList.size()]);
+
     fClassLoader = new PluginClassLoader(urls, PluginDescriptor.class.getClassLoader());
     return fClassLoader;
   }
@@ -302,7 +311,6 @@ public class PluginDescriptor {
    * @param pDescriptor
    */
   private void collectLibs(ArrayList<URL> pLibs, PluginDescriptor pDescriptor) {
-
     for (String id : pDescriptor.getDependencies()) {
       PluginDescriptor descriptor = PluginRepository.get(fConf)
           .getPluginDescriptor(id);

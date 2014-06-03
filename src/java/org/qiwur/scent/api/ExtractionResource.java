@@ -23,6 +23,7 @@ import org.qiwur.scent.data.builder.ProductHTMLBuilder;
 import org.qiwur.scent.data.extractor.DataExtractorFactory;
 import org.qiwur.scent.data.extractor.DataExtractorNotFound;
 import org.qiwur.scent.data.extractor.PageExtractor;
+import org.qiwur.scent.data.extractor.PageExtractorFactory;
 import org.qiwur.scent.data.extractor.WebExtractor;
 import org.qiwur.scent.entity.PageEntity;
 import org.qiwur.scent.jsoup.nodes.Document;
@@ -58,7 +59,7 @@ public class ExtractionResource extends ServerResource {
         return "invalid doc";
       }
 
-      PageExtractor extractorImpl = (PageExtractor)dataExtractorFactory.getDataExtractor("ProductExtractor");
+      PageExtractor extractorImpl = new PageExtractorFactory(conf).getExtractor("product", doc);
       PageEntity pageEntity = extractor.extract(extractorImpl);
 
       logger.debug(pageEntity);

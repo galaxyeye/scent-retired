@@ -88,12 +88,16 @@
 	<target name="compile" depends="compile-core, compile-plugins" description="--> compile all Java files" />
 
 	<target name="compile-core" depends="init, resolve-default" description="--> compile core Java files only">
-		<javac encoding="${build.encoding}" srcdir="${src.dir}" includes="org/qiwur/scent/**/*.java" 
+		<javac encoding="${build.encoding}" srcdir="${src.dir}" 
+			includes="org/qiwur/scent/**/*.java" 
 			destdir="${build.classes}" debug="${javac.debug}" optimize="${javac.optimize}" target="${javac.version}" 
 			source="${javac.version}" deprecation="${javac.deprecation}">
 			<compilerarg value="-Xlint:-path" />
 			<classpath refid="classpath" />
 		</javac>
+		<copy todir="${build.classes}">
+			<fileset dir="${src.dir}" includes="org/qiwur/scent/**/*.properties" />
+		</copy>
 	</target>
 
 	<target name="compile-plugins" depends="init, resolve-default" description="--> compile plugins only">
@@ -145,8 +149,8 @@
 			</classpath>
 
 			<group title="Core" packages="org.qiwur.scent.*" />
-            <group title="Plugins API" packages="${plugins.api}" />
-            <group title="Data Extractor" packages="${plugins.data-extractor}" />
+			<group title="Plugins API" packages="${plugins.api}" />
+			<group title="Data Extractor" packages="${plugins.data-extractor}" />
 			<!--
 			<group title="Plugins API" packages="${plugins.api}" />
 			<group title="Protocol Plugins" packages="${plugins.protocol}" />
@@ -238,38 +242,38 @@
 	<target name="local" depends="compile, jar" description="--> default target for running Nutch">
 		<mkdir dir="${runtime.dir}" />
 		<mkdir dir="${runtime.local}" />
-        <!-- local area -->
-        <copy file="${build.dir}/${final.name}.jar" todir="${runtime.local}/lib" />
-        <copy todir="${runtime.local}/lib/native">
-            <fileset dir="lib/native" />
-        </copy>
-        <copy todir="${runtime.local}/conf">
-            <fileset dir="${conf.dir}" excludes="*.template" />
-        </copy>
-        <copy todir="${runtime.local}/output">
-            <fileset dir="${output.dir}" />
-        </copy>
-        <copy todir="${runtime.local}/wwwroot">
-            <fileset dir="${wwwroot.dir}" />
-        </copy>
-        <copy todir="${runtime.local}/models">
-            <fileset dir="${models.dir}" />
-        </copy>
-        <copy todir="${runtime.local}/bin">
-            <fileset dir="src/bin" />
-        </copy>
-        <chmod perm="ugo+x" type="file">
-            <fileset dir="${runtime.local}/bin" />
-        </chmod>
-        <copy todir="${runtime.local}/lib">
-            <fileset dir="${build.dir}/lib" excludes="ant*.jar,jasper*.jar,jsp-*.jar,hadoop*test*.jar,hbase*test*.jar" />
-        </copy>
-        <copy todir="${runtime.local}/plugins">
-            <fileset dir="${build.dir}/plugins" />
-        </copy>
-        <copy todir="${runtime.local}/test">
-            <fileset dir="${build.dir}/test" />
-        </copy>
+		<!-- local area -->
+		<copy file="${build.dir}/${final.name}.jar" todir="${runtime.local}/lib" />
+		<copy todir="${runtime.local}/lib/native">
+			<fileset dir="lib/native" />
+		</copy>
+		<copy todir="${runtime.local}/conf">
+			<fileset dir="${conf.dir}" excludes="*.template" />
+		</copy>
+		<copy todir="${runtime.local}/output">
+			<fileset dir="${output.dir}" />
+		</copy>
+		<copy todir="${runtime.local}/wwwroot">
+			<fileset dir="${wwwroot.dir}" />
+		</copy>
+		<copy todir="${runtime.local}/models">
+			<fileset dir="${models.dir}" />
+		</copy>
+		<copy todir="${runtime.local}/bin">
+			<fileset dir="src/bin" />
+		</copy>
+		<chmod perm="ugo+x" type="file">
+			<fileset dir="${runtime.local}/bin" />
+		</chmod>
+		<copy todir="${runtime.local}/lib">
+			<fileset dir="${build.dir}/lib" excludes="ant*.jar,jasper*.jar,jsp-*.jar,hadoop*test*.jar,hbase*test*.jar" />
+		</copy>
+		<copy todir="${runtime.local}/plugins">
+			<fileset dir="${build.dir}/plugins" />
+		</copy>
+		<copy todir="${runtime.local}/test">
+			<fileset dir="${build.dir}/test" />
+		</copy>
 	</target>
 
 	<target name="runtime" depends="jar, job" description="--> default target for running Nutch">
@@ -292,15 +296,15 @@
 		<copy todir="${runtime.local}/conf">
 			<fileset dir="${conf.dir}" excludes="*.template" />
 		</copy>
-        <copy todir="${runtime.local}/output">
-            <fileset dir="${output.dir}" />
-        </copy>
-        <copy todir="${runtime.local}/wwwroot">
-            <fileset dir="${wwwroot.dir}" />
-        </copy>
-        <copy todir="${runtime.local}/models">
-            <fileset dir="${models.dir}" />
-        </copy>
+		<copy todir="${runtime.local}/output">
+			<fileset dir="${output.dir}" />
+		</copy>
+		<copy todir="${runtime.local}/wwwroot">
+			<fileset dir="${wwwroot.dir}" />
+		</copy>
+		<copy todir="${runtime.local}/models">
+			<fileset dir="${models.dir}" />
+		</copy>
 		<copy todir="${runtime.local}/bin">
 			<fileset dir="src/bin" />
 		</copy>
@@ -751,8 +755,8 @@
 
 				<source path="${basedir}/src/java/" />
 				<source path="${basedir}/src/test/" />
-                <source path="${basedir}/src/plugin/data-extractor/src/java/" />
-                <source path="${basedir}/src/plugin/data-extractor/src/test/" />
+				<source path="${basedir}/src/plugin/data-extractor/src/java/" />
+				<source path="${basedir}/src/plugin/data-extractor/src/test/" />
 				<output path="${basedir}/build/classes" />
 			</classpath>
 		</eclipse>

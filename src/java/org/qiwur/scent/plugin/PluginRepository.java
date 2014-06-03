@@ -42,6 +42,7 @@ import org.qiwur.scent.configuration.ScentConfiguration;
  * loading.
  */
 public class PluginRepository {
+
   private static final WeakHashMap<String, PluginRepository> CACHE = new WeakHashMap<String, PluginRepository>();
 
   private boolean auto;
