@@ -2,7 +2,6 @@ package org.qiwur.scent.entity;
 
 import java.util.Collection;
 import java.util.Formatter;
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
@@ -11,16 +10,12 @@ import org.apache.commons.lang.StringUtils;
 import org.qiwur.scent.utils.StringUtil;
 
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Multiset;
+import com.google.common.collect.Sets;
 import com.google.common.collect.TreeMultimap;
-import com.google.common.collect.TreeMultiset;
 
-// TODO : add multimap interface ?
 public class PageEntity {
 
-  // TODO : consider sorting by full name
-  protected final Multiset<EntityAttribute> attributes = TreeMultiset.create();
-  private final Set<String> values = new HashSet<String>();
+  protected final Set<EntityAttribute> attributes = Sets.newHashSet();
 
   public PageEntity() {
   }
@@ -50,7 +45,6 @@ public class PageEntity {
       return null;
     }
 
-    values.add(attribute.value());
     attributes.add(attribute);
 
     return attribute;
@@ -67,12 +61,12 @@ public class PageEntity {
     return changed;
   }
 
-  public Multiset<EntityAttribute> attributes() {
+  public Set<EntityAttribute> attributes() {
     return attributes;
   }
 
-  public Multiset<EntityAttribute> get(String name) {
-    Multiset<EntityAttribute> results = TreeMultiset.create();
+  public Set<EntityAttribute> get(String name) {
+    Set<EntityAttribute> results = Sets.newHashSet();
 
     for (EntityAttribute attr : attributes) {
       if (attr.name().equals(name)) {
@@ -83,8 +77,8 @@ public class PageEntity {
     return results;
   }
 
-  public Multiset<EntityAttribute> get(String name, String value) {
-    Multiset<EntityAttribute> results = TreeMultiset.create();
+  public Set<EntityAttribute> get(String name, String value) {
+    Set<EntityAttribute> results = Sets.newHashSet();
 
     for (EntityAttribute attr : attributes) {
       if (attr.name().equals(name) && attr.value().equals(value)) {
@@ -95,8 +89,8 @@ public class PageEntity {
     return results;
   }
 
-  public Multiset<EntityAttribute> get(String name, String value, String category) {
-    Multiset<EntityAttribute> results = TreeMultiset.create();
+  public Set<EntityAttribute> get(String name, String value, String category) {
+    Set<EntityAttribute> results = Sets.newHashSet();
 
     for (EntityAttribute attr : attributes) {
       if (attr.name().equals(name) && attr.value().equals(value) && attr.hasCategory(category)) {
@@ -107,8 +101,8 @@ public class PageEntity {
     return results;
   }
 
-  public Multiset<EntityAttribute> getCategorized(String category) {
-    Multiset<EntityAttribute> results = TreeMultiset.create();
+  public Set<EntityAttribute> getCategorized(String category) {
+    Set<EntityAttribute> results = Sets.newHashSet();
 
     for (EntityAttribute attribute : attributes) {
       if (attribute.hasCategory(category)) {
@@ -119,8 +113,8 @@ public class PageEntity {
     return results;
   }
 
-  public Multiset<EntityAttribute> getUncategorized() {
-    Multiset<EntityAttribute> results = TreeMultiset.create();
+  public Set<EntityAttribute> getUncategorized() {
+    Set<EntityAttribute> results = Sets.newHashSet();
 
     for (EntityAttribute attribute : attributes) {
       if (attribute.uncategorized()) {
@@ -147,7 +141,7 @@ public class PageEntity {
 
   public String firstText(String name) {
     String text = firstValue(name);
-    return text == null ? null : text;
+    return text == null ? "" : text;
   }
 
   public int size() {
@@ -158,10 +152,7 @@ public class PageEntity {
     return get(name).size();
   }
 
-  /**
-   * TODO : check bug
-   * combine by category and make the collection unique
-   * */
+  // combine all categories and make attributes unique by <name, value> pair
   public PageEntity getCombined() {
     PageEntity other = new PageEntity();
 
@@ -230,6 +221,7 @@ public class PageEntity {
     @SuppressWarnings("unchecked")
     Multimap<String, EntityAttribute> categorySortedattributes = TreeMultimap.create(
         ComparatorUtils.reversedComparator(ComparatorUtils.NATURAL_COMPARATOR), ComparatorUtils.NATURAL_COMPARATOR);
+    
     for (EntityAttribute attr : attributes) {
       if (!attr.categories().isEmpty()) ++counter;
       categorySortedattributes.put(attr.simpleCategoriesString(), attr);

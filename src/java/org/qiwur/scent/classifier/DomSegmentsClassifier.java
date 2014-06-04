@@ -31,9 +31,9 @@ public class DomSegmentsClassifier extends BlockClassifier {
   }
 
   @Override
-  public void process() {
+  public void classify() {
     for (BlockClassifier classifier : classifiers) {
-      classifier.process();
+      classifier.classify();
     }
 
     calculateOverallScore();
@@ -71,7 +71,7 @@ public class DomSegmentsClassifier extends BlockClassifier {
       for (int col = 0; col < labels.length; ++col) {
         double score = scoreMatrix.get(row, col);
 
-        // important
+        // important : only if the total score greater than 0, we use the max score for this cell
         if (score > 0) {
           score = getMaxScore(row, col);
         }

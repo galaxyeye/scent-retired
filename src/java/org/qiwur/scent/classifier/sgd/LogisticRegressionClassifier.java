@@ -35,7 +35,7 @@ public class LogisticRegressionClassifier extends BlockClassifier {
   }
 
   @Override
-  public void process() {
+  public void classify() {
     if (!conf.getBoolean("scent.logistic.regression.classifier.enabled", false)) {
       return;
     }

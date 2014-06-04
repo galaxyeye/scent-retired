@@ -73,17 +73,16 @@ public class WebExtractor {
 
     DomSegment[] segments = segmentSet.toArray(new DomSegment[segmentSet.size()]);
     String[] labels = conf.getStrings("scent.segment.labels");
-    new DomSegmentsClassifier(segments, labels, conf).process();
+    new DomSegmentsClassifier(segments, labels, conf).classify();
 
     // logger.info("打印已标注的标签");
     new BlockLabelPrinter(doc, conf).process();
 
-    new BlockFeatureRecorder(doc, conf).process();
+//    new BlockFeatureRecorder(doc, conf).process();
 
     // logger.info("实体抽取");
     extractorImpl.process();
-    PageEntity pageEntity = extractorImpl.pageEntity();
 
-    return pageEntity;
+    return extractorImpl.pageEntity();
   }
 }

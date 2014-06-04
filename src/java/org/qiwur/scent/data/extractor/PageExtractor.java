@@ -32,12 +32,11 @@ public class PageExtractor implements DataExtractor {
   protected final PageEntity pageEntity = new PageEntity();
   protected Configuration conf;
   protected Document doc;
-  protected EntityAttributeLearner attrLearner;
 
   protected List<DomSegmentExtractor> extractors = new ArrayList<DomSegmentExtractor>();
   protected List<DomSegment> processedSegments = new ArrayList<DomSegment>();
 
-  private static Map<String, String> configuratedExtractors = new HashMap<String, String>();
+  protected static Map<String, String> configuratedExtractors = new HashMap<String, String>();
 
   static {
     // TODO : load from configuration
@@ -59,17 +58,17 @@ public class PageExtractor implements DataExtractor {
 
     this.doc = doc;
     this.conf = conf;
-    this.attrLearner = EntityAttributeLearner.create(conf);
   }
 
   @Override
   public void process() {
     Validate.notNull(doc);
+    Validate.notNull(conf);
 
     // must be done before extractors are installed. extractors are segment specified : one segment, one extractor
     removeBadBlocks();
 
-    installExtractors();
+    installExtractors(configuratedExtractors);
 
     extract();
 
@@ -92,11 +91,17 @@ public class PageExtractor implements DataExtractor {
     doc.domSegments().removeAll(getSegments(BlockLabel.BadBlock));
   }
 
-  protected void installExtractors() {
-    for (Entry<String, String> entry : configuratedExtractors.entrySet()) {
-      for (DomSegment segment : getSegments(entry.getKey())) {
-        addExtractor(getExtractor(segment, entry.getValue(), conf));
-      }
+  protected void installExtractor(String label, String clazz) {
+    for (DomSegment segment : getSegments(label)) {
+      addExtractor(getExtractor(segment, clazz, conf));
+    }
+  }
+
+  protected void installExtractors(Map<String, String> extractors) {
+    this.extractors.clear();
+
+    for (Entry<String, String> entry : extractors.entrySet()) {
+      installExtractor(entry.getKey(), entry.getValue());
     }
   }
 
@@ -107,8 +112,6 @@ public class PageExtractor implements DataExtractor {
   }
 
   protected PageEntity extract() {
-    logger.debug("{} specified extractors", extractors.size());
-
     // specified extractors
     for (DomSegmentExtractor extractor : extractors) {
       extractor.process();
@@ -123,7 +126,7 @@ public class PageExtractor implements DataExtractor {
         new DomSegmentExtractor(segment, pageEntity, segment.primaryLabel()).process();
       }
     }
-    logger.debug("{} common extractors", counter);
+    logger.debug("{} specified extractors, {} common extractors", extractors.size(), counter);
 
     // common attributes
     String domain = NetUtil.getDomain(doc.baseUri());
@@ -133,28 +136,12 @@ public class PageExtractor implements DataExtractor {
     pageEntity.put(getPageKeywords());
     pageEntity.put(getPageDescription());
 
-    // unclassified attributes
-    processUnclassifiedAttributes();
-
     return pageEntity;
   }
 
   protected void learn() {
+    EntityAttributeLearner attrLearner = EntityAttributeLearner.create(conf);
     attrLearner.learn(pageEntity.attributes());
-  }
-
-  // 未分类属性集
-  private void processUnclassifiedAttributes() {
-//    String file = conf.get("scent.bad.attribute.name.file");
-//    LinedFeature badAttrNames = new LinedFeatureFactory(file, conf).getFeature();
-//
-//    for (String name : pageEntity.strAttributes().keySet()) {
-//      for (String value : pageEntity.strAttributes().get(name)) {
-//        if (!badAttrNames.contains(name) && !pageEntity.contains(name, value)) {
-//          pageEntity.put(new EntityAttribute(name, value));
-//        }
-//      }
-//    }
   }
 
   private EntityAttribute getWebsiteDomain(String domain) {
@@ -186,6 +173,10 @@ public class PageExtractor implements DataExtractor {
 
   protected DomSegments getSegments(BlockLabel label) {
     return doc.domSegments().getAll(label);
+  }
+
+  protected boolean hasSegment(String label) {
+    return hasSegment(BlockLabel.fromString(label));
   }
 
   protected boolean hasSegment(BlockLabel label) {

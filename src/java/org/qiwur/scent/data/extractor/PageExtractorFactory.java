@@ -19,6 +19,9 @@ package org.qiwur.scent.data.extractor;
 
 import org.apache.hadoop.conf.Configuration;
 import org.qiwur.scent.jsoup.nodes.Document;
+import org.qiwur.scent.plugin.Extension;
+import org.qiwur.scent.plugin.PluginRuntimeException;
+import org.qiwur.scent.utils.ObjectCache;
 
 /**
  * Creates and caches {@link PageExtractor} plugins. DataExtractor plugins
@@ -43,9 +46,17 @@ public class PageExtractorFactory extends DataExtractorFactory {
    * @throws DataExtractorNotFound
    *           when DataExtractor can not be found for extractorName
    */
-  @Override
-  public PageExtractor getExtractor(String extractorName) throws DataExtractorNotFound {
-    return (PageExtractor)super.getExtractor("product");
+  public PageExtractor create(String extractorName) throws DataExtractorNotFound {
+    try {
+      Extension extension = findExtension(extractorName);
+      if (extension == null) {
+        throw new DataExtractorNotFound(extractorName);
+      }
+
+      return (PageExtractor) extension.getExtensionInstance();
+    } catch (PluginRuntimeException e) {
+      throw new DataExtractorNotFound(extractorName, e.toString());
+    }
   }
 
   /**
@@ -60,8 +71,8 @@ public class PageExtractorFactory extends DataExtractorFactory {
    * @throws DataExtractorNotFound
    *           when DataExtractor can not be found for extractorName
    */
-  public PageExtractor getExtractor(String extractorName, Document doc) throws DataExtractorNotFound {
-    PageExtractor extractor = (PageExtractor)this.getExtractor("product");
+  public PageExtractor create(String extractorName, Document doc) throws DataExtractorNotFound {
+    PageExtractor extractor = this.create("product");
     extractor.doc(doc);
     return extractor;
   }

@@ -28,7 +28,7 @@ public final class ImagesExtractor extends DomSegmentExtractor {
 		}
 
     if (!images.isEmpty()) {
-      pageEntity.put(sectionLabel, formatImages(), segment.labelTracker().getLabels());
+      pageEntity.put(sectionLabel, formatImages(), segment.labels());
     }
 	}
 

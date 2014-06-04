@@ -31,7 +31,7 @@ public final class LinksExtractor extends DomSegmentExtractor {
 		}
 
     if (!links.isEmpty()) {
-      pageEntity.put(sectionLabel, formatLinks(), segment.labelTracker().getLabels());
+      pageEntity.put(sectionLabel, formatLinks(), segment.labels());
     }
 	}
 

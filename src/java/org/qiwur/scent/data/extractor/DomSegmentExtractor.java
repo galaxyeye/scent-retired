@@ -16,6 +16,8 @@ import com.google.common.collect.Multimap;
 
 public class DomSegmentExtractor extends KeyValueExtractor implements DataExtractor {
 
+  public static final String DefaultLabel = BlockLabel.UnknownBlock.text();
+
   protected Configuration conf;
   protected final DomSegment segment;
   protected final PageEntity pageEntity;
@@ -37,7 +39,7 @@ public class DomSegmentExtractor extends KeyValueExtractor implements DataExtrac
 
     this.segment = segment;
     this.pageEntity = pageEntity;
-    this.sectionLabel = sectionLabel;
+    this.sectionLabel = StringUtils.isEmpty(sectionLabel) ? DefaultLabel : sectionLabel;
   }
 
   public DomSegment segment() {
@@ -54,7 +56,7 @@ public class DomSegmentExtractor extends KeyValueExtractor implements DataExtrac
     }
 
     if (attrs.isEmpty() && StringUtils.isNotEmpty(sectionLabel)) {
-      pageEntity.put(sectionLabel, getExtractedValue(segment, sectionLabel), segment.labelTracker().getLabels());
+      pageEntity.put(sectionLabel, getExtractedValue(segment, sectionLabel), segment.labels());
     }
   }
 
