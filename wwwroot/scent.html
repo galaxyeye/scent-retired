@@ -51,10 +51,17 @@ div.extraction form input[type=submit] {
 	<div class="extraction">
         <h1>Scent网页抽取系统 version 0.8</h1>
 		<form target="_blank" action="/scent/extract/extract" method="get">
-            <input type="text" name="target" value="输入商品详情页URL">
-			<input type="submit" value="立即抽取" />
+		  <fieldset>
+            <input type="text" name="target" value="输入商品详情页URL" onfocus="this.value=''" onblur="if (this.value == '') this.value='输入商品详情页URL'" />
+            <input type="submit" value="立即抽取" />
+		  </fieldset>
+          <fieldset>
+            <input type="checkbox" name="format" value="txt" />显示详情
+          </fieldset>
 		</form>
-        <div>目前暂时仅支持商品详细页抽取，由于需要模拟人类行为访问目标网页，因此加载过程会较慢，请耐心等待</div>
+        <div>由于需要模拟人类行为访问目标网页，因此加载过程会较慢，请耐心等待。</div>
+        <div><a href="http://gouwu.hao123.com/" target="_blank">电商网站导航</a></div>
+        <div>系统由机器学习驱动，抽取准确度将不断提高。目前暂时仅支持商品详细页抽取，如需抽取其他类型网站，可定制服务。</div>
 	</div>
 </body>
 </html>

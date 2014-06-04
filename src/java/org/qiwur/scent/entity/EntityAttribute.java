@@ -1,16 +1,17 @@
 package org.qiwur.scent.entity;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.lang.Validate;
+
+import com.google.common.collect.Sets;
 
 public class EntityAttribute implements Comparable<EntityAttribute> {
   private final String name;
   private String value = "";
 
-  private Set<EntityCategory> categories = new HashSet<EntityCategory>();
+  private Set<EntityCategory> categories = Sets.newHashSet();
 
   public EntityAttribute(String name, String value) {
     Validate.notEmpty(name);
@@ -42,6 +43,7 @@ public class EntityAttribute implements Comparable<EntityAttribute> {
     return name;
   }
 
+  // TODO : what if categories.size() > 1 in which case it's a category tree
   public String fullName() {
     if (categories.size() > 0) {
       StringBuilder fullName = new StringBuilder();
@@ -80,7 +82,7 @@ public class EntityAttribute implements Comparable<EntityAttribute> {
 
   public void categorize(String category) {
     if (category != null)
-    this.categories.add(new EntityCategory(category));
+      this.categories.add(new EntityCategory(category));
   }
 
   public void categorize(Collection<String> categories) {
@@ -144,6 +146,7 @@ public class EntityAttribute implements Comparable<EntityAttribute> {
     return name.equals(a.name) && value.equals(a.value) && categories.equals(a.categories);
   }
 
+  // TODO : check if we need compare with the categories
   @Override
   public int compareTo(EntityAttribute other) {
     int r = name.compareTo(other.name);

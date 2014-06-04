@@ -82,7 +82,7 @@ public class DataExtractorFactory {
     }
   }
 
-  private Extension findExtension(String name) throws PluginRuntimeException {
+  protected Extension findExtension(String name) throws PluginRuntimeException {
     Extension[] extensions = this.extensionPoint.getExtensions();
 
     for (int i = 0; i < extensions.length; i++) {
@@ -96,20 +96,7 @@ public class DataExtractorFactory {
     return null;
   }
 
-//  public Collection<WebPage.Field> getFields() {
-//    Collection<WebPage.Field> fields = new HashSet<WebPage.Field>();
-//    for (Extension extension : this.extensionPoint.getExtensions()) {
-//      DataExtractor protocol;
-//      try {
-//        protocol = (DataExtractor) extension.getExtensionInstance();
-//        Collection<WebPage.Field> pluginFields = protocol.getFields();
-//        if (pluginFields != null) {
-//          fields.addAll(pluginFields);
-//        }
-//      } catch (PluginRuntimeException e) {
-//        // ignore
-//      }
-//    }
-//    return fields;
-//  }
+  protected Configuration getConf() {
+    return conf;
+  }
 }

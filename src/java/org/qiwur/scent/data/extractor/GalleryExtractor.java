@@ -30,7 +30,7 @@ public final class GalleryExtractor extends DomSegmentExtractor {
 		}
 
     if (!images.isEmpty()) {
-      pageEntity.put(sectionLabel, formatGallery(), segment.labelTracker().getLabels());
+      pageEntity.put(sectionLabel, formatGallery(), segment.labels());
     }
 	}
 

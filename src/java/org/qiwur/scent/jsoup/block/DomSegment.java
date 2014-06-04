@@ -1,5 +1,7 @@
 package org.qiwur.scent.jsoup.block;
 
+import java.util.Set;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -186,6 +188,10 @@ public class DomSegment implements Comparable<DomSegment> {
 
   public BlockLabel primaryLabel() {
     return labelTracker.primaryKey();
+  }
+
+  public Set<String> labels() {
+    return labelTracker.getLabels();
   }
 
   public boolean is(BlockLabel label, FuzzyProbability p) {

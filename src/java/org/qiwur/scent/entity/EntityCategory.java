@@ -1,16 +1,17 @@
 package org.qiwur.scent.entity;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 
+import com.google.common.collect.Sets;
+
 public class EntityCategory implements Comparable<EntityCategory> {
 
   private final String name;
-  private Set<EntityCategory> categories = new HashSet<EntityCategory>();
+  private Set<EntityCategory> categories = Sets.newHashSet();
 
   public EntityCategory(String name) {
     Validate.notEmpty(name);
@@ -85,12 +86,16 @@ public class EntityCategory implements Comparable<EntityCategory> {
   }
 
   public String simpleCategoriesString() {
+    return simpleCategoriesString(",");
+  }
+
+  public String simpleCategoriesString(final String seperator) {
     StringBuilder sb = new StringBuilder();
 
     int i = 0;
     for (EntityCategory category : categories) {
       if (i++ > 0) {
-        sb.append(',');
+        sb.append(seperator);
       }
       sb.append(category.name());
     }

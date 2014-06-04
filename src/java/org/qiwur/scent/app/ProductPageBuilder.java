@@ -20,10 +20,7 @@ import org.qiwur.scent.data.extractor.DataExtractorNotFound;
 import org.qiwur.scent.data.extractor.PageExtractor;
 import org.qiwur.scent.data.extractor.PageExtractorFactory;
 import org.qiwur.scent.data.extractor.WebExtractor;
-import org.qiwur.scent.data.extractor.WebLoader;
 import org.qiwur.scent.entity.PageEntity;
-import org.qiwur.scent.jsoup.Connection.Response;
-import org.qiwur.scent.jsoup.Jsoup;
 import org.qiwur.scent.jsoup.nodes.Document;
 import org.qiwur.scent.learning.WordsLearnerFactory;
 import org.qiwur.scent.utils.FetchListManager;
@@ -35,13 +32,11 @@ public class ProductPageBuilder {
   private static final Logger logger = LogManager.getLogger(ProductPageBuilder.class);
 
   private final Configuration conf;
-  private final DataExtractorFactory dataExtractorFactory;
   private final boolean GenerateFetchList;
   private final WebExtractor extractor;
   private final boolean savePage;
   private final boolean saveWiki;
   private final boolean uploadWiki;
-  private final long localFileCacheExpires;
 
   private FetchListManager fetchListManager = new FetchListManager();
 
@@ -53,9 +48,7 @@ public class ProductPageBuilder {
     savePage = conf.getBoolean("scent.page.save", false);
     uploadWiki = conf.getBoolean("scent.wiki.upload", false);
     saveWiki = conf.getBoolean("scent.wiki.save", false);
-    localFileCacheExpires = conf.getLong("scent.local.file.cache.expires", 3 * 60 * 1000);
 
-    dataExtractorFactory = new DataExtractorFactory(conf);
     extractor = WebExtractor.create(conf);
   }
 
@@ -80,68 +73,34 @@ public class ProductPageBuilder {
 
   // 支持远程URL和本地文件
   public void processPage(String uri) throws IOException, DataExtractorNotFound {
-    Document doc = null;
-
     // 配置选项：忽略已处理过的链接
     if (GenerateFetchList && fetchListManager.checkProcessed(uri)) {
       return;
     }
 
-    // cache mechanism
-    File file = new File(FileUtil.getFileNameFromUri(uri));
-    if (checkLocalCacheAvailable(file, localFileCacheExpires)) {
-      uri = "file://" + file.getAbsolutePath();
-    }
-
-    if (uri.startsWith("http")) {
-      WebLoader loader = extractor.getWebLoader();
-
-      Response response = loader.fetch(uri);
-      if (response == null)
-        return;
-
-      if (savePage) savePage(uri, response.body(), "original");
-
-      doc = loader.parse(response);
-
-      if (doc != null && GenerateFetchList) {
-        fetchListManager.extractLinks(doc);
-      }
-    } else if (uri.startsWith("file://")) {
-      doc = Jsoup.parse(new File(uri.substring("file://".length())), "utf-8");
-    }
+    Document doc = extractor.getWebLoader().load(uri);
+    if (doc == null) return;
 
     if (GenerateFetchList) {
       fetchListManager.addProcessed(uri);
     }
 
-    if (doc != null) {
-      long time = System.currentTimeMillis();
+    long time = System.currentTimeMillis();
 
-      PageExtractor extractorImpl = new PageExtractorFactory(conf).getExtractor("product", doc);
-      PageEntity pageEntity = extractor.extract(extractorImpl);
-      logger.info(pageEntity);
+    PageExtractor extractorImpl = new PageExtractorFactory(conf).create("product", doc);
+    PageEntity pageEntity = extractor.extract(extractorImpl);
+    logger.info(pageEntity);
 
-      time = System.currentTimeMillis() - time;
-      logger.info("网页转换耗时 : {}s\n\n", time / 1000.0);
+    time = System.currentTimeMillis() - time;
+    logger.info("网页转换耗时 : {}s\n\n", time / 1000.0);
 
-      Document page = generateHtml(pageEntity);
-      savePage(page.baseUri(), page.toString(), "generated");
+    Document page = generateHtml(pageEntity);
+    savePage(page.baseUri(), page.toString(), "generated");
 
-      // Page page = generateWiki(product, Page.ProductPage);
-      //
-      // if (saveWiki) saveWiki(page);
-      // if (uploadWiki) uploadWiki(page);
-    }
-  }
-
-  public void savePage(String url, String content, String dir) {
-    try {
-      File file = FileUtil.createTempFileForPage(url, "web/" + dir);
-      FileUtils.writeStringToFile(file, content);
-    } catch (IOException e) {
-      logger.error(e);
-    }
+    // Page page = generateWiki(product, Page.ProductPage);
+    //
+    // if (saveWiki) saveWiki(page);
+    // if (uploadWiki) uploadWiki(page);
   }
 
   public void saveWiki(Page page) {
@@ -163,22 +122,17 @@ public class ProductPageBuilder {
     page.upload();
   }
 
-  private boolean checkLocalCacheAvailable(File file, long expires) {
-    if (file.exists()) {
-      long modified = file.lastModified();
-      if (System.currentTimeMillis() - modified < expires) {
-        return true;
-      }
-      else {
-        file.delete();
-      }
-    }
-
-    return false;
-  }
-
   private String getOutputFile(String title) {
     return "output/wiki/" + DigestUtils.md5Hex(title);
+  }
+
+  private void savePage(String url, String content, String dir) {
+    try {
+      File file = FileUtil.createTempFileForPage(url, "web/" + dir);
+      FileUtils.writeStringToFile(file, content);
+    } catch (IOException e) {
+      logger.error(e);
+    }
   }
 
   private Page generateWiki(PageEntity pageEntity, String pageType) {

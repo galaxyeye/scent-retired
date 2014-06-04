@@ -36,7 +36,7 @@
 	</property>
     <property>
         <name>scent.local.file.cache.expires</name>
-        <value>0</value>
+        <value>108000</value>
         <description>
         eg : 
         0 = no cache

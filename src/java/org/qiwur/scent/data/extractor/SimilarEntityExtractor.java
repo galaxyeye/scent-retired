@@ -29,7 +29,7 @@ public final class SimilarEntityExtractor extends DomSegmentExtractor {
       }
     }
 
-    pageEntity.put(sectionLabel, formatLinks(), segment.labelTracker().getLabels());
+    pageEntity.put(sectionLabel, formatLinks(), segment.labels());
   }
 
   protected String formatLinks() {

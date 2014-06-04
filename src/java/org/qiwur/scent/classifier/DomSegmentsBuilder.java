@@ -352,8 +352,9 @@ public class DomSegmentsBuilder {
         continue;
       }
 
-      String name = StringUtils.substring(title, 0, 10);
-      String name2 = StringUtils.substring(ele.text(), 0, 10);
+      // 由于有些情况下，前面有前导字符如列表数字，故需要截取中间部分比较相似度
+      String name = StringUtils.substring(title, 3, 11);
+      String name2 = StringUtils.substring(ele.text(), 3, 11);
 
       if (name.equals(name2)) {
         sim = 1.0;

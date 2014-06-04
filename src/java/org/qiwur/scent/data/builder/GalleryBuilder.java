@@ -3,6 +3,7 @@ package org.qiwur.scent.data.builder;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
 import org.qiwur.scent.entity.EntityAttribute;
@@ -11,8 +12,6 @@ import org.qiwur.scent.jsoup.Jsoup;
 import org.qiwur.scent.jsoup.nodes.Document;
 import org.qiwur.scent.jsoup.nodes.Element;
 import org.qiwur.scent.utils.StringUtil;
-
-import com.google.common.collect.Multiset;
 
 public class GalleryBuilder extends EntityBuilder {
 
@@ -40,7 +39,7 @@ public class GalleryBuilder extends EntityBuilder {
 
     for (String label : labels) {
       String section = StringUtil.humanize(label);
-      Multiset<EntityAttribute> attributes = pageEntity.getCategorized(label);
+      Set<EntityAttribute> attributes = pageEntity.getCategorized(label);
       if (attributes.isEmpty()) continue;
 
       Element div = body.appendElement("div");

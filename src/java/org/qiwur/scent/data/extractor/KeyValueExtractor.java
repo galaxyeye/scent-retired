@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang.Validate;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,6 +33,8 @@ public class KeyValueExtractor {
 	private Multimap<String, String> attributes = LinkedListMultimap.create();
 
 	public KeyValueExtractor(Element root) {
+	  Validate.notNull(root);
+
 	  this.root = root;
 	}
 

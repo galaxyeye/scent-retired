@@ -1,7 +1,9 @@
 package org.qiwur.scent.data.extractor;
 
+import java.io.File;
 import java.io.IOException;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,6 +13,7 @@ import org.qiwur.scent.jsoup.nodes.Document;
 import org.qiwur.scent.net.ProxyEntry;
 import org.qiwur.scent.net.ProxyPool;
 import org.qiwur.scent.net.ProxyPoolFactory;
+import org.qiwur.scent.utils.FileUtil;
 
 public class WebLoader {
 
@@ -24,6 +27,7 @@ public class WebLoader {
   private int proxyPort = 19080;
   private ProxyPool proxyPool = null;
   private int minPageLength = 2000;
+  private final long localFileCacheExpires;
 
   public WebLoader(Configuration conf) {
     this.conf = conf;
@@ -40,47 +44,69 @@ public class WebLoader {
     }
 
     minPageLength = conf.getInt("scent.page.length.min", 2000);
+    localFileCacheExpires = conf.getLong("scent.local.file.cache.expires", 3 * 60 * 1000);
   }
 
-  public Document load(String url) {
-    return parse(fetch(url));
-  }
-
-  public Response fetch(String url) {
-    Response response = null;
+  public Document load(String uri) {
+    Document doc = null;
 
     try {
-      if (useProxyPool) {
-        ProxyEntry proxy = proxyPool.poll();
-        proxyHost = proxy.host();
-        proxyPort = proxy.port();
-      }
+      doc = doLoad(uri);
+    } catch (IOException | InterruptedException e) {
+      logger.info("can not fetch {}, {}", uri, e);
+    }
 
-      if (useProxy) {
-        response = Jsoup.connect(url, proxyHost, proxyPort).execute();
-      }
-      else {
-        response = Jsoup.connect(url).execute();
-      }
-    } catch (IOException e) {
-      logger.info("can not fetch {}, {}", url, e);
-    } catch (InterruptedException e) {
-      logger.info("can not fetch {}, {}", url, e);
+    return doc;
+  }
+
+  protected Document doLoad(String uri) throws IOException, InterruptedException {
+    // cache mechanism
+    File file = new File(FileUtil.getFileNameFromUri(uri));
+    if (checkLocalCacheAvailable(file, localFileCacheExpires)) {
+      uri = "file://" + file.getAbsolutePath();
+    }
+
+    if (uri.startsWith("file://")) {
+      return Jsoup.parse(file, "utf-8");
+    }
+    else {
+      return parse(fetch(uri));
+    }
+  }
+
+  protected Response fetch(String uri) throws IOException, InterruptedException {
+    Response response = null;
+
+    if (useProxyPool) {
+      ProxyEntry proxy = proxyPool.poll();
+      proxyHost = proxy.host();
+      proxyPort = proxy.port();
+    }
+
+    if (useProxy) {
+      response = Jsoup.connect(uri, proxyHost, proxyPort).execute();
+    }
+    else {
+      response = Jsoup.connect(uri).execute();
+    }
+
+    if (localFileCacheExpires > 0) {
+      cachePage(uri, response.body(), "original");
     }
 
     if (response != null) {
       if (response.body().length() < minPageLength) {
-        logger.info("get just {} bytes from {}, ignore", response.body().length(), url);
+        logger.info("get just {} bytes from {}, ignore", response.body().length(), uri);
         response = null;
       } else {
-        logger.debug("received {} bytes from {}", response.body().length(), url);
+        logger.debug("received {} bytes from {}", response.body().length(), uri);
       }
     }
 
     return response;
   }
 
-  public Document parse(Response res) {
+  protected Document parse(Response res) {
     Document doc = null;
 
     try {
@@ -93,4 +119,26 @@ public class WebLoader {
     return doc;
   }
 
+  private void cachePage(String url, String content, String dir) {
+    try {
+      File file = FileUtil.createTempFileForPage(url, "web/" + dir);
+      FileUtils.writeStringToFile(file, content);
+    } catch (IOException e) {
+      logger.error(e);
+    }
+  }
+
+  private boolean checkLocalCacheAvailable(File file, long expires) {
+    if (expires > 0 && file.exists()) {
+      long modified = file.lastModified();
+      if (System.currentTimeMillis() - modified < expires) {
+        return true;
+      }
+      else {
+        file.delete();
+      }
+    }
+
+    return false;
+  }
 }

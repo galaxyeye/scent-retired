@@ -16,11 +16,12 @@
  ******************************************************************************/
 package org.qiwur.scent.api;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.qiwur.scent.data.builder.EntityBuilder;
 import org.qiwur.scent.data.builder.ProductHTMLBuilder;
-import org.qiwur.scent.data.extractor.DataExtractorFactory;
 import org.qiwur.scent.data.extractor.DataExtractorNotFound;
 import org.qiwur.scent.data.extractor.PageExtractor;
 import org.qiwur.scent.data.extractor.PageExtractorFactory;
@@ -38,36 +39,40 @@ public class ExtractionResource extends ServerResource {
 
   private final Configuration conf;
   private final WebExtractor extractor;
-  private final DataExtractorFactory dataExtractorFactory;
+  private final PageExtractorFactory extractorFactory;
 
   public ExtractionResource() {
     this.conf = ScentApp.server.conf;
-    dataExtractorFactory = new DataExtractorFactory(conf);
+    extractorFactory = new PageExtractorFactory(conf);
     extractor = WebExtractor.create(conf);
   }
 
-  @Get("json|xml|html")
+  @Get("json|xml|html|txt")
   public Object execute() throws DataExtractorNotFound {
     String cmd = (String) getRequestAttributes().get(Params.CMD);
-    String args = (String) getRequestAttributes().get(Params.ARGS);
 
     if ("extract".equalsIgnoreCase(cmd)) {
       String url = getQuery().getValues("target");
+      String format = getQuery().getValues("format");
+      if (format == null) format = "html";
+
       Document doc = extractor.getWebLoader().load(url);
 
       if (doc == null) {
         return "invalid doc";
       }
 
-      PageExtractor extractorImpl = new PageExtractorFactory(conf).getExtractor("product", doc);
-      PageEntity pageEntity = extractor.extract(extractorImpl);
+      long time = System.currentTimeMillis();
+      PageExtractor extractorImpl = extractorFactory.create("product", doc);
+      PageEntity pageEntity = extractor.extract(extractorImpl).getCombined();
+      time = System.currentTimeMillis() - time;
+      logger.info("extraction time : {}s\n\n", time / 1000.0);
 
-      logger.debug(pageEntity);
+      if (format.equals("txt")) {
+        return "<pre>" + StringEscapeUtils.escapeHtml(buildText(pageEntity)) + "</pre>";
+      }
 
-      ProductHTMLBuilder builder = new ProductHTMLBuilder(pageEntity, conf);
-      builder.process();
-
-      return builder.doc().toString();
+      return buildHtml(pageEntity);
       // return extractor.generateWiki(pageEntity, Page.ProductPage);
     } else if ("statistics".equalsIgnoreCase(cmd)) {
       // new BlockVarianceCalculator(doc, conf).process();
@@ -85,4 +90,16 @@ public class ExtractionResource extends ServerResource {
     return "Unknown command " + cmd;
   }
 
+  private String buildText(PageEntity pageEntity) {
+    return new EntityBuilder(pageEntity, conf).toString();
+  }
+
+  private String buildHtml(PageEntity pageEntity) {
+    ProductHTMLBuilder builder = new ProductHTMLBuilder(pageEntity, conf);
+    builder.process();
+
+    // logger.debug(builder.doc().toString());
+
+    return builder.doc().toString();
+  }
 }

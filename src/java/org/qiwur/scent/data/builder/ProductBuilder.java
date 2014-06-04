@@ -126,5 +126,5 @@ public class ProductBuilder extends EntityBuilder {
 
 	protected void rebuildManufacturer() {
   }
-	
+
 }

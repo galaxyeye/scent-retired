@@ -15,6 +15,8 @@ import org.qiwur.scent.jsoup.block.DomSegment;
 import org.qiwur.scent.jsoup.select.DOMUtil;
 import org.qiwur.scent.utils.MatrixUtil;
 
+import ruc.irm.similarity.FuzzyProbability;
+
 public abstract class BlockClassifier {
 
   protected static final Logger logger = LogManager.getLogger(BlockClassifier.class);
@@ -67,7 +69,7 @@ public abstract class BlockClassifier {
     return scoreMatrix.viewRow(segmentIndex).maxValue();
   }
 
-  public void process() {
+  public void classify() {
     if (weight == 0.0) return;
 
     for (int row = 0; row < segments.length; ++row) {
@@ -92,7 +94,7 @@ public abstract class BlockClassifier {
     for (int row = 0; row < segments.length; ++row) {
       for (int col = 0; col < labels.length; ++col) {
         double likelihood = scoreMatrix.get(row, col);
-        if (likelihood >= 0.6) {
+        if (FuzzyProbability.maybe(likelihood)) {
           segments[row].tag(BlockLabel.fromString(labels[col]), likelihood);
         }
       }

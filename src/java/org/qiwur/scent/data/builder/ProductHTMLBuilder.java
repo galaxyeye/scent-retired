@@ -3,8 +3,10 @@ package org.qiwur.scent.data.builder;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.Validate;
 import org.apache.hadoop.conf.Configuration;
 import org.qiwur.scent.entity.EntityAttribute;
 import org.qiwur.scent.entity.PageEntity;
@@ -14,8 +16,6 @@ import org.qiwur.scent.jsoup.nodes.Attributes;
 import org.qiwur.scent.jsoup.nodes.Document;
 import org.qiwur.scent.jsoup.nodes.Element;
 import org.qiwur.scent.utils.StringUtil;
-
-import com.google.common.collect.Multiset;
 
 public class ProductHTMLBuilder extends ProductBuilder {
 
@@ -31,7 +31,7 @@ public class ProductHTMLBuilder extends ProductBuilder {
       "Links",
   };
 
-  public Document doc;
+  private Document doc;
 
   public ProductHTMLBuilder(PageEntity pageEntity, Configuration conf) {
     super(pageEntity, conf);
@@ -44,11 +44,13 @@ public class ProductHTMLBuilder extends ProductBuilder {
   }
 
   public void process() {
+    Validate.notNull(doc);
+
     Element body = doc.select("body").first();
 
     for (String label : labels) {
       String section = StringUtil.humanize(label);
-      Multiset<EntityAttribute> attributes = pageEntity.getCategorized(label);
+      Set<EntityAttribute> attributes = pageEntity.getCategorized(label);
       if (attributes.isEmpty()) continue;
 
       Element div = body.appendElement("div");
@@ -64,7 +66,7 @@ public class ProductHTMLBuilder extends ProductBuilder {
 
         doc.title(title);
       }
-      else if (StringUtil.in(label, "ProductShow", "Metadata")) {
+      else if (StringUtil.in(label, "ProductShow", "ProductSpec", "Metadata")) {
         buildTable(div, attributes);
       }
       else if (label.equals("Images")) {
@@ -135,6 +137,8 @@ public class ProductHTMLBuilder extends ProductBuilder {
   private Element buildTable(Element root, Collection<EntityAttribute> attributes) {
     Element table = root.appendElement("table");
     for (EntityAttribute attr : attributes) {
+      if (attr.value().length() > 300) continue;
+
       Element tr = table.appendElement("tr");
       Element th = tr.appendElement("td");
       Element td = tr.appendElement("td");
