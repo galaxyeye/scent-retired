@@ -13,11 +13,9 @@ public final class CategoryFeature extends LinedFeature {
 
   static final Logger logger = LogManager.getLogger(CategoryFeature.class);
 
-  public static final int MinCategoryWordSize = 2;
-
   public static final int MaxCategoryWordSize = 10;
 
-  public static final String BadCategoryWordsFile = "conf/bad-product-cate-words.txt";
+  public static final String BadCategoryWordsFile = "conf/bad-category-words.txt";
 
   private CategoryFeature() {
     super(BadCategoryWordsFile);
@@ -46,15 +44,16 @@ public final class CategoryFeature extends LinedFeature {
 
   public String strip(String name) {
     int count = StringUtil.countChinese(name);
-    if (name == null || count < MinCategoryWordSize || count > MaxCategoryWordSize) {
+
+    if (name == null || count > MaxCategoryWordSize) {
       return "";
     }
 
-    name = StringUtil.stripNonChar(name);
+    name = StringUtil.stripNonChar(name, StringUtil.DefaultKeepChars);
     for (String word : lines()) {
       name = name.replaceAll(word, "");
     }
 
-    return "";
+    return name;
   }
 }

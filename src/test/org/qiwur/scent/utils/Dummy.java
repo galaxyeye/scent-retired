@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -207,5 +208,7 @@ public class Dummy {
   }
 
   public static void main(String[] args) {
+    String[] range = ",-4".split(",", 2);
+    System.out.println(Arrays.asList(range));
   }
 }

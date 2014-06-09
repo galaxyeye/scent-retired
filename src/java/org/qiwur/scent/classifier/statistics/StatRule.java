@@ -8,15 +8,18 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
+import org.apache.commons.lang.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.qiwur.scent.jsoup.block.DomSegment;
 import org.qiwur.scent.jsoup.nodes.Element;
 import org.qiwur.scent.jsoup.nodes.Indicator;
 
 public class StatRule {
 
   protected static final Logger logger = LogManager.getLogger(StatRule.class);
+
+  public static final double MIN_SCORE = -10000.0;
+  public static final double MAX_SCORE = 10000.0;
 
   private final StatIndicator indicator;
   private final double min;
@@ -28,8 +31,8 @@ public class StatRule {
 
   public StatRule(StatIndicator indicator, double min, double max, double score, double nag_score) {
     this.indicator = indicator;
-    this.min = min < -10000 ? -10000 : min;
-    this.max = max >  10000 ?  10000 : max;
+    this.min = min < MIN_SCORE ? MIN_SCORE : min;
+    this.max = max >  MAX_SCORE ?  MAX_SCORE : max;
     this.score = score;
     this.nag_score = nag_score;
 
@@ -44,11 +47,9 @@ public class StatRule {
     variables.put(name, value);
   }
 
-  public double getScore(DomSegment segment) {
-    return getScore(segment.body());
-  }
-
   public double getScore(Element ele) {
+    if (ele == null) return 0.0;
+
     double value = 0.0;
 
     if (indicator.isSimple()) {
@@ -67,6 +68,8 @@ public class StatRule {
   }
 
   private double eval(Element ele, String script) {
+    Validate.notNull(ele);
+
     double result = 0.0;
 
     // TODO : use engine cache to enhance performance

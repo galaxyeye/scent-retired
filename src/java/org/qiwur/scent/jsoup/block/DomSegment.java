@@ -32,7 +32,7 @@ public class DomSegment implements Comparable<DomSegment> {
 
   public DomSegment(Element root, Element title, Element body) {
     if (body == null) {
-      logger.warn("Can not construct a null DomSegment");
+      logger.error("Can not construct a null DomSegment");
       return;
     }
 
@@ -51,7 +51,7 @@ public class DomSegment implements Comparable<DomSegment> {
 
   public DomSegment(Element baseBlock) {
     if (baseBlock == null) {
-      logger.warn("Can not construct a null DomSegment");
+      logger.error("Can not construct a null DomSegment");
       return;
     }
 

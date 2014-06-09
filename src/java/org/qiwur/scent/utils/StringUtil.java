@@ -405,6 +405,10 @@ public final class StringUtil {
   public static double parseDouble(String s) {
     double r = 0.0;
 
+    if (StringUtils.isEmpty(s)) {
+      return r;
+    }
+
     try {
       r = Double.parseDouble(s);
     }

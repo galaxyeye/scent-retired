@@ -41,7 +41,7 @@ public class ProxyPool {
 
   private FiledLines proxyServerList = null;
 
-  // TODO : save connected connections
+  // TODO : save connected connections rather than ProxyEntry
   private BlockingQueue<ProxyEntry> proxyEntries = new LinkedBlockingQueue<ProxyEntry>();
   private BlockingQueue<ProxyEntry> retiredProxyEntries = new LinkedBlockingQueue<ProxyEntry>();
 

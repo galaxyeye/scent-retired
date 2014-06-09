@@ -29,23 +29,9 @@ public class CodeStructureFeatureClassifier extends RuleBasedBlockClassifier {
 
   @Override
   protected double getScore(DomSegment segment, String label) {
-    double score = 0.0;
+    if (segment.body() == null) return 0.0;
 
-    Collection<StatRule> rules = blockStatFeature.getRules(label);
-    if (rules == null) return score;
-
-    for (StatRule rule : rules) {
-      score += rule.getScore(segment);
-    }
-
-//    if (segment.body().attr("id").contains("detail_info")) {
-//        logger.debug(segment.body().prettyName());
-//        logger.debug(segment.body().indicators());
-//        logger.debug(rules);
-//        logger.debug("score : " + score);
-//    }
-
-    return score;
+    return blockStatFeature.getScore(segment.body(), label);
   }
 
   @Override

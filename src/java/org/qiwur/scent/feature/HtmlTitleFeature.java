@@ -163,22 +163,18 @@ public final class HtmlTitleFeature {
   // 在<title>标签中的字符串往往会增加一些无用信息，这里将整个字符串进行分解，从中找到潜在的主体信息
   // 比较长的放到前面
   public Set<String> getPotentialTitles(String title) {
-    Set<String> potentialTitles = new TreeSet<String>(new Comparator<String>() {
-      @Override
-      public int compare(String s, String s2) {
-        return new Integer(s2.length()).compareTo(s.length());
-      }
-    });
+    Set<String> potentialTitles = new TreeSet<String>(StringUtil.LongerFirstComparator);
 
     if (!validate(title)) {
       return potentialTitles;
     }
 
+    // 移除后缀的 -xx网
+    title = removeSuffix(title);
+
     // step 1. add the whole original title
     potentialTitles.add(title);
 
-    // 移除后缀的 -xx网
-    title = removeSuffix(title);
     // 移除无效字符
     title = trim(title);
 

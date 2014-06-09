@@ -110,10 +110,6 @@ public class ProductHTMLBuilder extends ProductBuilder {
 
   private Element buildImages(Element root, Collection<EntityAttribute> attributes) {
     for (EntityAttribute attr : attributes) {
-//      if (!attr.hasCategory("Links") && !attr.hasCategory("Gallery") && !attr.hasCategory("SimilarEntity")) {
-//        root.append(attr.value());
-//      }
-
       if (attr.hasCategory("ProductDetail")) {
         root.append(attr.value());
       }

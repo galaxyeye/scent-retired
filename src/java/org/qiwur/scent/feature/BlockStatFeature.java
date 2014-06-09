@@ -11,12 +11,15 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.qiwur.scent.classifier.statistics.BlockRule;
 import org.qiwur.scent.classifier.statistics.StatIndicator;
 import org.qiwur.scent.classifier.statistics.StatRule;
 import org.qiwur.scent.jsoup.Jsoup;
+import org.qiwur.scent.jsoup.block.DomSegment;
 import org.qiwur.scent.jsoup.nodes.Document;
 import org.qiwur.scent.jsoup.nodes.Element;
 import org.qiwur.scent.jsoup.parser.Parser;
@@ -38,7 +41,7 @@ public class BlockStatFeature {
 
   private Map<String, StatIndicator> indicators = new HashMap<String, StatIndicator>();
 
-  private Multimap<String, StatRule> rules = LinkedListMultimap.create();
+  private Multimap<String, BlockRule> blockRules = LinkedListMultimap.create();
 
   private int maxPlaceholders = 10;
 
@@ -47,7 +50,7 @@ public class BlockStatFeature {
     Validate.notEmpty(configFiles);
 
     this.configFiles.addAll(Arrays.asList(configFiles));
-    
+
     for (String file : this.configFiles) {
       load(file);
     }
@@ -71,18 +74,39 @@ public class BlockStatFeature {
   }
 
   public Set<String> getLabels() {
-    return rules.keySet();
+    return blockRules.keySet();
   }
 
-  public Collection<StatRule> getRules(String label) {
-    return rules.get(label);
+  public Collection<BlockRule> getRules(String label) {
+    return blockRules.get(label);
   }
 
+  /**
+   * all block rules with the same block label are independent
+   * the final score is the max score calculated by all rules with the same block
+   * */
+  public double getScore(Element ele, String label) {
+    double maxScore = StatRule.MIN_SCORE;
+
+    Collection<BlockRule> rules = getRules(label);
+    if (rules == null) return maxScore;
+
+    for (BlockRule rule : rules) {
+      double score = rule.getScore(ele);
+      if (score > maxScore) maxScore = score;
+    }
+
+    return maxScore;
+  }
+
+  /**
+   * Be careful that "global" means be global for each page, NOT for the whole application
+   * */
   public void setGlobalVar(String name, String value) {
     globalVars.put(name, value);
 
-    for (StatRule rule : rules.values()) {
-      rule.var(name, value);
+    for (BlockRule rule : blockRules.values()) {
+      rule.setGlobalVar(name, value);
     }
   }
 
@@ -106,48 +130,57 @@ public class BlockStatFeature {
       indicators.put(name, new StatIndicator(name, ele.text()));
     }
 
-    for (Element eleBlock : doc.select("block-features block")) {
-      String type = eleBlock.attr("type");
+    for (Element block : doc.select("block-features block")) {
+      if (StringUtils.isEmpty(block.attr("type"))) continue;
 
-      for (Element eleRule : eleBlock.getElementsByTag("rule")) {
-        StatIndicator indicator = indicators.get(eleRule.attr("indicator"));
+      BlockRule blockRule = parseBlockRule(block);
+      blockRules.put(blockRule.getLabel(), blockRule);
+    }
+  }
 
-        if (indicator == null) {
-          logger.error("invalid rule, miss indicator");
-          continue;
-        }
+  private BlockRule parseBlockRule(Element block) {
+    String type = block.attr("type");
+    BlockRule blockRule = new BlockRule(type);
 
-        StatRule rule = null;
+    for (Element eleRule : block.getElementsByTag("rule")) {
+      StatIndicator indicator = indicators.get(eleRule.attr("indicator"));
 
-        String[] range = eleRule.attr("range").split(",", 2);
-        if (range.length != 2) {
-          logger.error("invalid rule range {}", eleRule.attr("range"));
-          continue;
-        }
+      if (indicator == null) {
+        logger.error("invalid rule, miss indicator");
+        continue;
+      }
 
-        double min = StringUtil.parseDouble(range[0]);
-        double max = StringUtil.parseDouble(range[1]);
-        if (range[0].trim().isEmpty()) min = Double.MIN_VALUE;
-        if (range[1].trim().isEmpty()) max = Double.MAX_VALUE;
+      String[] range = eleRule.attr("range").split(",", 2);
+      if (range.length != 2) {
+        logger.error("invalid rule range {}", eleRule.attr("range"));
+        continue;
+      }
 
-        double score = StringUtil.parseDouble(eleRule.attr("score"));
-        double nag_score = StringUtil.parseDouble(eleRule.attr("-score"));
+      Double min = StringUtil.parseDouble(range[0]);
+      Double max = StringUtil.parseDouble(range[1]);
+      if (range[0].trim().isEmpty()) min = StatRule.MIN_SCORE;
+      if (range[1].trim().isEmpty()) max = StatRule.MAX_SCORE;
 
-        rule = new StatRule(indicator, min, max, score, nag_score);
+      double score = StringUtil.parseDouble(eleRule.attr("score"));
+      double nag_score = StringUtil.parseDouble(eleRule.attr("-score"));
 
-        if (!indicator.isSimple()) {
-          for (int i = 1; i <= maxPlaceholders; ++i) {
-            String ref = "_" + i;
-            String var = eleRule.attr(ref);
-            if (!var.isEmpty()) {
-              rule.ref("$" + ref, var);
-            }
+      StatRule rule = new StatRule(indicator, min, max, score, nag_score);
+
+      // add reference : _1, _2, _3, ...
+      if (!indicator.isSimple()) {
+        for (int i = 1; i <= maxPlaceholders; ++i) {
+          String ref = "_" + i;
+          String var = eleRule.attr(ref);
+          if (!var.isEmpty()) {
+            rule.ref("$" + ref, var);
           }
         }
+      }
 
-        rules.put(type, rule);
-      } // for
-    } // for
+      blockRule.addRule(rule);
+    }
+
+    return blockRule;
   }
 
   public String dumpGlobalVars() {
@@ -156,6 +189,6 @@ public class BlockStatFeature {
 
   @Override
   public String toString() {
-    return rules.toString();
+    return blockRules.toString();
   }
 }

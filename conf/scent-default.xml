@@ -109,8 +109,8 @@
 		<value>conf/bad-page-keywords.txt</value>
 	</property>
 	<property>
-		<name>scent.bad.product.cate.words.file</name>
-		<value>conf/bad-product-cate-words.txt</value>
+		<name>scent.bad.category.words.file</name>
+		<value>conf/bad-category-words.txt</value>
 	</property>
 	<property>
 		<name>scent.bad.product.name.words.file</name>

@@ -3,8 +3,9 @@ build-in global indicators :
     -result     : result for complex indicators
     -menu-seq   : menu's tag sequence in HTML code
     -title-seq  : title's tag sequence in HTML code if any, the title text is similar with <title> tag
+    -last-seq   : the last tag sequence in HTML code
 
-build-in simple indicators :
+build-in simple indicators : 
      build-in simple indicators are each element specified
      -char      : character number
      -own-char  : character number of direct data nodes
@@ -16,7 +17,7 @@ build-in simple indicators :
      -grant-child : grant children number
      -descend   : all descendant number
      -sep       : separator number, separators are defined in configuration
-     -sibling   : sibling number in DOM
+     -sibling   : sibling number
      -dep       : depth in DOM
      -seq       : tag sequence in HTML code
  -->
@@ -44,7 +45,7 @@ build-in simple indicators :
         <indicator name="-dep"          type="simple" />
         <indicator name="-seq"          type="simple" />
 
-        <!--
+        <!-- 
             complex indicators calculated using javascript,
             the user can define his own complex indicators.
             global indicators and simple indicators listed above are available in the calculating,
@@ -88,17 +89,16 @@ build-in simple indicators :
         <rule indicator="-descend"        range="0,1000" score="0"  -score="0" />
     </block>
     <block type="Gallery">
-        <rule indicator="-char"           range="0,0"      score="0"  -score="-10" />
-        <rule indicator="-img"            range="4,"       score="10" -score="0" />
+        <rule indicator="-char"           range="0,0"    score="0"  -score="-10" />
+        <rule indicator="-img"            range="4,"     score="10" -score="0" />
     </block>
     <block type="Categories">
-        <rule indicator="menu-distance"   range="1,100"     score="2" -score="0" />
-        <rule indicator="title-distance"  range="-30,0"     score="2" -score="-10" />
-        <rule indicator="-char"           range="5,100"     score="2" -score="-2" />
-        <rule indicator="-txt-blk"        range="2,20"      score="2" -score="0" />
-        <rule indicator="ave-txt-blk-len" range="2,6"       score="4" -score="0" />
-        <rule indicator="ave-txt-blk-len" range="2,10"      score="2" -score="-2" />
-        <rule indicator="-descend"        range="6,50"      score="2" -score="0" />
-        <rule indicator="-img"            range=",2"        score="0" -score="-10" />
+        <rule indicator="menu-distance"   range="10,"    score="0"  -score="-100" />
+        <rule indicator="title-distance"  range=",-10"   score="0"  -score="-100" />
+        <rule indicator="-txt-blk"        range="2,30"   score="4"  -score="0" />
+        <rule indicator="ave-txt-blk-len" range="1,10"   score="4"  -score="0" />
+        <rule indicator="ave-txt-blk-len" range="1,6"    score="4"  -score="0" />
+        <rule indicator="-descend"        range="6,50"   score="4"  -score="-100" />
+        <rule indicator="-img"            range=",2"     score="0"  -score="-100" />
     </block>
 </block-features>
