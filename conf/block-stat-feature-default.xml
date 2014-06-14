@@ -20,6 +20,16 @@ build-in simple indicators :
      -sibling   : sibling number
      -dep       : depth in DOM
      -seq       : tag sequence in HTML code
+     
+     -a-max-w   : max link width
+     -a-ave-w   : 
+     -a-max-h   : 
+     -a-ave-h   : 
+
+     -img-max-w : max img width
+     -img-ave-w : 
+     -img-max-h : 
+     -img-ave-h : 
  -->
 <?xml version="1.0"?>
 <block-features>
@@ -44,6 +54,17 @@ build-in simple indicators :
         <indicator name="-sibling"      type="simple" />
         <indicator name="-dep"          type="simple" />
         <indicator name="-seq"          type="simple" />
+
+        <!-- vision feature -->
+        <indicator name="-a-max-w"      type="simple" />
+        <indicator name="-a-ave-w"      type="simple" />
+        <indicator name="-a-max-h"      type="simple" />
+        <indicator name="-a-ave-h"      type="simple" />
+
+        <indicator name="-img-max-w"    type="simple" />
+        <indicator name="-img-ave-w"    type="simple" />
+        <indicator name="-img-max-h"    type="simple" />
+        <indicator name="-img-ave-h"    type="simple" />
 
         <!-- 
             complex indicators calculated using javascript,
@@ -87,10 +108,6 @@ build-in simple indicators :
         <rule indicator="-child"          range="0,1000" score="0"  -score="0" />
         <rule indicator="-grant-child"    range="0,1000" score="0"  -score="0" />
         <rule indicator="-descend"        range="0,1000" score="0"  -score="0" />
-    </block>
-    <block type="Gallery">
-        <rule indicator="-char"           range="0,0"    score="0"  -score="-10" />
-        <rule indicator="-img"            range="4,"     score="10" -score="0" />
     </block>
     <block type="Categories">
         <rule indicator="menu-distance"   range="10,"    score="0"  -score="-100" />

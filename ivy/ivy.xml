@@ -66,7 +66,7 @@
     </dependency>
 
     <dependency org="org.apache.gora" name="gora-core" rev="0.3" conf="*->default"/>
-    <dependency org="org.apache.gora" name="gora-hbase" rev="0.2" conf="*->default" />
+    <dependency org="org.apache.gora" name="gora-hbase" rev="0.3" conf="*->default" />
 
     <dependency org="org.apache.mahout" name="mahout-core" rev="0.9" />
     <dependency org="org.apache.mahout" name="mahout-math" rev="0.9" />

@@ -39,6 +39,8 @@ public class ProxyPool {
 
   private int pollingMaxRetry = 5;
 
+  private int maxPoolSize = 5;
+  
   private FiledLines proxyServerList = null;
 
   // TODO : save connected connections rather than ProxyEntry
@@ -52,7 +54,7 @@ public class ProxyPool {
   public ProxyPool(Configuration conf) {
     this.conf = conf;
 
-    // TODO : use configured values
+    this.maxPoolSize = conf.getInt("scent.net.proxy.max.pool.size", 5);
 
     update();
   }
@@ -225,6 +227,9 @@ public class ProxyPool {
     return new Date(file.lastModified()).toString();
   }
 
+  /**
+   * not used in scent, used by nutch-proxy
+   * */
   public static void testAndSave(List<String> proxyList) throws IOException {
     if (proxyList.isEmpty()) {
       return;
@@ -297,13 +302,15 @@ public class ProxyPool {
 
   private void parse() {
     try {
+      // for diagnostic
       List<String> proxyList = new ArrayList<String>();
 
       for (String line : proxyServerList.getLines(ProxyListFile)) {
         ProxyEntry proxy = ProxyEntry.parse(line);
 
         if (proxy != null && !proxyEntries.contains(proxy) && !retiredProxyEntries.contains(proxy)) {
-          if (testNetwork(proxy)) {
+          // set a max pool size to avoid too much testing time
+          if (size() < maxPoolSize && testNetwork(proxy)) {
             put(proxy);
             proxyList.add(proxy.ipPort());
           }

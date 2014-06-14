@@ -1,32 +1,19 @@
 package org.qiwur.scent.learning;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.util.Formatter;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.qiwur.scent.jsoup.block.BlockLabel;
-import org.qiwur.scent.jsoup.block.BlockLabelTracker;
-import org.qiwur.scent.jsoup.block.BlockPattern;
-import org.qiwur.scent.jsoup.block.BlockPatternTracker;
 import org.qiwur.scent.jsoup.block.DomSegment;
 import org.qiwur.scent.jsoup.block.DomSegments;
 import org.qiwur.scent.jsoup.nodes.Document;
-import org.qiwur.scent.jsoup.nodes.Indicator;
-import org.qiwur.scent.wiki.Page;
-
-import ruc.irm.similarity.FuzzyProbability;
 
 public class BlockFeatureRecorder {
 

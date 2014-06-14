@@ -21,7 +21,6 @@ import org.apache.hadoop.conf.Configuration;
 import org.qiwur.scent.jsoup.nodes.Document;
 import org.qiwur.scent.plugin.Extension;
 import org.qiwur.scent.plugin.PluginRuntimeException;
-import org.qiwur.scent.utils.ObjectCache;
 
 /**
  * Creates and caches {@link PageExtractor} plugins. DataExtractor plugins

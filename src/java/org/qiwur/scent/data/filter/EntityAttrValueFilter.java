@@ -6,7 +6,8 @@ import java.util.List;
 import org.apache.hadoop.conf.Configuration;
 import org.qiwur.scent.entity.EntityAttribute;
 import org.qiwur.scent.entity.PageEntity;
-import org.qiwur.scent.feature.EntityAttrValueFeature;
+import org.qiwur.scent.feature.AttrValueFeature;
+import org.qiwur.scent.feature.FeatureManager;
 import org.qiwur.scent.utils.StringUtil;
 
 public class EntityAttrValueFilter extends BadWordFilter {
@@ -16,18 +17,21 @@ public class EntityAttrValueFilter extends BadWordFilter {
 	private final PageEntity pageEntity;
 
 	public EntityAttrValueFilter(PageEntity pageEntity, Configuration conf) {
-	  super("conf/bad-attribute-name.txt", conf);
+	  super("conf/bad-attribute-value-words.txt", conf);
 		this.pageEntity = pageEntity;
 	}
 
 	public void process() {
 		List<String> DontFilterAttributeList = Arrays.asList(DontFilterAttributes);
+
+    String featureFile = getConf().get("scent.bad.attr.value.words.file");
+    AttrValueFeature valueFeature = FeatureManager.get(getConf(), AttrValueFeature.class, featureFile);
+
 		// 删除敏感词
 		for (EntityAttribute attribute : pageEntity.attributes()) {
 			if (DontFilterAttributeList.contains(attribute.name())) continue;
 
-			String value = EntityAttrValueFeature.preprocess(attribute.value());
-
+			String value = valueFeature.preprocess(attribute.value());
 			value = StringUtil.trimNonChar(value);
 
 			if (!value.isEmpty()) {

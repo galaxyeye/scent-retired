@@ -17,6 +17,8 @@ public class DomStatisticsPrinter {
 
   String report = "";
 
+  boolean segmentedOnly = true;
+
   public DomStatisticsPrinter(Document doc) {
     this.doc = doc;
   }
@@ -40,6 +42,10 @@ public class DomStatisticsPrinter {
     }
 
     public void head(Element e, int depth) {
+      if (segmentedOnly && !e.hasAttr("data-segmented")) {
+        return;
+      }
+
       // 空标签，一般仅用于布局
       if (StringUtil.in(e.tagName(), "p", "div", "ol", "ul", "li", "table") && e.indic(Indicator.D) == 0) {
         return;

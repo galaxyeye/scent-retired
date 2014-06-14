@@ -42,6 +42,8 @@ public class DomSegmentsBuilder {
 
   public static final int MinImageNumberInPureImage = 4;
 
+  public static final int MinLinkNumberInVeryDensyLinkArea = 50;
+
   private final Document doc;
 
   private final Configuration conf;
@@ -58,29 +60,49 @@ public class DomSegmentsBuilder {
 
     // variance based block recognition
     for (Element block : blocks.values()) {
-      segments.add(new DomSegment(block));
+      if (!block.isSegmented()) {
+        segments.add(new DomSegment(block));
+      }
     }
 
     // tables
     for (Element block : findTables()) {
-      segments.add(new DomSegment(null, null, block));
+      if (!block.isSegmented()) {
+        segments.add(new DomSegment(null, null, block));
+      }
     }
 
     // uls
     for (Element block : findLists()) {
-      segments.add(new DomSegment(null, null, block));
+      if (!block.isSegmented()) {
+        segments.add(new DomSegment(null, null, block));
+      }
     }
 
     // image without links
     for (Element block : findPureImageAreas()) {
-      DomSegment segment = new DomSegment(null, null, block);
-      segment.tag(BlockLabel.Images, FuzzyProbability.MUST_BE);
-      segments.add(segment);
+      if (!block.isSegmented()) {
+        DomSegment segment = new DomSegment(null, null, block);
+        segment.tag(BlockLabel.PureImages, FuzzyProbability.MUST_BE);
+        segments.add(segment);
+      }
     }
 
     // list like
     for (Element block : findListLikeAreas()) {
-      segments.add(new DomSegment(null, null, block));
+      if (!block.isSegmented()) {
+        segments.add(new DomSegment(null, null, block));
+      }
+    }
+
+    // very dense links
+    for (Element block : findVeryDensyLinks()) {
+      if (!block.isSegmented()) {
+        DomSegment segment = new DomSegment(null, null, block);
+        segment.tag(BlockPattern.SIGMA_L, FuzzyProbability.MUST_BE);
+        segment.tag(BlockLabel.DensyLinks, FuzzyProbability.MUST_BE);
+        segments.add(segment);
+      }
     }
 
     for (DomSegment segment : segments) {
@@ -109,6 +131,7 @@ public class DomSegmentsBuilder {
       logger.warn("no tilte found, create one");
       title = TitleLocator.createTitle(doc, conf);
     }
+    title.tag(BlockLabel.Title, FuzzyProbability.MUST_BE);
     segments.add(title);
     conf.set("scent.page.title.text", title.text());
     conf.setInt("scent.page.title.sequence", title.body().sequence());
@@ -118,7 +141,7 @@ public class DomSegmentsBuilder {
 
     for (DomSegment segment : segments) {
       if (segment.veryLikely(BlockPattern.LI)) {
-        segment.tag(BlockLabel.Images);
+        segment.tag(BlockLabel.LinkImages);
       }
 
       if (segment.veryLikely(BlockPattern.L)) {
@@ -136,7 +159,7 @@ public class DomSegmentsBuilder {
     return segments;
   }
 
-  // TODO : use configured rules
+  // TODO : use plugin
   private void buildProductShowSegment() {
     DomSegments segments = doc.domSegments();
     DomSegment titleSegment = segments.get(BlockLabel.Title, FuzzyProbability.VERY_LIKELY);
@@ -308,6 +331,41 @@ public class DomSegmentsBuilder {
     }
 
     return candidates;
+  }
+
+  private Elements findVeryDensyLinks() {
+    Elements candidates = new Elements();
+    Multimap<Double, Element> indicatorIndex = doc.indicatorIndex(Indicator.A);
+
+    for (Entry<Double, Element> entry : indicatorIndex.entries()) {
+      double n = entry.getKey();
+      Element ele = entry.getValue();
+
+      if (n < MinLinkNumberInVeryDensyLinkArea) {
+        break;
+      }
+
+      if (!StringUtil.in(ele.tagName(), "div", "ul")) {
+        continue;
+      }
+
+      double seq = ele.indic(Indicator.SEQ);
+      double a = ele.indic(Indicator.A);
+      double img = ele.indic(Indicator.IMG);
+      double c = ele.indic(Indicator.C);
+      double tb = ele.indic(Indicator.TB);
+      double sep = ele.indic(Indicator.SEP);
+      double aah = ele.indic(Indicator.AAH);
+      double docD = doc.body().indic(Indicator.D);
+
+      if (seq > (docD / 3) || img > a / 5 || c / tb > 8 || sep > 10 || aah > 30) {
+        continue;
+      }
+
+      candidates.add(ele);
+    }
+
+    return candidates;    
   }
 
   private Elements findListLikeAreas() {

@@ -15,7 +15,6 @@ import org.apache.logging.log4j.Logger;
 import org.qiwur.scent.configuration.ScentConfiguration;
 import org.qiwur.scent.data.builder.ProductHTMLBuilder;
 import org.qiwur.scent.data.builder.ProductWikiBuilder;
-import org.qiwur.scent.data.extractor.DataExtractorFactory;
 import org.qiwur.scent.data.extractor.DataExtractorNotFound;
 import org.qiwur.scent.data.extractor.PageExtractor;
 import org.qiwur.scent.data.extractor.PageExtractorFactory;

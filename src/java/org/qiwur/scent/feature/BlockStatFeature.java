@@ -2,7 +2,6 @@ package org.qiwur.scent.feature;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -10,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.Validate;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.logging.log4j.LogManager;
@@ -19,23 +17,24 @@ import org.qiwur.scent.classifier.statistics.BlockRule;
 import org.qiwur.scent.classifier.statistics.StatIndicator;
 import org.qiwur.scent.classifier.statistics.StatRule;
 import org.qiwur.scent.jsoup.Jsoup;
-import org.qiwur.scent.jsoup.block.DomSegment;
 import org.qiwur.scent.jsoup.nodes.Document;
 import org.qiwur.scent.jsoup.nodes.Element;
 import org.qiwur.scent.jsoup.parser.Parser;
-import org.qiwur.scent.utils.ObjectCache;
 import org.qiwur.scent.utils.StringUtil;
 
 import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
-public class BlockStatFeature {
+public class BlockStatFeature implements WebFeature {
 
   protected static final Logger logger = LogManager.getLogger(BlockStatFeature.class);
 
   public static final String defaultConfigFile = "conf/block-stat-feature-default.xml";
 
-  private List<String> configFiles = new ArrayList<String>();
+  private Configuration conf;
+
+  private final List<String> featureFiles;
 
   private Map<String, String> globalVars = new HashMap<String, String>();
 
@@ -45,40 +44,21 @@ public class BlockStatFeature {
 
   private int maxPlaceholders = 10;
 
-  private BlockStatFeature(String... configFiles) {
-    Validate.notNull(configFiles);
-    Validate.notEmpty(configFiles);
+  public BlockStatFeature(Configuration conf, String[] featureFiles) {
+    this.featureFiles = Lists.newArrayList();
+    this.featureFiles.add(defaultConfigFile); // must come first
+    this.featureFiles.addAll(Arrays.asList(featureFiles));
 
-    this.configFiles.addAll(Arrays.asList(configFiles));
-
-    for (String file : this.configFiles) {
-      load(file);
-    }
-  }
-
-  public static BlockStatFeature create(String configFile, Configuration conf) {
-    ObjectCache objectCache = ObjectCache.get(conf);
-    final String cacheId = configFile;
-
-    if (objectCache.getObject(cacheId) != null) {
-      return (BlockStatFeature) objectCache.getObject(cacheId);
-    } else {
-      BlockStatFeature feature = new BlockStatFeature(defaultConfigFile, configFile);
-      objectCache.setObject(cacheId, feature);
-      return feature;
-    }
+    this.conf = conf;
+    load();
   }
 
   public List<String> configFile() {
-    return configFiles;
+    return featureFiles;
   }
 
   public Set<String> getLabels() {
     return blockRules.keySet();
-  }
-
-  public Collection<BlockRule> getRules(String label) {
-    return blockRules.get(label);
   }
 
   /**
@@ -114,7 +94,41 @@ public class BlockStatFeature {
     return globalVars.get(name);
   }
 
-  private void load(String file) {
+  @Override
+  public void reset() {
+    globalVars.clear();
+    indicators.clear();
+    blockRules.clear();
+  }
+
+  @Override
+  public void load() {
+    for (String file : this.featureFiles) {
+      load(file);
+    }
+  }
+
+  @Override
+  public void reload() {
+    reset();
+    load();
+  }
+
+  @Override
+  public Configuration getConf() {
+    return conf;
+  }
+
+  @Override
+  public void setConf(Configuration conf) {
+    this.conf = conf;
+  }
+
+  protected Collection<BlockRule> getRules(String label) {
+    return blockRules.get(label);
+  }
+
+  protected void load(String file) {
     try {
       Document doc = Jsoup.parse(new FileInputStream(file), "utf-8", "", Parser.xmlParser());
 

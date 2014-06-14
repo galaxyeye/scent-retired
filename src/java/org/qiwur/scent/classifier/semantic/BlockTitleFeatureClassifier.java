@@ -5,8 +5,8 @@ import java.util.Map;
 
 import org.apache.hadoop.conf.Configuration;
 import org.qiwur.scent.classifier.RuleBasedBlockClassifier;
+import org.qiwur.scent.feature.FeatureManager;
 import org.qiwur.scent.feature.PhraseFeature;
-import org.qiwur.scent.feature.PhraseFeatureFactory;
 import org.qiwur.scent.jsoup.block.DomSegment;
 
 import ruc.irm.similarity.FuzzyProbability;
@@ -22,8 +22,8 @@ public class BlockTitleFeatureClassifier extends RuleBasedBlockClassifier {
     double weight = conf.getFloat("scent.block.title.feature.classifier.weight", 1.0f);
     this.weight(weight);
 
-    String file = conf.get("scent.block.title.feature.file");
-    blockTitleFeature = new PhraseFeatureFactory(file, conf).getFeature();
+    String featureFile = conf.get("scent.block.title.feature.file");
+    blockTitleFeature = FeatureManager.get(conf, PhraseFeature.class, featureFile);
   }
 
   @Override

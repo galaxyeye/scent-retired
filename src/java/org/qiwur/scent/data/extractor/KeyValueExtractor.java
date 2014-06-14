@@ -1,18 +1,15 @@
 package org.qiwur.scent.data.extractor;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang.Validate;
-import org.apache.hadoop.conf.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.qiwur.scent.jsoup.nodes.Element;
 import org.qiwur.scent.jsoup.nodes.Indicator;
 import org.qiwur.scent.jsoup.select.DOMUtil;
 import org.qiwur.scent.jsoup.select.Elements;
-import org.qiwur.scent.storage.WebPage.Field;
 import org.qiwur.scent.utils.StringUtil;
 
 import com.google.common.collect.LinkedListMultimap;
@@ -27,7 +24,7 @@ public class KeyValueExtractor {
 	public static final int MIN_ATTRIBUTE_VALUE_LENGTH = 1;
 	public static final int MAX_ATTRIBUTE_NAME_LENGTH = 8;
 	public static final int MAX_ATTRIBUTE_VALUE_LENGTH = 80;
-	public static final String I_I_PATTERN_SEPERATORS = ":|：";
+	public static final String I_I_PATTERN_SEPERATORS = ":：";
 
 	private Element root = null;
 	private Multimap<String, String> attributes = LinkedListMultimap.create();
@@ -39,7 +36,7 @@ public class KeyValueExtractor {
 	}
 
 	/*
-	 * 默认分别使用三种抽取方法
+	 * 默认分别使用四种抽取方法
 	 * 
 	 * */
 	public void process() {

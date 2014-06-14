@@ -65,6 +65,8 @@ public class ProxyUpdateThread extends Thread {
   }
 
   public void runAsDaemon() throws InterruptedException {
+    logger.info("updating proxy pool, please wait...");
+
     proxyPool.tryUpdateFromFile();
 
     this.setDaemon(true);

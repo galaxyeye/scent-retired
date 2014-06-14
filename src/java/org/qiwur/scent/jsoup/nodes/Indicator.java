@@ -5,21 +5,42 @@ import java.util.Map;
 import org.qiwur.scent.utils.Validate;
 
 public class Indicator implements Map.Entry<String, Double>, Cloneable {
-  public static final String CH = "-char";   // chars
-  public static final String OCH = "-own-char"; // own chars
-  public static final String TB = "-txt-blk"; // text blocks
-  public static final String OTB = "-own-txt-blk"; // text blocks
-  public static final String IMG = "-img"; // images
-  public static final String A = "-a";   // links
-  public static final String SIB = "-sibling"; // siblings
-  public static final String C = "-child"; // children
-  public static final String G = "-grant-child"; // grand children
-  public static final String D = "-descend"; // descendants
-  public static final String DEP = "-dep"; // element depth
-  public static final String SEP = "-sep"; // separators
-  public static final String SEQ = "-seq";   // sequence
+  // code structure feature
+  public static final String CH   = "-char";   // chars
+  public static final String OCH  = "-own-char"; // own chars
+  public static final String TB   = "-txt-blk"; // text blocks
+  public static final String OTB  = "-own-txt-blk"; // text blocks
+  public static final String IMG  = "-img"; // images
+  public static final String A    = "-a";   // links
+  public static final String SIB  = "-sibling"; // siblings
+  public static final String C    = "-child"; // children
+  public static final String G    = "-grant-child"; // grand children
+  public static final String D    = "-descend"; // descendants
+  public static final String DEP  = "-dep"; // element depth
+  public static final String SEP  = "-sep"; // separators
+  public static final String SEQ  = "-seq";   // sequence
 
-  public static final String[] names = {CH, OCH, TB, OTB, IMG, A, SIB, C, G, D, DEP, SEP, SEQ};
+  // vision feature
+  public static final String AMW    = "-a-max-w";     // max link width
+  public static final String AAW    = "-a-ave-w";     // ave link width
+  public static final String AMH    = "-a-max-h";     // max link height
+  public static final String AAH    = "-a-ave-h";     // ave link height
+  public static final String IMW    = "-img-max-w";   // max image width
+  public static final String IAW    = "-img-ave-w";   // ave image width
+  public static final String IMH    = "-img-max-h";   // max image height
+  public static final String IAH    = "-img-ave-h";   // ave image height
+
+  // temporary variables for internal usage
+  public static final String ATW    = "--a-total-w";  // total link width
+  public static final String ATH    = "--a-total-h";  // total link width
+  public static final String ITW    = "--i-total-w";  // total link width
+  public static final String ITH    = "--i-total-h";  // total link width
+
+  public static final String[] names = {
+    CH, OCH, TB, OTB, IMG, A, SIB, C, G, D, DEP, SEP, SEQ,
+    AMW, AAW, AMH, AAH,
+    IMW, IAW, IMH, IAH
+  };
 
   /*
    * affect -sep

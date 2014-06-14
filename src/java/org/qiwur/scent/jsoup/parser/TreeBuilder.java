@@ -40,6 +40,8 @@ abstract class TreeBuilder {
 
         runParser();
 
+        // do filter
+        new NodeTraversor(new NodeFilter()).traverse(doc);
         // calculate indicators
         new NodeTraversor(new IndicatorCalculator()).traverse(doc);
         new ElementTraversor(new IndicatorIndexer(doc.indicatorIndex())).traverse(doc);

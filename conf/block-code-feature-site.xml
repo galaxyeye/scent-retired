@@ -7,15 +7,15 @@
         <phrase name="pic list" score="8" />
         <phrase name="picture list" score="8" />
         <phrase name="image list" score="8" />
-    </block>
-    <block type="Categories">
-        <rule indicator="menu-distance"   range="0,"     score="0"  -score="-100" />
-        <rule indicator="title-distance"  range=",0"     score="0"  -score="-100" />
-        <rule indicator="-txt-blk"        range="2,30"   score="4"  -score="0" />
-        <rule indicator="ave-txt-blk-len" range="2,10"   score="4"  -score="0" />
-        <rule indicator="ave-txt-blk-len" range="2,6"    score="4"  -score="0" />
-        <rule indicator="-descend"        range="6,50"   score="4"  -score="-100" />
-        <rule indicator="-img"            range=",2"     score="0"  -score="-100" />
+
+        <phrase name="product detail" score="-100" />
+        <phrase name="pro detail" score="-100" />
+        <phrase name="product content" score="-100" />
+        <phrase name="pro content" score="-100" />
+        <phrase name="detail all" score="-100" />
+        <phrase name="detail content" score="-100" />
+        <phrase name="description" score="-100" />
+        <phrase name="introduction" score="-100" />
     </block>
     <block type="ProductSpec">
         <phrase name="attributes list" score="8" />

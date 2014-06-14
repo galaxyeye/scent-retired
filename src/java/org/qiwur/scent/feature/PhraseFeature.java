@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.Validate;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.qiwur.scent.jsoup.Jsoup;
@@ -14,30 +16,25 @@ import org.qiwur.scent.jsoup.nodes.Element;
 import org.qiwur.scent.jsoup.parser.Parser;
 import org.qiwur.scent.utils.StringUtil;
 
-public class PhraseFeature {
+public class PhraseFeature implements WebFeature {
 
 	final Logger logger = LogManager.getLogger(PhraseFeature.class);
 
-	private String configFile = null;
+	private final String featureFile;
 
-	protected Map<String, Map<String, Double>> blockPhrases = new HashMap<String, Map<String, Double>>();
+	private Configuration conf;
 
-	PhraseFeature() {}
+	private Map<String, Map<String, Double>> blockPhrases = new HashMap<String, Map<String, Double>>();
 
-	PhraseFeature(String file) {
-    configFile = file;
+	public PhraseFeature(Configuration conf, String[] featureFile) {
+    this.featureFile = featureFile[0];
+    this.conf = conf;
 
-    try {
-      Document doc = Jsoup.parse(new FileInputStream(configFile), "utf-8", "", Parser.xmlParser());
-
-      parse(doc);
-    } catch (IOException e) {
-      logger.error(e);
-    }
+    load();
 	}
 
-	public String configFile() {
-		return configFile;
+	public String featureFile() {
+		return featureFile;
 	}
 
 	public Set<String> getLabels() {
@@ -48,13 +45,51 @@ public class PhraseFeature {
 		return blockPhrases.get(label);
 	}
 
-	private void parse(Document doc) {
+	@Override
+	public String toString() {
+	  return blockPhrases.toString();
+	}
+
+  @Override
+  public Configuration getConf() {
+    return conf;
+  }
+
+  @Override
+  public void setConf(Configuration conf) {
+    this.conf = conf;
+  }
+
+  @Override
+  public void reset() {
+    blockPhrases.clear();
+  }
+
+  @Override
+  public void load() {
+    Validate.notEmpty(featureFile);
+
+    try {
+      Document doc = Jsoup.parse(new FileInputStream(featureFile), "utf-8", "", Parser.xmlParser());
+
+      parse(doc);
+    } catch (IOException e) {
+      logger.error(e);
+    }    
+  }
+
+  @Override
+  public void reload() {
+    reset();
+    load();
+  }
+
+  private void parse(Document doc) {
     for (Element eleBlock : doc.select("block-features block")) {
       String type = eleBlock.attr("type");
       Map<String, Double> phrases = new HashMap<String, Double>();
 
       for (Element elePhrase : eleBlock.getElementsByTag("phrase")) {
-        String attr = elePhrase.attr("attr");
         String name = elePhrase.attr("name");
         String score = elePhrase.attr("score");
 
@@ -67,11 +102,5 @@ public class PhraseFeature {
         blockPhrases.put(type, phrases);
       }
     }
-	}
-
-	@Override
-	public String toString() {
-	  return blockPhrases.toString();
-	}
-
+  }  
 }

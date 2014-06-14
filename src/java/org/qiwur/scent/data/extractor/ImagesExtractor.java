@@ -16,7 +16,7 @@ public final class ImagesExtractor extends DomSegmentExtractor {
 	private Set<Image> images = new HashSet<Image>();
 
 	public ImagesExtractor(DomSegment segment, PageEntity pageEntity, Configuration conf) {
-    super(segment, pageEntity, BlockLabel.Images);
+    super(segment, pageEntity, BlockLabel.LinkImages);
 	}
 
 	@Override

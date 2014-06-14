@@ -15,7 +15,6 @@ import org.apache.mahout.math.Vector;
 import org.apache.mahout.vectorizer.encoders.ContinuousValueEncoder;
 import org.qiwur.scent.jsoup.nodes.Document;
 import org.qiwur.scent.jsoup.nodes.Element;
-import org.qiwur.scent.utils.StringUtil;
 
 public class BlockFeatureVectorEncoder extends ContinuousValueEncoder {
 

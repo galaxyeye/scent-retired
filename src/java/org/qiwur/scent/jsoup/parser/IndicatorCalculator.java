@@ -6,6 +6,7 @@ import org.qiwur.scent.jsoup.nodes.Indicator;
 import org.qiwur.scent.jsoup.nodes.Node;
 import org.qiwur.scent.jsoup.nodes.TextNode;
 import org.qiwur.scent.jsoup.select.InterruptiveNodeVisitor;
+import org.qiwur.scent.utils.StringUtil;
 
 public class IndicatorCalculator extends InterruptiveNodeVisitor {
 
@@ -38,6 +39,12 @@ public class IndicatorCalculator extends InterruptiveNodeVisitor {
     if (node instanceof Element) {
       Element e = (Element) node;
 
+      // since the the sum has been calculated, we can get the average
+      e.indic(Indicator.IAW, division(e, Indicator.ITW, Indicator.IMG));
+      e.indic(Indicator.IAH, division(e, Indicator.ITH, Indicator.IMG));
+      e.indic(Indicator.AAW, division(e, Indicator.ATW, Indicator.A));
+      e.indic(Indicator.AAH, division(e, Indicator.ATH, Indicator.A));
+
       // 计算父节点的统计信息
       Element pe = e.parent();
       if (pe == null) {
@@ -45,22 +52,36 @@ public class IndicatorCalculator extends InterruptiveNodeVisitor {
       }
 
       pe.accumIndics(
+          // code structure feature
           e.getIndicator(Indicator.CH),
           e.getIndicator(Indicator.TB),
           e.getIndicator(Indicator.SEP),
           e.getIndicator(Indicator.A),
           e.getIndicator(Indicator.IMG),
           new Indicator(Indicator.C, 1.0),
-          new Indicator(Indicator.D, 1.0)
+          new Indicator(Indicator.D, 1.0 + e.indic(Indicator.D)),
+
+          // vision feature
+          // calculate the sum and calculate the average later, when we leave that node
+          e.getIndicator(Indicator.ATW),
+          e.getIndicator(Indicator.ATH),
+          e.getIndicator(Indicator.ITW),
+          e.getIndicator(Indicator.ITH)
       );
+
+      // calculate required max value for parent node
+      final String[] maxIndicators = {Indicator.AMH, Indicator.AMW, Indicator.IMH, Indicator.IMW};
+      for (String indicator : maxIndicators) {
+        double value = e.indic(indicator);
+        if (value > pe.indic(indicator)) {
+          pe.indic(indicator, value);
+        }
+      }
 
       // grant children number
       Element ppe = pe.parent();
       if (ppe != null) {
-        ppe.accumIndics(
-            new Indicator(Indicator.G, 1.0),
-            new Indicator(Indicator.D, 1.0 + node.indic(Indicator.D))
-        );
+        ppe.accumIndics(new Indicator(Indicator.G, 1.0));
       }
     } // if
   }
@@ -97,15 +118,53 @@ public class IndicatorCalculator extends InterruptiveNodeVisitor {
 
     if (node instanceof Element) {
       double numLink = 0.0;
+      double linkWidth = 0.0;
+      double linkHeight = 0.0;
       double numImage = 0.0;
+      double imageWidth = 0.0;
+      double imageHeight = 0.0;
 
-      if (node.nodeName().equals("a")) ++numLink;
-      if (node.nodeName().equals("img")) ++numImage;
+      if (node.nodeName().equals("a")) {
+        ++numLink;
+        linkWidth = StringUtil.parseDouble(node.attr("data-offset-width"));
+        linkHeight = StringUtil.parseDouble(node.attr("data-offset-height"));
+      }
+
+      if (node.nodeName().equals("img")) {
+        ++numImage;
+        imageWidth = StringUtil.parseDouble(node.attr("data-offset-width"));
+        imageHeight = StringUtil.parseDouble(node.attr("data-offset-height"));
+      }
 
       node.accumIndics(
           new Indicator(Indicator.A, numLink),
-          new Indicator(Indicator.IMG, numImage)
+          new Indicator(Indicator.AMW, linkWidth),
+          new Indicator(Indicator.AAW, linkWidth),
+          new Indicator(Indicator.AMH, linkHeight),
+          new Indicator(Indicator.AAH, linkHeight),
+          new Indicator(Indicator.ATW, linkWidth),
+          new Indicator(Indicator.ATH, linkHeight),
+
+          new Indicator(Indicator.IMG, numImage),
+          new Indicator(Indicator.IMW, imageWidth),
+          new Indicator(Indicator.IAW, imageWidth),
+          new Indicator(Indicator.IMH, imageHeight),
+          new Indicator(Indicator.IAH, imageHeight),
+          new Indicator(Indicator.ITW, imageWidth),
+          new Indicator(Indicator.ITH, imageHeight)
       );
     }
+  }
+
+  private double division(Element ele, String numerator, String denominator) {
+    double res = 0.0;
+
+    double d = ele.indic(denominator);
+
+    if (d != 0) {
+      res = ele.indic(numerator) / ele.indic(denominator);
+    }
+
+    return res;
   }
 }

@@ -1,12 +1,14 @@
 package org.qiwur.scent.block.locator;
 
+import org.apache.commons.lang3.StringUtils;
 import org.qiwur.scent.jsoup.block.BlockLabel;
 import org.qiwur.scent.jsoup.block.DomSegment;
 import org.qiwur.scent.jsoup.nodes.Document;
 import org.qiwur.scent.jsoup.nodes.Element;
 import org.qiwur.scent.jsoup.nodes.Indicator;
+import org.qiwur.scent.jsoup.select.ElementTraversor;
 import org.qiwur.scent.jsoup.select.Elements;
-import org.qiwur.scent.utils.NetUtil;
+import org.qiwur.scent.jsoup.select.InterruptiveElementVisitor;
 import org.qiwur.scent.utils.StringUtil;
 
 import ruc.irm.similarity.FuzzyProbability;
@@ -19,11 +21,14 @@ public final class MenuLocator extends BlockLocator {
 
   @Override
 	protected DomSegment quickLocate() {
-    double maxScore = 0;
+    double maxScore = 3;
     DomSegment menu = null;
 
     for (DomSegment segment : doc.domSegments()) {
       double score = getScore(segment.body());
+
+      // logger.debug("menu score : {} : {}", segment.body().prettyName(), score);
+
       if (score > maxScore) {
         maxScore = score;
         menu = segment;
@@ -34,65 +39,39 @@ public final class MenuLocator extends BlockLocator {
       menu.tag(targetLabel, FuzzyProbability.MUST_BE);
     }
 
-    return null;
+    return menu;
   }
 
 	@Override
   protected DomSegment deepLocate() {
-		DomSegment segment = null;
+		Elements menuCandidates = findMenuCandidates();
 
-		Elements candidates = findNavElementCandidates();
+    double maxScore = 3;
+    Element menu = null;
 
-		if (candidates.size() > 0) {
-			Element navElement = getMaxScoreNavElement(candidates);
+    for (Element candidate : menuCandidates) {
+      double score = getScore(candidate);
 
-			if (navElement != null) {
-				Element mainNavElement = getMenuElement(navElement);
+      // logger.debug("menu score : {} : {}", item.prettyName(), score);
 
-				if (mainNavElement != null) {
-					segment = new DomSegment(mainNavElement);
-					segment.tag(targetLabel, FuzzyProbability.MUST_BE);
-				}
-			}
-		}
+      if (score > maxScore) {
+        maxScore = score;
+        menu = candidate;
+      }
+    }
+
+    DomSegment segment = null;
+    if (menu != null) {
+      segment = new DomSegment(null, null, menu);
+      segment.tag(targetLabel, FuzzyProbability.MUST_BE);
+    }
 
 		return segment;
 	}
 
-	/*
-	 * 通过一个菜单项，找到整个菜单的根节点
-	 * 向上3层内，找到直接孩子数最多的节点，就是包含整个菜单的节点
-	 * */
-	private Element getMenuElement(final Element navElement) {
-		// 至少6层深度,一个典型的路径是：
-		// html > body > div[class="main"] > div[class="nav"] > ul > li > a
-		if (navElement == null || navElement.depth() < 6) {
-			return null;
-		}
-
-		int maxTry = 3;
-		Element p = navElement;
-		Element mainNavElement = navElement;
-		// p的兄弟数
-		int maxSiblingNum = p.siblingSize();
-		while (p != null && maxTry-- > 0) {
-			// System.out.println(p.tagName() + " " + p.siblingSize() + " " + p.attr("class") + " " + p.text());
-
-			// p的父节点的兄弟数
-			int siblingNum = p.parent().siblingSize();
-
-			if (maxSiblingNum < siblingNum) {
-				mainNavElement = p.parent().parent();
-				maxSiblingNum = siblingNum;
-			}
-
-			p = p.parent();
-		}
-
-		return mainNavElement;
-	}
-
 	private int getScore(Element root) {
+    if (root == null) return 0;
+
 	  int score = 0;
 
 	  double seq = root.indic(Indicator.SEQ);
@@ -101,14 +80,23 @@ public final class MenuLocator extends BlockLocator {
 	  double c = root.indic(Indicator.C);
     double tb = root.indic(Indicator.TB);
     double sep = root.indic(Indicator.SEP);
-
+    double aah = root.indic(Indicator.AAH);
     double docD = doc.body().indic(Indicator.D);
 
-    if (seq > docD / 2 || a < 4 || a > 25 || img > 0 || c / tb > 5 || sep > 1) {
-      return 0;
+    // it's bad when there is a "all categories" section
+    if (seq > (2 * docD / 3) || a < 4 || a > 25 || img > 3 || c / tb > 5 || sep > 2) {
+      score -= 5;
     }
 
     if (c / tb < 5) {
+      ++score;
+    }
+
+    if (c / tb < 4) {
+      ++score;
+    }
+
+    if (seq < 200) {
       ++score;
     }
 
@@ -118,7 +106,7 @@ public final class MenuLocator extends BlockLocator {
 
     String text = StringUtil.stripNonChar(root.text());
     if (text.contains("首页")) {
-      score += 10;
+      score += 5;
     }
 
     if (root.attr("class").matches("nav|menu")) {
@@ -129,93 +117,98 @@ public final class MenuLocator extends BlockLocator {
       ++score;
     }
 
+    // vision feature
+    if (aah > 0 && aah < 22) {
+      score -= 3;
+    }
+
+    if (aah > 30) {
+      score += 3;
+    }
+
     return score;
 	}
 
-	private Element getMaxScoreNavElement(Elements candidates) {
-		Element navElement = null;
-		int lastScore = 0;
-
-		for (Element candidate : candidates) {
-			int score = 0;
-
-			if (candidate.depth() < 3 || candidate.tagName() != "a") {
-				continue;
-			}
-
-			// 计算分值，分值越大，是菜单的可能性越大
-			++score;
-
-			// 计算该节点向上5层内的统计信息
-			int maxTry = 5;
-			Element p = candidate.parent();
-			while (p != null && maxTry-- > 0) {
-				double numChildren = p.indic(Indicator.C);
-				score += numChildren;
-
-				// 如：ul下有多个li，每个li下面一个a
-				if (numChildren == p.indic(Indicator.G)) {
-					score += numChildren;
-				}
-
-				if (p.tagName().equals("ul")) {
-					score += numChildren;
-				}
-
-				if (p.attr("class").matches("nav|menu")) {
-					score += numChildren;
-				}
-
-				if (p.attr("id").matches("nav|menu")) {
-					score += numChildren;
-				}
-
-				p = p.parent();
-			}
-
-			if (score > lastScore) {
-				lastScore = score;
-				navElement = candidate;
-			}
-		}
-
-		return navElement;
-	}
-
 	/*
-	 * 多种查找规则，越往下，效率越差
+	 * find out all menu candidates in the document
 	 * */
-	private Elements findNavElementCandidates() {
-		// TODO : 查找算法可以优化
-		Elements candidates = doc().getElementsContainingStrippedOwnText("首页");
-		if (candidates.size() > 0) return candidates;
+	private Elements findMenuCandidates() {
+	  MenuItemFounder founder = new MenuItemFounder();
+	  new ElementTraversor(founder).traverse(doc());
 
-		// TODO : 手动更正
-		candidates = doc().getElementsContainingStrippedOwnText("天猫");
-		if (candidates.size() > 0) return candidates;
+	  // logger.debug("menu items : {}", founder.getMenuItems());
 
-		// 链接指向网站首页
-		String domain = NetUtil.getDomain(doc().baseUri());
-		if (domain != null && candidates.size() > 0) {
-			candidates = doc().getElementsByAttributeValueContaining("href", domain);
+	  Elements candidates = new Elements();
+	  for (Element item : founder.getMenuItems()) {
+	    Element menu = getMenuFromItem(item);
+	    if (menu != null) candidates.add(menu);
+	  }
 
-			// 包含本网站域名的链接太多了，没有意义
-			if (candidates.size() > 5) {
-				candidates = null;
-			}
-		}
-		if (candidates.size() > 0) return candidates;
-
-		// 链接指向网站首页
-		candidates = doc().getElementsByAttributeValue("href", "/");
-		if (candidates.size() > 0) return candidates;
-
-		// css信息
-		candidates = doc().getElementsByAttributeValueMatching("id", "nav|menu");
-		if (candidates.size() > 0) return candidates;
-		candidates = doc().getElementsByAttributeValueMatching("css", "nav|menu");
-		if (candidates.size() > 0) return candidates;
-
-		return candidates;
+	  return candidates;
 	}
+
+  /*
+   * 通过一个菜单项，找到整个菜单的根节点
+   * */
+  private Element getMenuFromItem(final Element menuItem) {
+    // 至少6层深度,一个典型的路径是：
+    // html > body > div[class="main"] > div[class="nav"] > ul > li > a
+    if (menuItem == null || menuItem.depth() < 6) {
+      return null;
+    }
+
+    Element menuElement = null;
+    Element ele = menuItem;
+
+    int maxTry = 4;
+    while(menuElement == null && ele != null && maxTry-- > 0) {
+      if (!StringUtil.in(ele.tagName(), "ul", "ol", "p", "div")) {
+        continue;
+      }
+
+      if (ele.tagName().equals("ul")) {
+        menuElement = ele;
+      }
+
+      if (menuElement == null && ele.indic(Indicator.C) >= 4 && ele.indic(Indicator.D) >= 8) {
+        // at least 4 menu item
+        menuElement = ele;
+      }
+
+      ele = ele.parent();
+    }
+
+    return menuElement;
+  }
+
+  private class MenuItemFounder extends InterruptiveElementVisitor {
+
+    private Elements menuItems = new Elements();
+
+    public Elements getMenuItems() {
+      return menuItems;
+    }
+
+    @Override
+    public void head(Element ele, int depth) {
+      if (!ele.tagName().equals("a")) {
+        return;
+      }
+
+      // logger.debug("find menu item : {}, {}", ele.prettyName(), ele.text());
+
+      String text = StringUtil.stripNonChar(ele.text());
+      if (text.equals("首页")) {
+        menuItems.add(ele);
+        return;
+      }
+
+      String href = StringUtils.stripEnd(ele.attr("href"), "/");
+      int count = StringUtils.countMatches(href, "/");
+      // only http:// or https:// or no "/"
+      if (count <= 2) {
+        menuItems.add(ele);
+      }
+    }
+  }
 }

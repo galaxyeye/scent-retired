@@ -47,6 +47,9 @@ public class DomSegment implements Comparable<DomSegment> {
     this.root = root;
     this.title = title;
     this.body = body;
+
+    root.attr("data-segmented", "1");
+    body.attr("data-segmented", "1");
   }
 
   public DomSegment(Element baseBlock) {
@@ -67,6 +70,13 @@ public class DomSegment implements Comparable<DomSegment> {
       title = null;
       root = body;
     }
+
+    root.attr("data-segmented", "1");
+    body.attr("data-segmented", "1");
+//
+//    logger.debug("-----------------------------");
+//    logger.debug("root : {} body : {}", root.attributes(), body.attributes());    
+//    logger.debug("root : {} body : {}", root.hasAttr("data-segmented"), body.hasAttr("data-segmented"));
   }
 
   public Element root() {

@@ -11,8 +11,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.qiwur.scent.jsoup.nodes.Element;
 import org.qiwur.scent.jsoup.select.Elements;
-import org.qiwur.scent.utils.FiledLines;
-import org.qiwur.scent.utils.ObjectCache;
 import org.qiwur.scent.utils.StringUtil;
 
 import ruc.irm.similarity.FuzzyProbability;
@@ -21,39 +19,22 @@ import ruc.irm.similarity.sentence.morphology.MorphoSimilarity;
 
 import com.google.common.collect.Multiset;
 
-public final class EntityNameFeature extends FiledLines {
+public final class EntityNameFeature extends LinedFeature {
 
   static final Logger logger = LogManager.getLogger(EntityNameFeature.class);
 
-  public static final int MinProductTitleSize = 10;
+  public static final int MinProductTitleSize = 8;
 
   public static final int MaxProductTitleSize = 100;
 
   // 移除括号中的内容，最小匹配
   public static final Pattern PAT_REMOVE_COMMENT_POTION = Pattern.compile("((（.+?）)|(【.+?】))");
 
-  public static final String BadProductNameWordsFile = "conf/bad-product-name-words.txt";
+  // public static final String BadNameWordsFile = "conf/bad-product-name-words.txt";
 
-  private EntityNameFeature() {
-    super(StringUtil.LongerFirstComparator, BadProductNameWordsFile);
-  }
-
-  public static EntityNameFeature create(Configuration conf) {
-    ObjectCache objectCache = ObjectCache.get(conf);
-    final String cacheId = EntityNameFeature.class.getName();
-
-    if (objectCache.getObject(cacheId) != null) {
-      return (EntityNameFeature) objectCache.getObject(cacheId);
-    }
-    else {
-      EntityNameFeature feature = new EntityNameFeature();
-      objectCache.setObject(cacheId, feature);
-      return feature;
-    }
-  }
-
-  public Multiset<String> badWords() {
-    return getLines(BadProductNameWordsFile);
+  // visible inside the package
+  public EntityNameFeature(Configuration conf, String[] featureFile) {
+    super(conf, featureFile);
   }
 
   public static double getQuickSimilarity(String text, String text2) {
@@ -159,13 +140,17 @@ public final class EntityNameFeature extends FiledLines {
 
     Elements candidates = new Elements();
     for (Element h : rawCandidates) {
-      // TODO : we can do better here
-      String name = preprocess(h.ownText());
-      if (validate(name)) {
-        // NOTICE : this changes the original DOM
-        h.text(name);
-        candidates.add(h);
+      String name = strip(h.ownText());
+      String name2 = strip(h.text());
+
+      if (!validate(name)) {
+        h.html(name2);
       }
+      else {
+        h.html(name);
+      }
+
+      candidates.add(h);
     }
 
     Collections.sort(candidates, new Comparator<Element>() {
@@ -187,20 +172,24 @@ public final class EntityNameFeature extends FiledLines {
     return true;
   }
 
+  public Multiset<String> badWords() {
+    return lines();
+  }
+
   // 预处理
-  public String preprocess(String name) {
+  public String strip(String name) {
     if (!validate(name))
       return "";
-
-    // 去除括号以及括号中的部分
-    // name = PAT_REMOVE_COMMENT_POTION.matcher(name).replaceAll("");
-    // 去除两端的空白
-    name = StringUtil.trimNonChar(name, "[]()【】（）");
 
     // 去除黑名单中的词语
     for (String word : badWords()) {
       name = name.replace(word, "");
     }
+
+    // 去除括号以及括号中的部分
+    // name = PAT_REMOVE_COMMENT_POTION.matcher(name).replaceAll("");
+    // 去除两端的空白
+    name = StringUtil.trimNonChar(name, "[]()【】（）");
 
     if (!validate(name))
       return "";

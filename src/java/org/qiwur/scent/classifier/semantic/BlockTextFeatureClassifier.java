@@ -6,8 +6,8 @@ import java.util.Map.Entry;
 
 import org.apache.hadoop.conf.Configuration;
 import org.qiwur.scent.classifier.RuleBasedBlockClassifier;
+import org.qiwur.scent.feature.FeatureManager;
 import org.qiwur.scent.feature.PhraseFeature;
-import org.qiwur.scent.feature.PhraseFeatureFactory;
 import org.qiwur.scent.jsoup.block.DomSegment;
 
 public class BlockTextFeatureClassifier extends RuleBasedBlockClassifier {
@@ -20,8 +20,8 @@ public class BlockTextFeatureClassifier extends RuleBasedBlockClassifier {
     double weight = conf.getFloat("scent.block.text.feature.classifier.weight", 1.0f);
     this.weight(weight);
 
-    String file = conf.get("scent.block.text.feature.file");
-    blockTextFeature = new PhraseFeatureFactory(file, conf).getFeature();
+    String featureFile = conf.get("scent.block.text.feature.file");
+    blockTextFeature = FeatureManager.get(conf, PhraseFeature.class, featureFile);
   }
 
   /*

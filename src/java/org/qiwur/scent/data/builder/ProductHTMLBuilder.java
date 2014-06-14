@@ -26,7 +26,8 @@ public class ProductHTMLBuilder extends ProductBuilder {
       "Gallery",
       "ProductShow",
       "ProductSpec",
-      "Images",
+      "ProductDetail",
+      "PureImages",
       "SimilarEntity",
       "Links",
   };
@@ -69,8 +70,11 @@ public class ProductHTMLBuilder extends ProductBuilder {
       else if (StringUtil.in(label, "ProductShow", "ProductSpec", "Metadata")) {
         buildTable(div, attributes);
       }
-      else if (label.equals("Images")) {
-        buildImages(div, attributes);
+      else if (label.equals("ProductDetail")) {
+        buildProductDetail(div, attributes);
+      }
+      else if (label.equals("PureImages")) {
+        buildPureImages(div, attributes);
       }
       else if (label.equals("SimilarEntity")) {
         buildLinks(div, attributes);
@@ -108,11 +112,17 @@ public class ProductHTMLBuilder extends ProductBuilder {
     return root;
   }
 
-  private Element buildImages(Element root, Collection<EntityAttribute> attributes) {
+  private Element buildProductDetail(Element root, Collection<EntityAttribute> attributes) {
     for (EntityAttribute attr : attributes) {
-      if (attr.hasCategory("ProductDetail")) {
-        root.append(attr.value());
-      }
+      root.append(attr.value());
+    }
+
+    return root;
+  }
+
+  private Element buildPureImages(Element root, Collection<EntityAttribute> attributes) {
+    for (EntityAttribute attr : attributes) {
+      root.append(attr.value());
     }
 
     for (Element img : root.getElementsByTag("img")) {
@@ -156,7 +166,7 @@ public class ProductHTMLBuilder extends ProductBuilder {
       }
 
       // probably banner ad
-      if (width > 500) {
+      if (width > 1000) {
         img.remove();
       }
     }

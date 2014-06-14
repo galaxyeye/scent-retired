@@ -5,6 +5,8 @@ import java.util.Collection;
 import org.apache.hadoop.conf.Configuration;
 import org.qiwur.scent.classifier.RuleBasedBlockClassifier;
 import org.qiwur.scent.feature.BlockStatFeature;
+import org.qiwur.scent.feature.FeatureManager;
+import org.qiwur.scent.feature.PhraseFeature;
 import org.qiwur.scent.jsoup.block.DomSegment;
 
 public class CodeStructureFeatureClassifier extends RuleBasedBlockClassifier {
@@ -17,8 +19,8 @@ public class CodeStructureFeatureClassifier extends RuleBasedBlockClassifier {
     double weight = conf.getFloat("scent.code.structure.feature.classifier.weight", 1.0f);
     this.weight(weight);
 
-    String file = conf.get("scent.block.stat.feature.file");
-    blockStatFeature = BlockStatFeature.create(file, conf);
+    String featureFile = conf.get("scent.block.stat.feature.file");
+    blockStatFeature = FeatureManager.get(conf, BlockStatFeature.class, featureFile);
 
     blockStatFeature.setGlobalVar("$_menu_seq", conf.get("scent.page.menu.sequence"));
     blockStatFeature.setGlobalVar("$_title_seq", conf.get("scent.page.title.sequence"));

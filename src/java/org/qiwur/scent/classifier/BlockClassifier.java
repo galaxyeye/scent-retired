@@ -131,7 +131,7 @@ public abstract class BlockClassifier {
   public String getMatrixString() {
     final String[] ignoredLabels = {BlockLabel.Menu.text(), 
         BlockLabel.Title.text(), 
-        BlockLabel.Images.text(), 
+        BlockLabel.LinkImages.text(), 
         BlockLabel.Links.text()
     };
 

@@ -137,6 +137,10 @@ public class Element extends Node {
     return this;
   }
 
+  public boolean isSegmented() {
+    return hasAttr("data-segmented");
+  }
+
   /**
    * Get this element's HTML5 custom data attributes. Each attribute in the
    * element that has a key starting with "data-" is included the dataset.

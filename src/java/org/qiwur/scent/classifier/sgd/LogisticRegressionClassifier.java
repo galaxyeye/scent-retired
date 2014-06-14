@@ -9,7 +9,6 @@ import java.util.Collection;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.mahout.classifier.sgd.ModelSerializer;
 import org.apache.mahout.classifier.sgd.OnlineLogisticRegression;
-import org.apache.mahout.math.RandomAccessSparseVector;
 import org.apache.mahout.math.Vector;
 import org.qiwur.scent.classifier.BlockClassifier;
 import org.qiwur.scent.jsoup.block.DomSegment;

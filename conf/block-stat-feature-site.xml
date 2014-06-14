@@ -28,18 +28,25 @@ if there are several block with the same type, we calculate the max score, see, 
 -->
 <?xml version="1.0"?>
 <block-features>
+    <block type="GalleryList">
+        <rule indicator="menu-distance"   range=",0"      score="2" -score="-100" />
+        <rule indicator="-txt-blk"        range="100,"    score="5" -score="-100" />
+        <rule indicator="ave-txt-blk-len" range="2,10"    score="3" -score="-100" />
+    </block>
     <block type="Gallery">
         <rule indicator="menu-distance"   range="0,50"      score="2"  -score="0" />
-        <rule indicator="menu-distance"   range="0,100"     score="0"  -score="-100" />
+        <rule indicator="menu-distance"   range="0,1000"    score="0"  -score="-100" />
         <rule indicator="title-distance"  range="-100,10"   score="2"  -score="0" />
-        <rule indicator="title-distance"  range="-100,50"   score="0"  -score="-100" />
+        <rule indicator="title-distance"  range="-100,1000" score="0"  -score="-100" />
         <rule indicator="-char"           range="0,20"      score="2"  -score="-100" />
         <rule indicator="-char"           range="0,0"       score="2"  -score="0" />
         <rule indicator="-img"            range="1,20"      score="0"  -score="-100" />
         <rule indicator="-img"            range="2,"        score="2"  -score="0" />
-        <rule indicator="-img"            range="4,"        score="2"  -score="0" />
+        <rule indicator="-img"            range="4,"        score="4"  -score="0" />
         <rule indicator="delta"           range="0,2"       score="2"  -score="0"  _1="-img" _2="-a" />
         <rule indicator="delta"           range=",-4"       score="3"  -score="0"  _1="-img" _2="-a" />
+        <rule indicator="-img-ave-w"      range=",300"      score="0"  -score="-100" />
+        <rule indicator="-img-ave-h"      range=",300"      score="0"  -score="-100" />
     </block>
     <block type="ProductShow">
         <rule indicator="title-distance"  range="0,10"      score="4" -score="-100" />
@@ -47,6 +54,8 @@ if there are several block with the same type, we calculate the max score, see, 
         <rule indicator="-img"            range=",3"        score="2" -score="0" />
         <rule indicator="-txt-blk"        range="10,"       score="2" -score="0" />
         <rule indicator="-sep"            range="3,"        score="4" -score="0" />
+        <rule indicator="-img-ave-w"      range=",300"      score="0" -score="-100" />
+        <rule indicator="-img-ave-h"      range=",300"      score="0" -score="-100" />
     </block>
     <block type="ProductSpec">
         <rule indicator="-sep"            range="3,"      score="3" -score="0" />
@@ -70,13 +79,19 @@ if there are several block with the same type, we calculate the max score, see, 
     <block type="ProductDetail">
         <rule indicator="title-distance"  range="50,"     score="0" -score="-100" />
         <rule indicator="-char"           range="150,"    score="2" -score="0" />
-        <rule indicator="-char"           range="300,"    score="2" -score="0" />
+        <rule indicator="-char"           range="300,"    score="4" -score="0" />
         <rule indicator="-img"            range="1,"      score="0" -score="-100" />
         <rule indicator="-img"            range="2,"      score="2" -score="0" />
         <rule indicator="-img"            range="4,"      score="2" -score="0" />
+        <rule indicator="-img-ave-w"      range="300,"    score="2" -score="-4" />
+        <rule indicator="-img-ave-h"      range="300,"    score="2" -score="-4" />
+        <rule indicator="-img-ave-w"      range="500,"    score="2" -score="0" />
+        <rule indicator="-img-ave-h"      range="500,"    score="2" -score="0" />
         <rule indicator="delta"           range="2,"      score="0" -score="-100" _1="-a" _2="-img" />
         <rule indicator="delta"           range="4,"      score="4" -score="0"    _1="-a" _2="-img" />
         <rule indicator="delta"           range="8,"      score="4" -score="0"    _1="-a" _2="-img" />
+        <rule indicator="-img-ave-w"      range="10,100"  score="-100" -score="0" />
+        <rule indicator="-img-ave-h"      range="10,100"  score="-100" -score="0" />
     </block>
     <block type="Comment">
         <rule indicator="-char"           range="200,"    score="2" -score="-100" />
@@ -88,7 +103,9 @@ if there are several block with the same type, we calculate the max score, see, 
         <rule indicator="delta"           range="5,"      score="0" -score="-100" _1="-a" _2="-txt-blk" />
         <rule indicator="bottom-distance" range="0,500"   score="0" -score="-100" />
     </block>
+    <!-- 
     <block type="BadBlock">
         <rule indicator="bottom-distance" range="0,300"    score="10" -score="0" />
     </block>
+     -->
 </block-features>

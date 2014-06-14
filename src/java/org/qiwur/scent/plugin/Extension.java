@@ -20,8 +20,6 @@ import java.util.HashMap;
 
 import org.apache.hadoop.conf.Configurable;
 import org.apache.hadoop.conf.Configuration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * An <code>Extension</code> is a kind of listener descriptor that will be

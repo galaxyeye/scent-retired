@@ -8,7 +8,7 @@
 	<!-- labels -->
 	<property>
 		<name>scent.segment.labels</name>
-		<value>ProductShow,RelativeProduct,ShopIntro,ProductSpec,ProductDetail,Comment</value>
+		<value>CategoryList,ProductShow,RelativeProduct,ShopIntro,ProductSpec,ProductDetail,Comment</value>
 		<description>Notice : do not split into lines</description>
 	</property>
 
@@ -26,6 +26,10 @@
 		<name>scent.net.proxy.use.proxy.pool</name>
 		<value>false</value>
 	</property>
+    <property>
+        <name>scent.net.proxy.max.pool.size</name>
+        <value>5</value>
+    </property>
 	<property>
 		<name>scent.net.proxy.host</name>
 		<value>localhost</value>
@@ -65,7 +69,7 @@
 	<!-- code statistics analysis -->
     <property>
         <name>scent.stat.indicator.separators</name>
-        <value>:,：,|</value>
+        <value>:,：,>,|</value>
         <description>affect -sep indicator</description>
     </property>
 	<property>
@@ -101,7 +105,7 @@
 		<value>conf/bad-attribute-names.txt</value>
 	</property>
 	<property>
-		<name>scent.bad.attribute.value.words.file</name>
+		<name>scent.bad.attr.value.words.file</name>
 		<value>conf/bad-attribute-value-words.txt</value>
 	</property>
 	<property>
@@ -112,8 +116,12 @@
 		<name>scent.bad.category.words.file</name>
 		<value>conf/bad-category-words.txt</value>
 	</property>
+    <property>
+        <name>scent.bad.html.title.feature.file</name>
+        <value>conf/bad-html-title-words.txt</value>
+    </property>
 	<property>
-		<name>scent.bad.product.name.words.file</name>
+		<name>scent.bad.entity.name.words.file</name>
 		<value>conf/bad-product-name-words.txt</value>
 	</property>
 

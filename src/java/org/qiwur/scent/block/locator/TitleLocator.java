@@ -6,8 +6,9 @@ import java.util.TreeMap;
 
 import org.apache.commons.collections.ComparatorUtils;
 import org.apache.hadoop.conf.Configuration;
-import org.qiwur.scent.feature.HtmlTitleFeature;
 import org.qiwur.scent.feature.EntityNameFeature;
+import org.qiwur.scent.feature.FeatureManager;
+import org.qiwur.scent.feature.HtmlTitleFeature;
 import org.qiwur.scent.jsoup.block.BlockLabel;
 import org.qiwur.scent.jsoup.block.DomSegment;
 import org.qiwur.scent.jsoup.nodes.Document;
@@ -36,7 +37,7 @@ public final class TitleLocator extends BlockLocator {
   private TreeMap<Double, Element> titleElementCandidates = new TreeMap<Double, Element>(ReversedDoubleComparator);
 
   private final Configuration conf;
-  private final EntityNameFeature productNameFeature;
+  private final EntityNameFeature entityNameFeature;
   private final HtmlTitleFeature htmlTitleFeature;
   private Set<String> potentialTitles = null;
 
@@ -44,10 +45,10 @@ public final class TitleLocator extends BlockLocator {
 
   public TitleLocator(Document doc, Configuration conf) {
     super(doc, BlockLabel.Title);
-
     this.conf = conf;
-    productNameFeature = EntityNameFeature.create(conf);
-    htmlTitleFeature = HtmlTitleFeature.create(conf);
+
+    entityNameFeature = FeatureManager.get(conf, EntityNameFeature.class, conf.get("scent.bad.entity.name.words.file"));
+    htmlTitleFeature = FeatureManager.get(conf, HtmlTitleFeature.class, conf.get("scent.bad.html.title.feature.file"));
   }
 
   @Override
@@ -58,14 +59,14 @@ public final class TitleLocator extends BlockLocator {
     if (potentialTitles == null) {
       potentialTitles = htmlTitleFeature.getPotentialTitles(doc.title());
     }
-    final Elements candidates = productNameFeature.getSortedHeadElements(doc, tagNames);
+    final Elements candidates = entityNameFeature.getSortedHeadElements(doc, tagNames);
 
     // logger.debug(candidates);
 
     double sim = 0.0;
     for (Element h : candidates) {
       if (!FuzzyProbability.veryLikely(sim)) {
-        sim = EntityNameFeature.getMaxSimilarity(h.ownText(), potentialTitles);
+        sim = EntityNameFeature.getMaxSimilarity(h.text(), potentialTitles);
       }
 
       if (FuzzyProbability.veryLikely(sim)) {
@@ -123,10 +124,10 @@ public final class TitleLocator extends BlockLocator {
 
     String title = doc.title();
 
-    HtmlTitleFeature titleFeature = HtmlTitleFeature.create(conf);
-    title = titleFeature.removeSuffix(title);
-    title = titleFeature.trim(title);
-    ele.text(title);
+    String featureFile = conf.get("scent.html.title.feature.file");
+    HtmlTitleFeature titleFeature = FeatureManager.get(conf, HtmlTitleFeature.class, featureFile);
+    title = titleFeature.strip(title);
+    ele.html(title);
 
     DomSegment segment = new DomSegment(null, null, ele);
     segment.tag(BlockLabel.Title, FuzzyProbability.MUST_BE);
@@ -147,7 +148,7 @@ public final class TitleLocator extends BlockLocator {
       Element candidate = findCandidateTitle(e);
       if (candidate != null) {
         // TODO : also check candidate.text()
-        String text = productNameFeature.preprocess(candidate.ownText());
+        String text = entityNameFeature.strip(candidate.ownText());
 
         if (htmlTitleFeature.validate(text)) {
           titleElement = evaluateCandidate(text, candidate);

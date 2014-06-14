@@ -9,10 +9,9 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Properties;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.qiwur.scent.jsoup.Connection.Response;
-import org.qiwur.scent.jsoup.Jsoup;
 
 public class TestNet {
 
@@ -51,9 +50,12 @@ public class TestNet {
 	}
 
 	public static void main(String s[]) throws Exception {
-    String url = "http://sinorelo.com/";
+    String href = StringUtils.stripEnd("http://www.suning.com", "/");
+    int count = StringUtils.countMatches(href, "/");
 
-    Response res = Jsoup.connect(url, "http://qiwur.com/", 19080).execute();
-    System.out.println(res.body());
-	}
+    String text = StringUtil.stripNonChar("首页");
+    
+    System.out.println(count);
+    System.out.println(text.equals("首页"));
+  }
 }

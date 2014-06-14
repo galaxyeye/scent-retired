@@ -104,6 +104,10 @@ public class FiledLines {
     return lines.remove(text);
   }
 
+  public void clear() {
+    filedLines.clear();
+  }
+
   public boolean contains(String file, String text) {
     Multiset<String> conf = getLines(file);
     if (conf != null)

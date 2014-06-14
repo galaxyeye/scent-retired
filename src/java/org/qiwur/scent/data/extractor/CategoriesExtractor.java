@@ -6,6 +6,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.qiwur.scent.entity.PageEntity;
 import org.qiwur.scent.feature.CategoryFeature;
+import org.qiwur.scent.feature.FeatureManager;
+import org.qiwur.scent.feature.LinedFeature;
 import org.qiwur.scent.jsoup.block.DomSegment;
 import org.qiwur.scent.jsoup.nodes.Element;
 import org.qiwur.scent.jsoup.nodes.Indicator;
@@ -19,9 +21,11 @@ public class CategoriesExtractor extends DomSegmentExtractor {
 
 	public CategoriesExtractor(DomSegment segment, PageEntity pageEntity, Configuration conf) {
 		super(segment, pageEntity, "Categories");
-
 		this.conf = conf;
-		this.feature = CategoryFeature.create(conf);
+
+    String featureFile = conf.get("scent.bad.category.words.file");
+    feature = FeatureManager.get(conf, CategoryFeature.class, featureFile);
+
 		this.categoryLearner = new EntityCategoryLearner(conf);
 	}
 

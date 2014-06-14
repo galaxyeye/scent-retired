@@ -13,8 +13,6 @@ import org.qiwur.scent.utils.StringUtil;
 
 public final class GalleryExtractor extends DomSegmentExtractor {
 
-	// TODO : add more suffixes
-
 	private Set<Image> images = new HashSet<Image>();
 
 	public GalleryExtractor(DomSegment segment, PageEntity pageEntity, Configuration conf) {

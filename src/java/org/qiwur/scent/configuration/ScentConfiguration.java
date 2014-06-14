@@ -17,8 +17,8 @@
 
 package org.qiwur.scent.configuration;
 
-import java.util.Map.Entry;
 import java.util.Collection;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.UUID;
 

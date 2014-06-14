@@ -14,8 +14,8 @@ import org.qiwur.scent.classifier.statistics.BlockVarianceCalculator;
 import org.qiwur.scent.entity.PageEntity;
 import org.qiwur.scent.jsoup.block.DomSegment;
 import org.qiwur.scent.jsoup.nodes.Document;
-import org.qiwur.scent.learning.BlockFeatureRecorder;
 import org.qiwur.scent.printer.BlockLabelPrinter;
+import org.qiwur.scent.printer.DomStatisticsPrinter;
 import org.qiwur.scent.utils.ObjectCache;
 
 import ruc.irm.similarity.word.hownet2.concept.BaseConceptParser;
@@ -59,17 +59,19 @@ public class WebExtractor {
     return loader;
   }
 
+  public void refreshFeatures() {
+
+  }
+
   public PageEntity extract(PageExtractor extractorImpl) {
     Validate.notNull(extractorImpl);
     Document doc = extractorImpl.doc();
-
-    // new DomStatisticsPrinter(doc).process();
 
     new BlockVarianceCalculator(doc, conf).process();
 
     Set<DomSegment> segmentSet = new DomSegmentsBuilder(doc, conf).build();
 
-//    new DomSegmentPrinter(doc).process();
+    new DomStatisticsPrinter(doc).process();
 
     DomSegment[] segments = segmentSet.toArray(new DomSegment[segmentSet.size()]);
     String[] labels = conf.getStrings("scent.segment.labels");
@@ -85,4 +87,5 @@ public class WebExtractor {
 
     return extractorImpl.pageEntity();
   }
+
 }

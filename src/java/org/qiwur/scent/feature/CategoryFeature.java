@@ -1,12 +1,8 @@
 package org.qiwur.scent.feature;
 
-import java.util.regex.Pattern;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.qiwur.scent.utils.FiledLines;
-import org.qiwur.scent.utils.ObjectCache;
 import org.qiwur.scent.utils.StringUtil;
 
 public final class CategoryFeature extends LinedFeature {
@@ -17,29 +13,8 @@ public final class CategoryFeature extends LinedFeature {
 
   public static final String BadCategoryWordsFile = "conf/bad-category-words.txt";
 
-  private CategoryFeature() {
-    super(BadCategoryWordsFile);
-    setPreprocessor(new FiledLines.Preprocessor() {
-      @Override
-      public String process(String line) {
-        line = line.startsWith("#") ? "" : line.trim();
-        return Pattern.quote(line);
-      }
-    });
-  }
-
-  public static CategoryFeature create(Configuration conf) {
-    ObjectCache objectCache = ObjectCache.get(conf);
-    final String cacheId = BadCategoryWordsFile;
-
-    if (objectCache.getObject(cacheId) != null) {
-      return (CategoryFeature) objectCache.getObject(cacheId);
-    }
-    else {
-      CategoryFeature feature = new CategoryFeature();
-      objectCache.setObject(cacheId, feature);
-      return feature;
-    }
+  public CategoryFeature(Configuration conf, String[] featureFile) {
+    super(conf, featureFile);
   }
 
   public String strip(String name) {

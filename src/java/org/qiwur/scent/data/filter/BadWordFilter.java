@@ -5,20 +5,24 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
+import org.qiwur.scent.feature.FeatureManager;
 import org.qiwur.scent.feature.LinedFeature;
-import org.qiwur.scent.feature.LinedFeatureFactory;
 
 public class BadWordFilter implements DataFilter {
 
-  private final String file;
+  private final String featureFile;
   private final Configuration conf;
   private final LinedFeature feature;
 
-  public BadWordFilter(String file, Configuration conf) {
-    this.file = file;
+  public BadWordFilter(String featureFile, Configuration conf) {
+    this.featureFile = featureFile;
     this.conf = conf;
 
-    feature = new LinedFeatureFactory(file, conf).get();
+    feature = FeatureManager.get(conf, LinedFeature.class, featureFile);
+  }
+
+  public Configuration getConf() {
+    return conf;
   }
 
   public Collection<String> filter(Collection<String> words) {

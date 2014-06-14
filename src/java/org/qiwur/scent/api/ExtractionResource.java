@@ -64,7 +64,8 @@ public class ExtractionResource extends ServerResource {
 
       long time = System.currentTimeMillis();
       PageExtractor extractorImpl = extractorFactory.create("product", doc);
-      PageEntity pageEntity = extractor.extract(extractorImpl).getCombined();
+      extractor.refreshFeatures();
+      PageEntity pageEntity = extractor.extract(extractorImpl);
 
       logger.debug(pageEntity);
 

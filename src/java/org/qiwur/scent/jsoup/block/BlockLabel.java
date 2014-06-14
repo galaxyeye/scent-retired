@@ -14,7 +14,9 @@ public class BlockLabel implements Comparable<BlockLabel> {
   public static BlockLabel Categories = BlockLabel.fromString("Categories");
   public static BlockLabel Gallery = BlockLabel.fromString("Gallery");
   public static BlockLabel Links = BlockLabel.fromString("Links");
-  public static BlockLabel Images = BlockLabel.fromString("Images");
+  public static BlockLabel DensyLinks = BlockLabel.fromString("DensyLinks");
+  public static BlockLabel LinkImages = BlockLabel.fromString("LinkImages");
+  public static BlockLabel PureImages = BlockLabel.fromString("PureImages");
   public static BlockLabel SimilarEntity = BlockLabel.fromString("SimilarEntity");
 
   public static List<BlockLabel> labels = new ArrayList<BlockLabel>();
@@ -29,13 +31,17 @@ public class BlockLabel implements Comparable<BlockLabel> {
     labels.add(Categories);
     labels.add(Gallery);
     labels.add(Links);
-    labels.add(Images);
+    labels.add(DensyLinks);
+    labels.add(LinkImages);
+    labels.add(PureImages);
     labels.add(SimilarEntity);
 
     noInheritLabels.add(UnknownBlock);
     noInheritLabels.add(BadBlock);
-    noInheritLabels.add(Images);
+    noInheritLabels.add(LinkImages);
+    noInheritLabels.add(PureImages);
     noInheritLabels.add(Links);
+    noInheritLabels.add(DensyLinks);
   }
 
   private String text;

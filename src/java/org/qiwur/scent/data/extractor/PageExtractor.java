@@ -44,7 +44,7 @@ public class PageExtractor implements DataExtractor {
     configuratedExtractors.put(BlockLabel.Title.text(), TitleExtractor.class.getName());
     configuratedExtractors.put(BlockLabel.Gallery.text(), GalleryExtractor.class.getName());
     configuratedExtractors.put(BlockLabel.Links.text(), LinksExtractor.class.getName());
-    configuratedExtractors.put(BlockLabel.Images.text(), ImagesExtractor.class.getName());
+    configuratedExtractors.put(BlockLabel.LinkImages.text(), ImagesExtractor.class.getName());
     configuratedExtractors.put(BlockLabel.SimilarEntity.text(), SimilarEntityExtractor.class.getName());
   }
 

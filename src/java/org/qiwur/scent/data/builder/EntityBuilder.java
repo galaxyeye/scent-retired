@@ -13,17 +13,20 @@ import org.apache.commons.collections.ComparatorUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.qiwur.scent.entity.EntityAttribute;
 import org.qiwur.scent.entity.PageEntity;
-import org.qiwur.scent.feature.EntityAttrValueFeature;
+import org.qiwur.scent.feature.FeatureManager;
 import org.qiwur.scent.feature.LinedFeature;
-import org.qiwur.scent.feature.LinedFeatureFactory;
 import org.qiwur.scent.utils.StringUtil;
 
 import com.google.common.collect.Multimap;
 import com.google.common.collect.TreeMultimap;
 
 public class EntityBuilder implements Builder {
+
+  static final Logger logger = LogManager.getLogger(EntityBuilder.class);
 
   public static final Map<String, String> ImageAttributeTransformer = new HashMap<String, String>();
 
@@ -88,11 +91,11 @@ public class EntityBuilder implements Builder {
 
     // 颜色属性和可选颜色属性
     for (String text : colorStrings) {
-      for (String color : EntityAttrValueFeature.knownColors()) {
-        if (text.contains(color)) {
-          pageEntity.put(new EntityAttribute(AttributeName, color));
-        }
-      }
+//      for (String color : EntityAttrValueFeature.knownColors()) {
+//        if (text.contains(color)) {
+//          pageEntity.put(new EntityAttribute(AttributeName, color));
+//        }
+//      }
     }
   }
 
@@ -100,9 +103,8 @@ public class EntityBuilder implements Builder {
   protected void rebuildKeywords() {
     final String AttributeName = "page-keywords";
 
-    LinedFeature badPageKeywords;
     String file = conf.get("scent.bad.page.keywords.file");
-    badPageKeywords = new LinedFeatureFactory(file, conf).get();
+    LinedFeature badPageKeywords = FeatureManager.get(conf, LinedFeature.class, file);
 
     Set<String> keywordStrings = new HashSet<String>();
     Collection<EntityAttribute> keywordAttributes = pageEntity.get(AttributeName);
