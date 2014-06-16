@@ -125,10 +125,7 @@ public final class HtmlTitleFeature extends LinedFeature {
       title = StringUtils.remove(title, word);
 
       if (title.length() < lastTitleLength) {
-        // logger.debug("Suffix {} removed", suffix);
-
         removed = true;
-        break;
       }
     }
 
@@ -136,14 +133,7 @@ public final class HtmlTitleFeature extends LinedFeature {
     if (!removed) {
       int pos = StringUtils.lastIndexOf(title, '-');
       if (pos > title.length() / 2) {
-        String suffix = title.substring(pos + 1).replaceAll("\\s+", "");
-
-        // 5个字符网站名的案例：（暂时没找到）
-        if (suffix.length() <= 5) {
-          title = title.substring(0, pos);
-
-          // logger.debug("Suffix {} removed", suffix);
-        }
+        title = title.substring(0, pos);
       }
     }
 

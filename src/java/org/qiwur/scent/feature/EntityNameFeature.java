@@ -1,7 +1,5 @@
 package org.qiwur.scent.feature;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -9,8 +7,6 @@ import java.util.regex.Pattern;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.qiwur.scent.jsoup.nodes.Element;
-import org.qiwur.scent.jsoup.select.Elements;
 import org.qiwur.scent.utils.StringUtil;
 
 import ruc.irm.similarity.FuzzyProbability;
@@ -65,7 +61,9 @@ public final class EntityNameFeature extends LinedFeature {
       if (validate(text2) && text2.contains(text3)) {
         sim = text3.length() / (double) text2.length() + 0.15;
 
-        logger.debug("sim by length : {}, {} -|- {}", sim, text2, text3);
+        if (FuzzyProbability.maybe(sim)) {
+          logger.debug("sim by length : {}, {} -|- {}", sim, text2, text3);
+        }
 
         if (FuzzyProbability.veryLikely(sim)) {
           break;
@@ -81,7 +79,9 @@ public final class EntityNameFeature extends LinedFeature {
 
         sim = getStandardEditSimilarity(text2, text3);
 
-        logger.debug("sim by standard edition : {}, {} -|- {}", sim, text2, text3);
+        if (FuzzyProbability.maybe(sim)) {
+          logger.debug("sim by standard edition : {}, {} -|- {}", sim, text2, text3);
+        }
 
         if (FuzzyProbability.veryLikely(sim)) {
           break;
@@ -96,7 +96,7 @@ public final class EntityNameFeature extends LinedFeature {
     return new StandardEditDistance().getSimilarity(text, text2);
   }
 
-  public static double getSimilarity(String text, String text2) {
+  public static double getSimilarity(final String text, String text2) {
     Set<String> set = new HashSet<String>();
     set.add(text2);
     return getMaxSimilarity(text, set);
@@ -106,9 +106,11 @@ public final class EntityNameFeature extends LinedFeature {
     if (!validate(text)) return 0.0;
 
     double sim = getQuickMaxSimilarity(text, potentialTitles);
+
+    // we find it
     if (FuzzyProbability.veryLikely(sim)) return sim;
 
-    // 句子包含方法没有找到，使用语义计算方法
+    // use morpho similarity algorithm
     logger.debug("try semantic based lookup");
 
     for (String potentialTitle : potentialTitles) {
@@ -116,13 +118,14 @@ public final class EntityNameFeature extends LinedFeature {
         continue;
       }
 
-      // TODO : need preprocess?
       String text2 = text;
 
       // 耗时子过程，原因是相似度计算效率太差，一个典型的句子（譬如商品标题）相似度计算需耗时半秒钟
       sim = MorphoSimilarity.getInstance().getSimilarity(potentialTitle, text2);
 
-      logger.debug("sim by similartiy : {}, protential : {}, header : {}", sim, potentialTitle, text2);
+      if (FuzzyProbability.maybe(sim)) {
+        logger.debug("sim by similartiy : {}, protential : {}, header : {}", sim, potentialTitle, text2);
+      }
 
       // 已经找到标题项
       if (FuzzyProbability.veryLikely(sim)) {
@@ -131,36 +134,6 @@ public final class EntityNameFeature extends LinedFeature {
     }
 
     return sim;
-  }
-
-  // tags should be header tags : h1~6
-  // NOTICE : this changes the original DOM
-  public Elements getSortedHeadElements(Element root, String[] tagNames) {
-    Elements rawCandidates = root.getElementsByAnyTag(tagNames);
-
-    Elements candidates = new Elements();
-    for (Element h : rawCandidates) {
-      String name = strip(h.ownText());
-      String name2 = strip(h.text());
-
-      if (!validate(name)) {
-        h.html(name2);
-      }
-      else {
-        h.html(name);
-      }
-
-      candidates.add(h);
-    }
-
-    Collections.sort(candidates, new Comparator<Element>() {
-      @Override
-      public int compare(Element e, Element e2) {
-        return e.tagName().compareTo(e2.tagName());
-      }
-    });
-
-    return candidates;
   }
 
   public static boolean validate(String name) {

@@ -24,7 +24,7 @@ public class ProductHTMLBuilder extends ProductBuilder {
       "Categories",
       "Metadata",
       "Gallery",
-      "ProductShow",
+      "TitleContainer",
       "ProductSpec",
       "ProductDetail",
       "PureImages",
@@ -67,7 +67,7 @@ public class ProductHTMLBuilder extends ProductBuilder {
 
         doc.title(title);
       }
-      else if (StringUtil.in(label, "ProductShow", "ProductSpec", "Metadata")) {
+      else if (StringUtil.in(label, "TitleContainer", "ProductSpec", "Metadata")) {
         buildTable(div, attributes);
       }
       else if (label.equals("ProductDetail")) {

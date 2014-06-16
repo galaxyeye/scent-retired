@@ -1,6 +1,5 @@
 package org.qiwur.scent.jsoup.select;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -46,33 +45,6 @@ public abstract class Evaluator {
         @Override
         public String toString() {
             return String.format("%s", tagName);
-        }
-    }
-
-    /**
-     * Evaluator for tag name
-     */
-    public static final class AnyTag extends Evaluator {
-        private List<String> tagNames;
-
-        public AnyTag(String... tagNames) {
-            this.tagNames = Arrays.asList(tagNames);
-        }
-
-        @Override
-        public boolean matches(Element root, Element element) {
-        	for (String tagName : tagNames) {
-        		if (element.tagName().equals(tagName)) {
-        			return true;
-        		}
-        	}
-
-            return false;
-        }
-
-        @Override
-        public String toString() {
-            return String.format("%s", tagNames.toString());
         }
     }
 

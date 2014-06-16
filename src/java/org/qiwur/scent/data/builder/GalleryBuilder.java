@@ -20,7 +20,7 @@ public class GalleryBuilder extends EntityBuilder {
       "Categories",
       "Metadata",
       "Gallery",
-      "ProductShow",
+      "TitleContainer",
       "ProductSpec",
       "Images",
       "SimilarEntity",
@@ -55,7 +55,7 @@ public class GalleryBuilder extends EntityBuilder {
 
         doc.title(title);
       }
-      else if (StringUtil.in(label, "ProductSpec", "ProductShow", "Metadata")) {
+      else if (StringUtil.in(label, "ProductSpec", "TitleContainer", "Metadata")) {
         buildTable(div, attributes);
       }
       else if (label.equals("Images")) {

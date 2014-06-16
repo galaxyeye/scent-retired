@@ -71,6 +71,9 @@ public class ScentConfiguration {
 
     initStaticVariables(conf);
 
+    // TODO : is it the right place to rebuild labels?
+    rebuildLabels(conf);
+
     return conf;
   }
 
@@ -96,19 +99,27 @@ public class ScentConfiguration {
       conf.set(e.getKey().toString(), e.getValue().toString());
     }
 
+    // TODO : is it the right place to rebuild labels?
+    rebuildLabels(conf);
+
     return conf;
   }
 
   public static void rebuildLabels(Configuration conf) {
-    Collection<String> labels = conf.getStringCollection("scent.segment.labels");
+    Collection<String> labels = conf.getStringCollection("scent.html.block.labels");
     for (BlockLabel label : BlockLabel.labels) {
       if (!labels.contains(label.text())) {
         labels.add(label.text());
       }
     }
-    conf.set("scent.segment.labels", StringUtils.join(labels, ","));
+    conf.set("scent.html.block.labels", StringUtils.join(labels, ","));
+
+    Collection<String> inheritableLabels = conf.getStringCollection("scent.html.block.inheritable.labels");
+    for (String label : inheritableLabels) {
+      BlockLabel.inheritableLabels.add(BlockLabel.fromString(label));
+    }
   }
-  
+
   /**
    * Add the standard Scent resources to {@link Configuration}.
    * 

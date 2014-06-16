@@ -4,4 +4,22 @@
 <!-- Put site-specific property overrides in this file. -->
 
 <configuration>
+    <!-- labels -->
+    <property>
+        <name>scent.html.block.labels</name>
+        <value>CategoryList,RelativeProduct,ShopIntro,ProductSpec,ProductDetail,Comment</value>
+        <description>Notice : do not split into lines</description>
+    </property>
+
+    <property>
+        <name>scent.html.block.inheritable.labels</name>
+        <value>CategoryList,ProductSpec,ProductDetail,Comment</value>
+        <description>Notice : do not split into lines</description>
+    </property>
+
+    <property>
+        <name>scent.diagnose.html.block.labels</name>
+        <value>CategoryList,Categories,TitleContainer,RelativeProduct,ProductSpec,ProductDetail,Comment,Areas,BadBlock</value>
+        <description>Notice : do not split into lines</description>
+    </property>
 </configuration>

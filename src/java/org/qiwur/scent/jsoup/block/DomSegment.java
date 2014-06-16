@@ -3,6 +3,7 @@ package org.qiwur.scent.jsoup.block;
 import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.qiwur.scent.jsoup.nodes.Element;
@@ -31,10 +32,7 @@ public class DomSegment implements Comparable<DomSegment> {
   BlockPatternTracker patternTracker = new BlockPatternTracker();
 
   public DomSegment(Element root, Element title, Element body) {
-    if (body == null) {
-      logger.error("Can not construct a null DomSegment");
-      return;
-    }
+    Validate.notNull(body);
 
     if (title != null && title.text() == "") {
       title = null;
@@ -53,10 +51,7 @@ public class DomSegment implements Comparable<DomSegment> {
   }
 
   public DomSegment(Element baseBlock) {
-    if (baseBlock == null) {
-      logger.error("Can not construct a null DomSegment");
-      return;
-    }
+    Validate.notNull(baseBlock);
 
     body = baseBlock;
 
@@ -73,10 +68,26 @@ public class DomSegment implements Comparable<DomSegment> {
 
     root.attr("data-segmented", "1");
     body.attr("data-segmented", "1");
-//
-//    logger.debug("-----------------------------");
-//    logger.debug("root : {} body : {}", root.attributes(), body.attributes());    
-//    logger.debug("root : {} body : {}", root.hasAttr("data-segmented"), body.hasAttr("data-segmented"));
+  }
+
+  public static DomSegment create(Element block) {
+    return new DomSegment(null, null, block);
+  }
+
+  public static DomSegment create(Element block, BlockLabel label) {
+    return create(block, label, FuzzyProbability.VERY_LIKELY);
+  }
+
+  public static DomSegment create(Element block, String label, FuzzyProbability p) {
+    return create(block, BlockLabel.fromString(label), p);
+  }
+
+  public static DomSegment create(Element block, BlockLabel label, FuzzyProbability p) {
+    DomSegment segment = new DomSegment(null, null, block);
+
+    segment.tag(label, p);
+
+    return segment;
   }
 
   public Element root() {
@@ -88,6 +99,8 @@ public class DomSegment implements Comparable<DomSegment> {
   }
 
   public Element body() {
+    Validate.notNull(body);
+
     return body;
   }
 

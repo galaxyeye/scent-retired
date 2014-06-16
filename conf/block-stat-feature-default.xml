@@ -110,8 +110,8 @@ build-in simple indicators :
         <rule indicator="-descend"        range="0,1000" score="0"  -score="0" />
     </block>
     <block type="Categories">
-        <rule indicator="menu-distance"   range="10,"    score="0"  -score="-100" />
-        <rule indicator="title-distance"  range=",-10"   score="0"  -score="-100" />
+        <rule indicator="menu-distance"   range="1,"     score="0"  -score="-100" />
+        <rule indicator="title-distance"  range=",1"     score="0"  -score="-100" />
         <rule indicator="-txt-blk"        range="2,30"   score="4"  -score="0" />
         <rule indicator="ave-txt-blk-len" range="1,10"   score="4"  -score="0" />
         <rule indicator="ave-txt-blk-len" range="1,6"    score="4"  -score="0" />

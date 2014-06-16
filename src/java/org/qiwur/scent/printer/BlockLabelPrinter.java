@@ -39,7 +39,7 @@ public class BlockLabelPrinter {
 
 		this.segments = doc.domSegments();
 		this.conf = conf;
-    this.labels = conf.getStrings("scent.segment.labels");
+    this.labels = conf.getStrings("scent.html.block.labels");
 	}
 
 	public void process() {

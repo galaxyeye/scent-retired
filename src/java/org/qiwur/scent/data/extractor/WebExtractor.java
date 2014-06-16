@@ -12,6 +12,7 @@ import org.qiwur.scent.classifier.DomSegmentsBuilder;
 import org.qiwur.scent.classifier.DomSegmentsClassifier;
 import org.qiwur.scent.classifier.statistics.BlockVarianceCalculator;
 import org.qiwur.scent.entity.PageEntity;
+import org.qiwur.scent.feature.FeatureManager;
 import org.qiwur.scent.jsoup.block.DomSegment;
 import org.qiwur.scent.jsoup.nodes.Document;
 import org.qiwur.scent.printer.BlockLabelPrinter;
@@ -34,9 +35,8 @@ public class WebExtractor {
     // logger.info(ConfigurationUtils.toString(conf));
 
     logger.info("初始化语义计算系统");
-    File conceptFile = new File("conf/commerce-concept.xml");
     try {
-      BaseConceptParser.load(conceptFile);
+      BaseConceptParser.load(new File("conf/commerce-concept.xml"));
     } catch (IOException e) {
       logger.error(e);
     }
@@ -60,12 +60,16 @@ public class WebExtractor {
   }
 
   public void refreshFeatures() {
-
+    // just for debug
+    FeatureManager.create(conf).reloadAll();
   }
 
   public PageEntity extract(PageExtractor extractorImpl) {
     Validate.notNull(extractorImpl);
+
     Document doc = extractorImpl.doc();
+
+    refreshFeatures();
 
     new BlockVarianceCalculator(doc, conf).process();
 
@@ -74,7 +78,7 @@ public class WebExtractor {
     new DomStatisticsPrinter(doc).process();
 
     DomSegment[] segments = segmentSet.toArray(new DomSegment[segmentSet.size()]);
-    String[] labels = conf.getStrings("scent.segment.labels");
+    String[] labels = conf.getStrings("scent.html.block.labels");
     new DomSegmentsClassifier(segments, labels, conf).classify();
 
     // logger.info("打印已标注的标签");
@@ -87,5 +91,4 @@ public class WebExtractor {
 
     return extractorImpl.pageEntity();
   }
-
 }

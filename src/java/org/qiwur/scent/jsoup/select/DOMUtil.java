@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.commons.collections.ComparatorUtils;
 import org.qiwur.scent.jsoup.block.DomSegment;
+import org.qiwur.scent.jsoup.block.DomSegments;
 import org.qiwur.scent.jsoup.nodes.Element;
 import org.qiwur.scent.jsoup.nodes.Indicator;
 
@@ -323,6 +324,5 @@ public class DOMUtil {
         }
       }
     }
-
   }
 }

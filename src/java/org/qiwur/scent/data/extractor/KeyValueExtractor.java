@@ -54,7 +54,7 @@ public class KeyValueExtractor {
 		}
 
     // 抽取table
-		Elements tables = root.getElementsByAnyTag("table", "tbody");
+		Elements tables = root.select("table,tbody");
 		for (Element table : tables) {
 			// logger.debug("try extract from table");
 			extractTable(table);

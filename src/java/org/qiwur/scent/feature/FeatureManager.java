@@ -2,7 +2,6 @@ package org.qiwur.scent.feature;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
 import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
@@ -10,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.qiwur.scent.utils.ObjectCache;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 public final class FeatureManager {
@@ -46,7 +46,7 @@ public final class FeatureManager {
 
   public WebFeature getFeature(String clazzName, String... featureFile) {
     ObjectCache objectCache = ObjectCache.get(conf);
-    final String cacheId = clazzName + featureFile.toString();
+    final String cacheId = clazzName + Lists.newArrayList(featureFile).toString();
 
     if (objectCache.getObject(cacheId) != null) {
       return (WebFeature) objectCache.getObject(cacheId);
@@ -79,6 +79,7 @@ public final class FeatureManager {
   public void reloadAll() {
     ObjectCache objectCache = ObjectCache.get(conf);
 
+    logger.debug("reload features : {}", cacheIds);
     for (String cacheId : cacheIds) {
       WebFeature feature = (WebFeature) objectCache.getObject(cacheId);
       feature.reload();
@@ -100,10 +101,10 @@ public final class FeatureManager {
     return feature;
   }
 
-//  public static void main(String[] args) throws Exception {
-//    Class<?> clazz = Class.forName(HtmlTitleFeature.class.getName(), false, FeatureManager.class.getClassLoader());
-//    Constructor<?> constructor = clazz.getConstructor(new Class[] { Configuration.class, String[].class });
-//
-//    WebFeature feature = (WebFeature) constructor.newInstance(null, "balabala");
-//  }
+  public static void main(String[] args) throws Exception {
+    Class<?> clazz = Class.forName(HtmlTitleFeature.class.getName(), false, FeatureManager.class.getClassLoader());
+    Constructor<?> constructor = clazz.getConstructor(new Class[] { Configuration.class, String[].class });
+
+    WebFeature feature = (WebFeature) constructor.newInstance(null, "balabala");
+  }
 }

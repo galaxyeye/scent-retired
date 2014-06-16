@@ -26,7 +26,7 @@ import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
-public class BlockStatFeature implements WebFeature {
+public final class BlockStatFeature implements WebFeature {
 
   protected static final Logger logger = LogManager.getLogger(BlockStatFeature.class);
 
@@ -44,7 +44,7 @@ public class BlockStatFeature implements WebFeature {
 
   private int maxPlaceholders = 10;
 
-  public BlockStatFeature(Configuration conf, String[] featureFiles) {
+  public BlockStatFeature(Configuration conf, String... featureFiles) {
     this.featureFiles = Lists.newArrayList();
     this.featureFiles.add(defaultConfigFile); // must come first
     this.featureFiles.addAll(Arrays.asList(featureFiles));
@@ -66,11 +66,12 @@ public class BlockStatFeature implements WebFeature {
    * the final score is the max score calculated by all rules with the same block
    * */
   public double getScore(Element ele, String label) {
-    double maxScore = StatRule.MIN_SCORE;
-
     Collection<BlockRule> rules = getRules(label);
-    if (rules == null) return maxScore;
+    if (rules.isEmpty()) return 0.0;
 
+    // implements the OR logic : if there are several block rules for one label, 
+    // take the one who has max score
+    double maxScore = StatRule.MIN_SCORE;
     for (BlockRule rule : rules) {
       double score = rule.getScore(ele);
       if (score > maxScore) maxScore = score;

@@ -29,13 +29,13 @@ public class CodeFeatureClassifier extends RuleBasedBlockClassifier {
 
 	@Override
 	protected double getScore(DomSegment segment, String label) {
-    double score = 0.0;
-
+	  // TODO : implement the OR logic
     Map<String, Double> rules = codeFeature.getRules(label);
     if (rules == null) {
-      return score;
+      return 0.0;
     }
 
+    double score = 0.0;
     List<String> names = getAttributeNames(segment);
 		for (Entry<String, Double> entry : rules.entrySet()) {
       if (names.contains(entry.getKey())) {

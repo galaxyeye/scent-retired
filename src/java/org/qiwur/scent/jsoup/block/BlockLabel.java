@@ -4,13 +4,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+
+import com.google.common.collect.Sets;
 
 public class BlockLabel implements Comparable<BlockLabel> {
   public static BlockLabel UnknownBlock = BlockLabel.fromString("UnknownBlock");
   public static BlockLabel BadBlock = BlockLabel.fromString("BadBlock");
   public static BlockLabel Metadata = BlockLabel.fromString("Metadata");
   public static BlockLabel Title = BlockLabel.fromString("Title");
+  public static BlockLabel TitleContainer = BlockLabel.fromString("TitleContainer");
   public static BlockLabel Menu = BlockLabel.fromString("Menu");
+  public static BlockLabel Areas = BlockLabel.fromString("Areas");
   public static BlockLabel Categories = BlockLabel.fromString("Categories");
   public static BlockLabel Gallery = BlockLabel.fromString("Gallery");
   public static BlockLabel Links = BlockLabel.fromString("Links");
@@ -19,15 +24,17 @@ public class BlockLabel implements Comparable<BlockLabel> {
   public static BlockLabel PureImages = BlockLabel.fromString("PureImages");
   public static BlockLabel SimilarEntity = BlockLabel.fromString("SimilarEntity");
 
-  public static List<BlockLabel> labels = new ArrayList<BlockLabel>();
-  public static List<BlockLabel> noInheritLabels = new ArrayList<BlockLabel>();
+  public static Set<BlockLabel> labels = Sets.newHashSet();
+  public static Set<BlockLabel> inheritableLabels = Sets.newHashSet();
 
   static {
     labels.add(UnknownBlock);
     labels.add(BadBlock);
     labels.add(Metadata);
     labels.add(Title);
+    labels.add(TitleContainer);
     labels.add(Menu);
+    labels.add(Areas);
     labels.add(Categories);
     labels.add(Gallery);
     labels.add(Links);
@@ -36,12 +43,9 @@ public class BlockLabel implements Comparable<BlockLabel> {
     labels.add(PureImages);
     labels.add(SimilarEntity);
 
-    noInheritLabels.add(UnknownBlock);
-    noInheritLabels.add(BadBlock);
-    noInheritLabels.add(LinkImages);
-    noInheritLabels.add(PureImages);
-    noInheritLabels.add(Links);
-    noInheritLabels.add(DensyLinks);
+    inheritableLabels.add(Areas);
+    inheritableLabels.add(DensyLinks);
+    inheritableLabels.add(TitleContainer);
   }
 
   private String text;
@@ -78,11 +82,11 @@ public class BlockLabel implements Comparable<BlockLabel> {
   }
 
   public boolean inheritable() {
-    return !noInheritLabels.contains(this);
+    return inheritableLabels.contains(this);
   }
 
   public static boolean inheritable(BlockLabel label) {
-    return !noInheritLabels.contains(label);
+    return label.inheritable();
   }
 
   @Override

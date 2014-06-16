@@ -26,7 +26,7 @@ public class PhraseFeature implements WebFeature {
 
 	private Map<String, Map<String, Double>> blockPhrases = new HashMap<String, Map<String, Double>>();
 
-	public PhraseFeature(Configuration conf, String[] featureFile) {
+	public PhraseFeature(Configuration conf, String... featureFile) {
     this.featureFile = featureFile[0];
     this.conf = conf;
 

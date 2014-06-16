@@ -18,7 +18,7 @@ public class ConfigurationTest {
       }
     }
 
-    for (String s : conf.getStrings("scent.segment.labels")) {
+    for (String s : conf.getStrings("scent.html.block.labels")) {
       System.out.println(s);
     }
   }

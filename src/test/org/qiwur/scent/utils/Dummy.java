@@ -170,7 +170,7 @@ public class Dummy {
 
   private static void testBlockLabel() {
     Configuration conf = ScentConfiguration.create();
-    String[] labels = conf.getStrings("scent.segment.labels");
+    String[] labels = conf.getStrings("scent.html.block.labels");
 
     for (String label : labels) {
       BlockLabel l = BlockLabel.fromString(label);

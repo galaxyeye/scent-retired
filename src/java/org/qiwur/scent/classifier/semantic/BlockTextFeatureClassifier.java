@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.qiwur.scent.classifier.RuleBasedBlockClassifier;
 import org.qiwur.scent.feature.FeatureManager;
@@ -25,20 +26,18 @@ public class BlockTextFeatureClassifier extends RuleBasedBlockClassifier {
   }
 
   /*
-   * 关键词匹配算法，特征关键词数量越多，质量越高，效果越好
+   * 关键词指标
    */
   @Override
   protected double getScore(DomSegment segment, String label) {
-    double score = 0.0;
-
     Map<String, Double> rules = blockTextFeature.getRules(label);
-    if (rules == null) return score;
+    if (rules == null) return 0.0;
 
+    double score = 0.0;
+    String text = segment.body().text();
     for (Entry<String, Double> rule : rules.entrySet()) {
-      boolean found = segment.body().containsStrippedOwnText(rule.getKey());
-      if (found) {
-        score += rule.getValue();
-      }
+      int count = StringUtils.countMatches(text, rule.getKey());
+      score += count * rule.getValue();
     }
 
     return score;

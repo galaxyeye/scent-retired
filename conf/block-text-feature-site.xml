@@ -10,11 +10,12 @@
         <phrase name="商品分类" score="8" />
         <phrase name=">" score="8" />
         <!-- it's a timer -->
-        <phrase name="天" score="-1" />
-        <phrase name="时" score="-1" />
-        <phrase name="分" score="-1" />
-        <phrase name="秒" score="-1" />
-        <phrase name=">>" score="-10" />
+        <phrase name="日期" score="-5" />
+        <phrase name="天"   score="-1" />
+        <phrase name="时"   score="-1" />
+        <phrase name="分"   score="-1" />
+        <phrase name="秒"   score="-1" />
+        <phrase name=">>"   score="-10" />
         <phrase name="全部商品分类" score="-8" />
     </block>
     <block type="ProductSpec">
@@ -25,7 +26,24 @@
         <phrase name="色系" score="2.5" />
         <phrase name="品牌" score="2.5" />
         <phrase name="不支持" score="2.5" />
-        <phrase name=">" score="-4" />
+
+        <phrase name="商品名称" score="2" />
+        <phrase name="商品编号" score="2" />
+        <phrase name="商品毛重" score="2" />
+        <phrase name="产品重量" score="2" />
+        <phrase name="商品产地" score="2" />
+        <phrase name="颜色分类" score="2" />
+        <phrase name=其他功能 score="2" />
+
+        <phrase name=">" score="-1" />
+        <phrase name="商品评论" score="-3" />
+        <phrase name="商品评价" score="-3" />
+        <phrase name="全部评价" score="-3" />
+        <phrase name="好评"    score="-1" />
+        <phrase name="心得"    score="-3" />
+        <phrase name="晒单"    score="-3" />
+        <phrase name="购买日期" score="-3" />
+        <phrase name="会员"    score="-2" />
     </block>
     <block type="Comment">
         <phrase name="商品评论" score="4" />
@@ -37,6 +55,43 @@
         <phrase name="购买日期" score="2" />
         <phrase name="会员"    score="2" />
     </block>
+	<block type="Areas">
+	    <phrase name="北京" score="2" />
+	    <phrase name="上海" score="2" />
+	    <phrase name="天津" score="2" />
+	    <phrase name="重庆" score="2" />
+	    <phrase name="河北" score="2" />
+	    <phrase name="山西" score="2" />
+	    <phrase name="河南" score="2" />
+	    <phrase name="辽宁" score="2" />
+	    <phrase name="吉林" score="2" />
+	    <phrase name="黑龙江" score="2" />
+	    <phrase name="内蒙古" score="2" />
+	    <phrase name="江苏" score="2" />
+	    <phrase name="山东" score="2" />
+	    <phrase name="安徽" score="2" />
+	    <phrase name="浙江" score="2" />
+	    <phrase name="福建" score="2" />
+	    <phrase name="湖北" score="2" />
+	    <phrase name="湖南" score="2" />
+	    <phrase name="广东" score="2" />
+	    <phrase name="广西" score="2" />
+	    <phrase name="江西" score="2" />
+	    <phrase name="四川" score="2" />
+	    <phrase name="海南" score="2" />
+	    <phrase name="贵州" score="2" />
+	    <phrase name="云南" score="2" />
+	    <phrase name="西藏" score="2" />
+	    <phrase name="陕西" score="2" />
+	    <phrase name="甘肃" score="2" />
+	    <phrase name="青海" score="2" />
+	    <phrase name="宁夏" score="2" />
+	    <phrase name="新疆" score="2" />
+	    <phrase name="台湾" score="2" />
+	    <phrase name="香港" score="2" />
+	    <phrase name="澳门" score="2" />
+	    <phrase name="钓鱼岛" score="2" />
+	</block>
     <block type="BadBlock">
         <phrase name="购物指南" score="10" />
         <phrase name="特色栏目" score="10" />

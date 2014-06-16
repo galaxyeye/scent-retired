@@ -113,11 +113,11 @@ public class ProductBuilder extends EntityBuilder {
 
 	protected void rebuildPrice() {
     if (!pageEntity.contains("价格") && pageEntity.contains("销售价")) {
-      pageEntity.put("价格", pageEntity.first("销售价").value(), "ProductShow");
+      pageEntity.put("价格", pageEntity.first("销售价").value(), "TitleContainer");
     }
 
     if (!pageEntity.contains("销售价") && pageEntity.contains("价格")) {
-      pageEntity.put("销售价", pageEntity.first("价格").value(), "ProductShow");
+      pageEntity.put("销售价", pageEntity.first("价格").value(), "TitleContainer");
     }
   }
 

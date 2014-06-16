@@ -101,20 +101,12 @@ public abstract class BlockClassifier {
     }
   }
 
-  protected void inheritLabel() {
-    final double tolerance = 3; // TODO : configuration
-
+  protected void inheritLabels() {
     for (DomSegment segment : segments) {
       for (DomSegment segment2 : segments) {
         if (DOMUtil.isAncestor(segment2, segment)) {
           // segment2 is a decendant of segment, copy all labels from the ancestor
           for (BlockLabel label : segment.labelTracker().keySet()) {
-            // TODO : delayed feature
-//            double likelihood = segment.likelihood(segment2, tolerance);
-//            if (FuzzyProbability.veryLikely(likelihood)) {
-//              segment2.unTag(label);
-//            }
-
             if (label.inheritable()) {
               segment2.tag(label, segment.labelTracker().get(label));
             }
@@ -129,16 +121,12 @@ public abstract class BlockClassifier {
   protected abstract double getScore(DomSegment segment, String label);
 
   public String getMatrixString() {
-    final String[] ignoredLabels = {BlockLabel.Menu.text(), 
-        BlockLabel.Title.text(), 
-        BlockLabel.LinkImages.text(), 
-        BlockLabel.Links.text()
-    };
-
+    String[] diagnoseLabels = conf.getStrings("scent.diagnose.html.block.labels");
+    
     String report = "\n\n";
     report += String.format("%-30s", getClass().getSimpleName());
     for (int col = 0; col < labels.length; ++col) {
-      if (ArrayUtils.contains(ignoredLabels, labels[col])) {
+      if (!ArrayUtils.contains(diagnoseLabels, labels[col])) {
         continue;
       }
 
@@ -149,7 +137,7 @@ public abstract class BlockClassifier {
     for (int row = 0; row < segments.length; ++row) {
       report += String.format("%-30s", segments[row].body().prettyName());
       for (int col = 0; col < labels.length; ++col) {
-        if (ArrayUtils.contains(ignoredLabels, labels[col])) {
+        if (!ArrayUtils.contains(diagnoseLabels, labels[col])) {
           continue;
         }
 

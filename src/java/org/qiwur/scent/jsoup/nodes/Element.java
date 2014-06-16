@@ -653,15 +653,6 @@ public class Element extends Node {
     return Collector.collect(new Evaluator.Tag(tagName), this);
   }
 
-  public Elements getElementsByAnyTag(String... tagNames) {
-    for (String tagName : tagNames) {
-      Validate.notEmpty(tagName);
-      tagName = tagName.toLowerCase().trim();
-    }
-
-    return Collector.collect(new Evaluator.AnyTag(tagNames), this);
-  }
-
   /**
    * Find an element by ID, including or under this element.
    * <p>

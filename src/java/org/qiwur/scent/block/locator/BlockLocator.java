@@ -37,7 +37,7 @@ public abstract class BlockLocator {
     return doc;
   }
 
-	public BlockLabel targetType() {
+	public BlockLabel targetLabel() {
 		return targetLabel;
 	}
 }

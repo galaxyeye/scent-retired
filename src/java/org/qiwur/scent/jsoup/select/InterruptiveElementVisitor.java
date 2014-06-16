@@ -13,6 +13,10 @@ public abstract class InterruptiveElementVisitor implements ElementVisitor {
 	public void tail(Element node, int depth) {
 	}
 
+	public void stop() {
+	  stopped = true;
+	}
+
 	@Override
 	public boolean stopped() {
 		return stopped;

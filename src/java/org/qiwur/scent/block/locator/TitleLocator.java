@@ -1,6 +1,8 @@
 package org.qiwur.scent.block.locator;
 
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -21,8 +23,6 @@ import org.qiwur.scent.jsoup.select.InterruptiveElementVisitor;
 import org.qiwur.scent.utils.StringUtil;
 
 import ruc.irm.similarity.FuzzyProbability;
-import ruc.irm.similarity.sentence.SentenceSimilarity;
-import ruc.irm.similarity.sentence.morphology.MorphoSimilarity;
 
 /**
  * 通过比较文本块和网页标题的相似度来找到商品标题
@@ -34,159 +34,133 @@ public final class TitleLocator extends BlockLocator {
   private static final Comparator<Double> ReversedDoubleComparator = ComparatorUtils
       .reversedComparator(ComparatorUtils.NATURAL_COMPARATOR);
 
-  private TreeMap<Double, Element> titleElementCandidates = new TreeMap<Double, Element>(ReversedDoubleComparator);
+  private final Configuration conf;  private final HtmlTitleFeature htmlTitleFeature;
 
-  private final Configuration conf;
-  private final EntityNameFeature entityNameFeature;
-  private final HtmlTitleFeature htmlTitleFeature;
-  private Set<String> potentialTitles = null;
-
-  private Element titleElement = null;
+  private final Set<String> potentialTitles;
+  private final TreeMap<Double, Element> candiateTitles = new TreeMap<Double, Element>(ReversedDoubleComparator);
 
   public TitleLocator(Document doc, Configuration conf) {
     super(doc, BlockLabel.Title);
     this.conf = conf;
 
-    entityNameFeature = FeatureManager.get(conf, EntityNameFeature.class, conf.get("scent.bad.entity.name.words.file"));
     htmlTitleFeature = FeatureManager.get(conf, HtmlTitleFeature.class, conf.get("scent.bad.html.title.feature.file"));
+
+    potentialTitles = htmlTitleFeature.getPotentialTitles(doc.title());
   }
 
   @Override
   protected DomSegment quickLocate() {
-    DomSegment segment = null;
+    Elements candidates = doc.select("h1,h2,h3");
 
-    final String[] tagNames = { "h1", "h2", "h3" };
-    if (potentialTitles == null) {
-      potentialTitles = htmlTitleFeature.getPotentialTitles(doc.title());
-    }
-    final Elements candidates = entityNameFeature.getSortedHeadElements(doc, tagNames);
+    // let h1 comes first, then h2, and then h3
+    Collections.sort(candidates, new Comparator<Element>() {
+      @Override
+      public int compare(Element e, Element e2) {
+        return e.tagName().compareToIgnoreCase(e2.tagName());
+      }
+    });
 
-    // logger.debug(candidates);
-
-    double sim = 0.0;
+    boolean found = false;
     for (Element h : candidates) {
-      if (!FuzzyProbability.veryLikely(sim)) {
-        sim = EntityNameFeature.getMaxSimilarity(h.text(), potentialTitles);
-      }
+      found = collectCandidate(h);
+      if (found) break;
+    }
 
-      if (FuzzyProbability.veryLikely(sim)) {
-        segment = new DomSegment(null, null, h);
-        segment.tag(targetLabel, sim);
-
-        return segment;
-      }
-    } // for
-
-    return segment;
+    return found ? getTitleSegment() : null;
   }
 
   @Override
   protected DomSegment deepLocate() {
-    DomSegment segment = null;
+    new ElementTraversor(new EntityTitleFounder(doc)).traverse(doc());
 
-    // 计算标题候选项
-    if (potentialTitles == null) {
-      potentialTitles = htmlTitleFeature.getPotentialTitles(doc.title());
-    }
-
-    // 第二步：从所有标签中寻找，这一步要么找到商品标题，要么收集了候选项
-    if (titleElement == null) {
-      new ElementTraversor(new ProductTitleFounder()).traverse(doc());
-    }
-
-    // 第三步：如果没有找到，那么从候选项中寻找一个作为商品标题
-    if (titleElement == null && !titleElementCandidates.isEmpty()) {
-      // TODO : 利用其他辅助信息来判断标题项，此处简单地讲相似度最大的项判断为标题项
-      titleElement = titleElementCandidates.firstEntry().getValue();
-    }
-
-    if (titleElement != null) {
-      segment = new DomSegment(null, null, titleElement);
-
-      // No chance to consider any other candidate, this is the final
-      // choose
-      segment.tag(targetType(), FuzzyProbability.MUST_BE);
-    }
-
-    return segment;
+    return getTitleSegment();
   }
 
   public static DomSegment createTitle(Document doc, Configuration conf) {
     Element body = doc.getElementsByTag("body").first();
 
-    if (body == null) {
-      logger.error("bad document");
-      return null;
-    }
-
     Element ele = body.prependElement("h1");
-    ele.sequence(body.sequence() + 1);
-
-    String title = doc.title();
+    ele.sequence(body.sequence() + 200); // TODO : use a machine learned sequence
 
     String featureFile = conf.get("scent.html.title.feature.file");
     HtmlTitleFeature titleFeature = FeatureManager.get(conf, HtmlTitleFeature.class, featureFile);
-    title = titleFeature.strip(title);
-    ele.html(title);
+    ele.html(titleFeature.strip(doc.title()));
 
-    DomSegment segment = new DomSegment(null, null, ele);
-    segment.tag(BlockLabel.Title, FuzzyProbability.MUST_BE);
-
-    return segment;
+    return DomSegment.create(ele, BlockLabel.Title, FuzzyProbability.MUST_BE);
   }
 
-  private class ProductTitleFounder extends InterruptiveElementVisitor {
+  private boolean collectCandidate(Element ele) {
+    if (ele == null) return false;
 
-    private Element body = null;
+    double sim = 0.0, sim2 = 0.0, sim3 = 0.0;
+    String name = ele.text(), name2 = ele.ownText();
+
+    sim2 = EntityNameFeature.getMaxSimilarity(name, potentialTitles);
+    if (name.length() > name2.length()) {
+      sim3 = EntityNameFeature.getMaxSimilarity(name2, potentialTitles);
+    }
+    sim = Math.max(sim2, sim3);
+
+    if (FuzzyProbability.maybe(sim)) {
+      candiateTitles.put(sim, ele);
+    }
+
+    boolean found = FuzzyProbability.veryLikely(sim);
+    if (found && sim3 > sim2) {
+      ele.html(name2);
+    }
+
+    return found;
+  }
+
+  private DomSegment getTitleSegment() {
+    if (candiateTitles.isEmpty()) return null;
+
+    Entry<Double, Element> eleTitle = candiateTitles.firstEntry();
+    DomSegment segTitle = new DomSegment(null, null, eleTitle.getValue());
+    segTitle.tag(targetLabel(), eleTitle.getKey());
+
+    return segTitle;
+  }
+
+  private class EntityTitleFounder extends InterruptiveElementVisitor {
+
+    private final Document doc;
+    private final Element body;
+
+    public EntityTitleFounder(Document doc) {
+      this.doc = doc;
+      body = doc.select("body").first();
+
+      if (body == null) {
+        logger.error("bad document");
+      }
+    }
 
     public void head(Element e, int depth) {
       if (shouldStop(e)) {
-        stopped = true;
         return;
       }
 
-      Element candidate = findCandidateTitle(e);
-      if (candidate != null) {
-        // TODO : also check candidate.text()
-        String text = entityNameFeature.strip(candidate.ownText());
-
-        if (htmlTitleFeature.validate(text)) {
-          titleElement = evaluateCandidate(text, candidate);
-
-          if (titleElement != null) {
-            stopped = true;
-          }
-        }
-      } // local title not null
+      boolean found = collectCandidate(findCandidateTitle(e));
+      if (found) stop();
     }
 
     private boolean shouldStop(Element e) {
-      if (body == null) {
-        body = doc.select("body").first();
-        if (body == null) {
-          logger.error("bad document");
-          return true;
-        }
-      }
-
-      if (titleElement != null || potentialTitles == null) {
-        return true;
-      }
-
-      if (e.sequence() > 0.5 * body.indic(Indicator.D)) {
+      // 2/3
+      if (e.sequence() > 0.6667 * body.indic(Indicator.D)) {
         logger.debug("tooo far away the beginnig to find a title, abort. sequence : {}", e.sequence());
         return true;
       }
 
-      return false;
+      return stopped();
     }
 
     /*
      * 如果e可能包含标题文本，那么返回true，否则返回false
      */
     private Element findCandidateTitle(Element e) {
-      if (e == null)
-        return null;
+      if (e == null) return null;
 
       Element candidate = null;
 
@@ -201,58 +175,22 @@ public final class TitleLocator extends BlockLocator {
 
       // 缩小范围，如果孩子中有h1 ~ h6，那么范围缩小，以最大的h标签为准
       for (Element child : e.children()) {
-        if (candidate != null)
-          break;
+        if (candidate != null) break;
 
         for (String h : Tag.headerTags) {
           if (child.tagName() == h) {
-            titleElement = child;
+            candidate = child;
             break;
           }
         }
       }
 
-      if (candidate == null)
+      if (candidate == null) {
         candidate = e;
+      }
 
       return candidate;
-    } // end findPotentialText
-
-    private Element evaluateCandidate(String text, Element candidate) {
-      if (text == null || candidate == null)
-        return null;
-
-      // 计算相似度
-      double sim = 0.0;
-      for (String potentialTitle : potentialTitles) {
-        if (!SentenceSimilarity.isValidLengthRate(text, potentialTitle))
-          continue;
-
-        sim = MorphoSimilarity.getInstance().getSimilarity(text, potentialTitle);
-
-        // 如果有一个候选项完全不匹配，那么可以断定其他候选项也不匹配
-        // TODO:数据检验
-        if (FuzzyProbability.strictlyNot(sim)) {
-          logger.warn("break the loop since the candidate <{}> is strictly not the potential title <{}>", text,
-              potentialTitle);
-
-          return null;
-        }
-
-        // 如果找不到相似度为veryLikely的文本，那么使用相似度最高的文本
-        if (FuzzyProbability.maybe(sim)) {
-          titleElementCandidates.put(sim, candidate);
-        }
-
-        // if it's very likely a candidate, no need to check others
-        if (FuzzyProbability.veryLikely(sim)) {
-          logger.debug("find one : {}, {}", sim, text);
-          return candidate;
-        }
-      } // end for
-
-      return null;
     }
-
-  } // ProductTitleFounder
+  } // EntityTitleFounder
+  
 }

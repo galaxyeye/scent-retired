@@ -18,7 +18,7 @@ public class LinedFeature implements WebFeature {
   private Configuration conf;
   private FiledLines filedLines = new FiledLines();
 
-  public LinedFeature(Configuration conf, String[] featureFile) {
+  public LinedFeature(Configuration conf, String... featureFile) {
     this.featureFile = featureFile[0];
     this.conf = conf;
 
