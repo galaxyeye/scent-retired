@@ -2,13 +2,13 @@ package org.qiwur.scent.data.extractor;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.logging.log4j.LogManager;
@@ -17,47 +17,49 @@ import org.qiwur.scent.data.builder.WebsiteFactory;
 import org.qiwur.scent.entity.EntityAttribute;
 import org.qiwur.scent.entity.PageEntity;
 import org.qiwur.scent.jsoup.block.BlockLabel;
+import org.qiwur.scent.jsoup.block.BlockPattern;
 import org.qiwur.scent.jsoup.block.DomSegment;
 import org.qiwur.scent.jsoup.block.DomSegments;
 import org.qiwur.scent.jsoup.nodes.Document;
+import org.qiwur.scent.jsoup.nodes.Element;
 import org.qiwur.scent.jsoup.select.Elements;
 import org.qiwur.scent.learning.EntityAttributeLearner;
 import org.qiwur.scent.storage.WebPage.Field;
 import org.qiwur.scent.utils.NetUtil;
+import org.qiwur.scent.utils.StringUtil;
 
-public class PageExtractor implements DataExtractor {
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
-  protected static final Logger logger = LogManager.getLogger(PageExtractor.class);
+public abstract class PageExtractor implements DataExtractor {
 
-  protected final PageEntity pageEntity = new PageEntity();
-  protected Configuration conf;
-  protected Document doc;
-
-  protected List<DomSegmentExtractor> extractors = new ArrayList<DomSegmentExtractor>();
-  protected List<DomSegment> processedSegments = new ArrayList<DomSegment>();
-
-  protected static Map<String, String> configuratedExtractors = new HashMap<String, String>();
+  static final Logger logger = LogManager.getLogger(PageExtractor.class);
+  static Map<BlockLabel, Class<? extends DomSegmentExtractor>> builtinExtractors = Maps.newHashMap();
+  static Map<BlockPattern, Class<? extends DomSegmentExtractor>> patternExtractors = Maps.newHashMap();
 
   static {
-    // TODO : load from configuration
-    configuratedExtractors.put(BlockLabel.Categories.text(), CategoriesExtractor.class.getName());
-    configuratedExtractors.put(BlockLabel.Title.text(), TitleExtractor.class.getName());
-    configuratedExtractors.put(BlockLabel.Gallery.text(), GalleryExtractor.class.getName());
-    configuratedExtractors.put(BlockLabel.Links.text(), LinksExtractor.class.getName());
-    configuratedExtractors.put(BlockLabel.LinkImages.text(), ImagesExtractor.class.getName());
-    configuratedExtractors.put(BlockLabel.SimilarEntity.text(), SimilarEntityExtractor.class.getName());
+    // TODO : may make it configurable
+    builtinExtractors.put(BlockLabel.Categories, CategoriesExtractor.class);
+    builtinExtractors.put(BlockLabel.Title, TitleExtractor.class);
+    builtinExtractors.put(BlockLabel.Gallery, GalleryExtractor.class);
+    builtinExtractors.put(BlockLabel.SimilarEntity, SimilarEntityExtractor.class);
+
+    patternExtractors.put(BlockPattern.Links, LinksExtractor.class);
+    patternExtractors.put(BlockPattern.DensyLinks, LinksExtractor.class);
+    patternExtractors.put(BlockPattern.Images, ImagesExtractor.class);
+    patternExtractors.put(BlockPattern.LinkImages, LinkImagesExtractor.class);
   }
 
+  private final PageEntity pageEntity = new PageEntity();
+  private Configuration conf;
+  private Document doc;
+
+  private Map<DomSegment, DomSegmentExtractor> extractors = Maps.newHashMap();
+
+  // NOTICE : conf and doc are initialized by PageExtractorFactory
   public PageExtractor() {
     
-  }
-
-  public PageExtractor(Document doc, Configuration conf) {
-    Validate.notNull(doc);
-    Validate.notNull(conf);
-
-    this.doc = doc;
-    this.conf = conf;
   }
 
   @Override
@@ -65,13 +67,13 @@ public class PageExtractor implements DataExtractor {
     Validate.notNull(doc);
     Validate.notNull(conf);
 
-    // must be done before extractors are installed. extractors are segment specified : one segment, one extractor
-    removeBadBlocks();
+    cleanDocument();
+    cleanSegments();
 
-    installExtractors(configuratedExtractors);
+    clearPreviousExtractors();
+    installExtractors();
 
     extract();
-
     learn();
   }
 
@@ -87,61 +89,159 @@ public class PageExtractor implements DataExtractor {
     return pageEntity;
   }
 
-  protected void removeBadBlocks() {
-    doc.domSegments().removeAll(getSegments(BlockLabel.BadBlock));
-  }
+  abstract protected void installUserExtractors();
 
-  protected void installExtractor(String label, String clazz) {
-    for (DomSegment segment : getSegments(label)) {
-      addExtractor(getExtractor(segment, clazz, conf));
-    }
-  }
-
-  protected void installExtractors(Map<String, String> extractors) {
-    this.extractors.clear();
-
-    for (Entry<String, String> entry : extractors.entrySet()) {
-      installExtractor(entry.getKey(), entry.getValue());
-    }
-  }
-
-  protected boolean addExtractor(DomSegmentExtractor extractor) {
-    if (extractor == null) return false;
-
-    return extractors.add(extractor);
-  }
-
-  protected PageEntity extract() {
-    // specified extractors
-    for (DomSegmentExtractor extractor : extractors) {
-      extractor.process();
-      processedSegments.add(extractor.segment());
-    }
-
-    int counter = 0;
-    // common extractors
+  protected void installExtractor(BlockLabel label, Class<? extends DomSegmentExtractor> clazz) {
     for (DomSegment segment : doc.domSegments()) {
-      if (!processedSegments.contains(segment)) {
-        ++counter;
-        new DomSegmentExtractor(segment, pageEntity, segment.primaryLabel()).process();
+      if (segment.veryLikely(label)) {
+        addExtractor(getExtractor(segment, clazz, conf));
+      }
+      else if (segment.maybe(label) && !extractors.containsKey(segment)) {
+        addExtractor(getExtractor(segment, clazz, conf));
       }
     }
-    logger.debug("{} specified extractors, {} common extractors", extractors.size(), counter);
+  }
 
-    // common attributes
-    String domain = NetUtil.getDomain(doc.baseUri());
-    pageEntity.put(getSoureLink(doc.baseUri()));
-    pageEntity.put(getWebsiteDomain(domain));
-    pageEntity.put(getWebsiteName(domain));
-    pageEntity.put(getPageKeywords());
-    pageEntity.put(getPageDescription());
+  protected void installExtractor(BlockPattern pattern, Class<? extends DomSegmentExtractor> clazz) {
+    for (DomSegment segment : doc.domSegments()) {
+      if (segment.veryLikely(pattern) && !extractors.containsKey(segment)) {
+        addExtractor(getExtractor(segment, clazz, conf));
+      }
+    }
+  }
 
-    return pageEntity;
+  protected void addExtractor(DomSegmentExtractor extractor) {
+    Validate.notNull(extractor);
+
+    extractors.put(extractor.segment(), extractor);
   }
 
   protected void learn() {
     EntityAttributeLearner attrLearner = EntityAttributeLearner.create(conf);
     attrLearner.learn(pageEntity.attributes());
+  }
+
+  protected DomSegments getSegments(String label) {
+    return getSegments(BlockLabel.fromString(label));
+  }
+
+  protected DomSegments getSegments(String... labels) {
+    List<BlockLabel> bl = Lists.newArrayList();
+    for (String label : labels) {
+      bl.add(BlockLabel.fromString(label));
+    }
+    return doc.domSegments().get(bl);
+  }
+
+  protected DomSegments getSegments(BlockPattern label) {
+    return doc.domSegments().getAll(label);
+  }
+
+  protected DomSegments getSegments(BlockLabel label) {
+    return doc.domSegments().getAll(label);
+  }
+
+  protected boolean hasSegment(BlockLabel label) {
+    return doc.domSegments().hasSegment(label);
+  }
+
+  protected DomSegmentExtractor getExtractor(DomSegment segment, Class<? extends DomSegmentExtractor> clazz, Configuration conf) {
+    DomSegmentExtractor extractor = null;
+
+    try {
+      // Class<?> clazz = Class.forName(clazzName, false, this.getClass().getClassLoader());
+      Constructor<?> constructor = clazz.getConstructor(DomSegment.class, PageEntity.class, Configuration.class);
+      extractor = (DomSegmentExtractor) constructor.newInstance(segment, pageEntity, conf);
+    } catch (InstantiationException | IllegalAccessException | NoSuchMethodException
+        | SecurityException | IllegalArgumentException | InvocationTargetException e) {
+      logger.error(e);
+    }
+
+    return extractor;
+  }
+
+	@Override
+	public Collection<Field> getFields() {
+		return null;
+	}
+
+	@Override
+	public Configuration getConf() {
+		return conf;
+	}
+
+	@Override
+	public void setConf(Configuration conf) {
+		this.conf = conf;
+	}
+
+  private void cleanDocument() {
+    String[] labels = conf.getStrings("scent.extractor.bad.blocks");
+    for (String label : labels) {
+      Element div = doc.body().appendElement("div");
+      div.attr("class", StringUtil.csslize(label));
+
+      for (DomSegment segment : getSegments(label)) {
+        div.appendChild(segment.root());
+      }
+    }
+  }
+
+  private void cleanSegments() {
+    String[] labels = conf.getStrings("scent.extractor.bad.blocks");
+    DomSegments segments = getSegments(labels);
+    for (DomSegment segment : segments) {
+      segment.remove();
+    }
+    doc.domSegments().removeAll(segments);
+  }
+
+  private void clearPreviousExtractors() {
+    extractors.clear();
+  }
+
+  private void installExtractors() {
+    // 1. install user defined extractors in the child classes
+    installUserExtractors();
+
+    // 2. if no user defined extractors, install built-in extractors
+    for (Entry<BlockLabel, Class<? extends DomSegmentExtractor>> entry : builtinExtractors.entrySet()) {
+      installExtractor(entry.getKey(), entry.getValue());
+    }
+
+    // 3. if no extractors, try pattern based extractors
+    for (Entry<BlockPattern, Class<? extends DomSegmentExtractor>> entry : patternExtractors.entrySet()) {
+      installExtractor(entry.getKey(), entry.getValue());
+    }
+
+    // 4. if no extractors, use common extractor
+    for (DomSegment segment : doc.domSegments()) {
+      if (!extractors.containsKey(segment)) {
+        BlockLabel label = segment.primaryLabel();
+        String displayLabel = label != null ? label.text() : null;
+        addExtractor(new DomSegmentExtractor(segment, pageEntity, displayLabel));
+      }
+    }
+  }
+
+  private PageEntity extract() {
+    // specified extractors
+    for (DomSegmentExtractor extractor : extractors.values()) {
+      extractor.process();
+    }
+
+    // Metadata
+    String domain = NetUtil.getDomain(doc.baseUri());
+    if (StringUtils.isNotEmpty(domain)) {
+      pageEntity.put(getSoureLink(doc.baseUri()));
+      pageEntity.put(getWebsiteDomain(domain));
+      pageEntity.put(getWebsiteName(domain));
+    }
+
+    pageEntity.put(getPageKeywords());
+    pageEntity.put(getPageDescription());
+
+    return pageEntity;
   }
 
   private EntityAttribute getWebsiteDomain(String domain) {
@@ -165,53 +265,5 @@ public class PageExtractor implements DataExtractor {
   private EntityAttribute getPageDescription() {
     Elements meta = doc.select("html head meta[name=description]");
     return new EntityAttribute("page-description", meta.attr("content"), "Metadata");
-  }
-
-  protected DomSegments getSegments(String label) {
-    return getSegments(BlockLabel.fromString(label));
-  }
-
-  protected DomSegments getSegments(BlockLabel label) {
-    return doc.domSegments().getAll(label);
-  }
-
-  protected boolean hasSegment(String label) {
-    return hasSegment(BlockLabel.fromString(label));
-  }
-
-  protected boolean hasSegment(BlockLabel label) {
-    return doc.domSegments().hasSegment(label);
-  }
-
-  // TODO : use plugin mechanism
-  protected DomSegmentExtractor getExtractor(DomSegment segment, String clazzName, Configuration conf) {
-    DomSegmentExtractor extractor = null;
-
-    try {
-      Class<?> clazz = Class.forName(clazzName, false, this.getClass().getClassLoader());
-      Constructor<?> constructor = clazz.getConstructor(new Class[] { DomSegment.class, PageEntity.class,
-          Configuration.class });
-      extractor = (DomSegmentExtractor) constructor.newInstance(segment, pageEntity, conf);
-    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchMethodException
-        | SecurityException | IllegalArgumentException | InvocationTargetException e) {
-      logger.error(e);
-    }
-
-    return extractor;
-  }
-
-	@Override
-	public Collection<Field> getFields() {
-		return null;
-	}
-
-	@Override
-	public Configuration getConf() {
-		return conf;
-	}
-
-	@Override
-	public void setConf(Configuration conf) {
-		this.conf = conf;
-	}
+  }	
 }

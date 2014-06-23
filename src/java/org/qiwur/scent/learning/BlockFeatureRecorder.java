@@ -34,7 +34,7 @@ public class BlockFeatureRecorder {
 
     this.segments = doc.domSegments();
     this.conf = conf;
-    this.labels = conf.getStrings("scent.html.block.labels");
+    this.labels = conf.getStrings("scent.classifier.block.labels");
     this.baseDir = conf.get("scent.sgd.train.base.dir");
   }
 

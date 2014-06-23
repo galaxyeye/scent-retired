@@ -20,7 +20,6 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.qiwur.scent.data.builder.EntityBuilder;
 import org.qiwur.scent.data.builder.ProductHTMLBuilder;
 import org.qiwur.scent.data.extractor.DataExtractorNotFound;
 import org.qiwur.scent.data.extractor.PageExtractor;
@@ -74,6 +73,9 @@ public class ExtractionResource extends ServerResource {
       if (format.equals("txt")) {
         return "<pre>" + StringEscapeUtils.escapeHtml(buildText(pageEntity)) + "</pre>";
       }
+      else if (format.equals("all")) {
+        return buildAllHtml(pageEntity);
+      }
 
       return buildHtml(pageEntity);
       // return extractor.generateWiki(pageEntity, Page.ProductPage);
@@ -94,7 +96,17 @@ public class ExtractionResource extends ServerResource {
   }
 
   private String buildText(PageEntity pageEntity) {
-    return new EntityBuilder(pageEntity, conf).toString();
+    ProductHTMLBuilder builder = new ProductHTMLBuilder(pageEntity, conf);
+    builder.process();
+
+    return builder.doc().toString();
+  }
+
+  private String buildAllHtml(PageEntity pageEntity) {
+    ProductHTMLBuilder builder = new ProductHTMLBuilder(pageEntity, conf);
+    builder.setFormat("All");
+    builder.process();
+    return builder.doc().toString();
   }
 
   private String buildHtml(PageEntity pageEntity) {

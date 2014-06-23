@@ -11,12 +11,12 @@ import org.qiwur.scent.jsoup.block.DomSegment;
 import org.qiwur.scent.jsoup.nodes.Element;
 import org.qiwur.scent.utils.StringUtil;
 
-public final class LinksExtractor extends DomSegmentExtractor {
+public final class LinkImagesExtractor extends DomSegmentExtractor {
 
-	private Set<Link> links = new HashSet<Link>();
+  private Set<Link> links = new HashSet<Link>();
 
-	public LinksExtractor(DomSegment segment, PageEntity pageEntity, Configuration conf) {
-    super(segment, pageEntity, BlockPattern.Links.text());
+	public LinkImagesExtractor(DomSegment segment, PageEntity pageEntity, Configuration conf) {
+    super(segment, pageEntity, BlockPattern.LinkImages.text());
 	}
 
 	@Override
@@ -27,7 +27,7 @@ public final class LinksExtractor extends DomSegmentExtractor {
       if (!Link.pseudoLink(ele.attr("href"))) {
         links.add(Link.create(ele));
       }
-		}
+    }
 
     if (!links.isEmpty()) {
       pageEntity().put(displayLabel(), formatLinks(), segment().labels());
@@ -42,7 +42,9 @@ public final class LinksExtractor extends DomSegmentExtractor {
 
     sb.append(String.format("<div class='%s' data-extractor='%s'>", cls, clazz));
     for (Link link : links) {
+      sb.append("<div>");
       sb.append(link.toString());
+      sb.append("</div>");
     }
     sb.append("</div>");
 

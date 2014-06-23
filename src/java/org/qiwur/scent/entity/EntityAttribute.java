@@ -81,8 +81,7 @@ public class EntityAttribute implements Comparable<EntityAttribute> {
   }
 
   public void categorize(String category) {
-    if (category != null)
-      this.categories.add(new EntityCategory(category));
+    if (category != null) this.categories.add(new EntityCategory(category));
   }
 
   public void categorize(Collection<String> categories) {

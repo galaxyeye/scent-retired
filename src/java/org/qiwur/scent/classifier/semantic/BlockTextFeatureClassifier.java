@@ -26,10 +26,12 @@ public class BlockTextFeatureClassifier extends RuleBasedBlockClassifier {
   }
 
   /*
-   * 关键词指标
+   * keyword based classifier, the classifier affects only the leaf segments in the segment tree
    */
   @Override
   protected double getScore(DomSegment segment, String label) {
+    if (!segment.hasChild()) return 0.0;
+
     Map<String, Double> rules = blockTextFeature.getRules(label);
     if (rules == null) return 0.0;
 

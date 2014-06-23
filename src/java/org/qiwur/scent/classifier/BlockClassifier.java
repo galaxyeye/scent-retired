@@ -14,6 +14,7 @@ import org.qiwur.scent.jsoup.block.BlockLabel;
 import org.qiwur.scent.jsoup.block.DomSegment;
 import org.qiwur.scent.jsoup.select.DOMUtil;
 import org.qiwur.scent.utils.MatrixUtil;
+import org.qiwur.scent.utils.StringUtil;
 
 import ruc.irm.similarity.FuzzyProbability;
 
@@ -121,41 +122,46 @@ public abstract class BlockClassifier {
   protected abstract double getScore(DomSegment segment, String label);
 
   public String getMatrixString() {
-    String[] diagnoseLabels = conf.getStrings("scent.diagnose.html.block.labels");
-    
-    String report = "\n\n";
-    report += String.format("%-30s", getClass().getSimpleName());
+    return getMatrixString(" ");
+  }
+
+  public String getMatrixString(String columnSeparator) {
+    String[] diagnoseLabels = conf.getStrings("scent.diagnose.classifier.block.labels");
+
+    String report = "";
+    report += String.format("%-20s%s", getClass().getSimpleName(), columnSeparator);
     for (int col = 0; col < labels.length; ++col) {
       if (!ArrayUtils.contains(diagnoseLabels, labels[col])) {
         continue;
       }
 
-      report += String.format("%-13s", StringUtils.substring(labels[col], 0, 12));
+      report += String.format("%-12s%s", StringUtils.substring(labels[col], 0, 12), columnSeparator);
     }
     report += "\n";
 
     for (int row = 0; row < segments.length; ++row) {
-      report += String.format("%-30s", segments[row].body().prettyName());
+      report += String.format("%-20s%s", StringUtils.substring(segments[row].name(), 0, 20), columnSeparator);
       for (int col = 0; col < labels.length; ++col) {
         if (!ArrayUtils.contains(diagnoseLabels, labels[col])) {
           continue;
         }
 
         double score = scoreMatrix.get(row, col);
-        if (score != 0.0) {
-          if (score > 0.6) {
-            report += String.format("!%-12.2f", score);
-          }
-          else {
-            report += String.format("%-13.2f", score);            
-          }
+        if (score <= 0) {
+          report += String.format("%-12.2s", ".");
+        }
+        else if (score < 0.6) {
+          report += String.format("%-12.2f", score);
         }
         else {
-          report += String.format("%-13.2s", ".");
+          report += String.format("<b>%-4.2f</b>", score);
         }
-      }
+
+        report += columnSeparator;
+      } // for
+
       report += "\n";
-    }
+    } // for
 
     return report;
   }

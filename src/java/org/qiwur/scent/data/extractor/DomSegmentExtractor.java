@@ -8,6 +8,7 @@ import org.apache.commons.lang.Validate;
 import org.apache.hadoop.conf.Configuration;
 import org.qiwur.scent.entity.PageEntity;
 import org.qiwur.scent.jsoup.block.BlockLabel;
+import org.qiwur.scent.jsoup.block.BlockPattern;
 import org.qiwur.scent.jsoup.block.DomSegment;
 import org.qiwur.scent.storage.WebPage.Field;
 import org.qiwur.scent.utils.StringUtil;
@@ -15,68 +16,71 @@ import org.qiwur.scent.utils.StringUtil;
 import com.google.common.collect.Multimap;
 
 public class DomSegmentExtractor extends KeyValueExtractor implements DataExtractor {
-
+ 
   public static final String DefaultLabel = BlockLabel.UnknownBlock.text();
 
-  protected Configuration conf;
-  protected final DomSegment segment;
-  protected final PageEntity pageEntity;
-  protected final String sectionLabel;
+  private Configuration conf;
+  private final DomSegment segment;
+  private final PageEntity pageEntity;
+  private final String displayLabel;
 
-  public DomSegmentExtractor(DomSegment segment, PageEntity pageEntity) {
-    this(segment, pageEntity, segment.primaryLabel());
-  }
-
-  public DomSegmentExtractor(DomSegment segment, PageEntity pageEntity, BlockLabel sectionLabel) {
-    this(segment, pageEntity, sectionLabel == null ? null : sectionLabel.text());
-  }
-
-  public DomSegmentExtractor(DomSegment segment, PageEntity pageEntity, String sectionLabel) {
-    super(segment == null ? null : segment.body());
+  public DomSegmentExtractor(DomSegment segment, PageEntity pageEntity, String displayLabel) {
+    super(segment.body());
 
     Validate.notNull(segment);
     Validate.notNull(pageEntity);
 
     this.segment = segment;
     this.pageEntity = pageEntity;
-    this.sectionLabel = StringUtils.isEmpty(sectionLabel) ? DefaultLabel : sectionLabel;
+    this.displayLabel = StringUtils.isEmpty(displayLabel) ? DefaultLabel : displayLabel;
   }
 
   public DomSegment segment() {
     return segment;
   }
 
+  /*
+   * Default extract behavior, firstly try to extract into key/value pairs, 
+   * if failed, use the section label to be the key and the all segment's html to be the value
+   * */
   @Override
   public void process() {
-    super.process();
+    if (segment.veryLikely(BlockPattern.II)) {
+      extractIIPattern(element(), I_I_PATTERN_SEPERATORS);
+    }
+
+    if (segment.veryLikely(BlockPattern.N2)) {
+      extractN2Pattern(element(), 4, "div", "p", "ol", "ul");
+    }
+
+    if (segment.veryLikely(BlockPattern.Table)) {
+      extractTable(element());
+    }
+
+    if (segment.veryLikely(BlockPattern.Dl)) {
+      extractDl(element());
+    }
 
     Multimap<String, String> attrs = getAttributes();
     for (Entry<String, String> entry : attrs.entries()) {
-      pageEntity.put(entry.getKey(), entry.getValue(), sectionLabel);
+      pageEntity.put(entry.getKey(), entry.getValue(), displayLabel);
     }
 
-    if (attrs.isEmpty() && StringUtils.isNotEmpty(sectionLabel)) {
-      pageEntity.put(sectionLabel, getExtractedValue(segment, sectionLabel), segment.labels());
+    if (attrs.isEmpty()) {
+      pageEntity.put(displayLabel, getExtractedValue(segment, displayLabel), segment.labels());
     }
   }
 
-  @Override
   public boolean valid() {
-    return segment != null && super.valid();
+    return segment != null;
   }
 
-  public BlockLabel primaryLabel() {
-    if (segment != null)
-      return segment.primaryLabel();
-    return BlockLabel.UnknownBlock;
+  public String displayLabel() {
+    return displayLabel;
   }
 
-  public final PageEntity pageEntity() {
+  public PageEntity pageEntity() {
     return pageEntity;
-  }
-
-  public final String sectionLabel() {
-    return sectionLabel;
   }
 
   public String getPrettyText(String name) {
@@ -84,7 +88,7 @@ public class DomSegmentExtractor extends KeyValueExtractor implements DataExtrac
   }
 
   protected String getExtractedValue(String text) {
-    return getExtractedValue(text, sectionLabel);
+    return getExtractedValue(text, displayLabel);
   }
 
   protected String getExtractedValue(String text, String label) {
@@ -97,7 +101,7 @@ public class DomSegmentExtractor extends KeyValueExtractor implements DataExtrac
   }
 
   protected String getExtractedValue(DomSegment segment) {
-    return getExtractedValue(segment, sectionLabel);
+    return getExtractedValue(segment, displayLabel);
   }
 
   protected String getExtractedValue(DomSegment segment, String label) {
@@ -105,9 +109,13 @@ public class DomSegmentExtractor extends KeyValueExtractor implements DataExtrac
     return getExtractedValue(segment.body().outerHtml(), label);
   }
 
+  @Override
+  public String toString() {
+    return "extractor_" + displayLabel + "_" + segment.root().prettyName();
+  }
+
 	@Override
 	public Collection<Field> getFields() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

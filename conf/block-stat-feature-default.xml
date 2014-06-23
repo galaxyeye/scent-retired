@@ -118,4 +118,9 @@ build-in simple indicators :
         <rule indicator="-descend"        range="6,50"   score="4"  -score="-100" />
         <rule indicator="-img"            range=",2"     score="0"  -score="-100" />
     </block>
+    <block type="Areas">
+        <rule indicator="-img"            range=",2"     score="0"  -score="-100" />
+        <rule indicator="-sep"            range=",2"     score="0"  -score="-100" />
+        <rule indicator="ave-txt-blk-len" range="2,3"    score="0"  -score="-100" />
+    </block>
 </block-features>

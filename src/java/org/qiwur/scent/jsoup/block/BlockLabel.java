@@ -9,7 +9,7 @@ import java.util.Set;
 import com.google.common.collect.Sets;
 
 public class BlockLabel implements Comparable<BlockLabel> {
-  public static BlockLabel UnknownBlock = BlockLabel.fromString("UnknownBlock");
+  public static BlockLabel UnknownBlock = BlockLabel.fromString("");
   public static BlockLabel BadBlock = BlockLabel.fromString("BadBlock");
   public static BlockLabel Metadata = BlockLabel.fromString("Metadata");
   public static BlockLabel Title = BlockLabel.fromString("Title");
@@ -18,34 +18,24 @@ public class BlockLabel implements Comparable<BlockLabel> {
   public static BlockLabel Areas = BlockLabel.fromString("Areas");
   public static BlockLabel Categories = BlockLabel.fromString("Categories");
   public static BlockLabel Gallery = BlockLabel.fromString("Gallery");
-  public static BlockLabel Links = BlockLabel.fromString("Links");
-  public static BlockLabel DensyLinks = BlockLabel.fromString("DensyLinks");
-  public static BlockLabel LinkImages = BlockLabel.fromString("LinkImages");
-  public static BlockLabel PureImages = BlockLabel.fromString("PureImages");
   public static BlockLabel SimilarEntity = BlockLabel.fromString("SimilarEntity");
 
-  public static Set<BlockLabel> labels = Sets.newHashSet();
   public static Set<BlockLabel> inheritableLabels = Sets.newHashSet();
+  public static Set<BlockLabel> builtinLabels = Sets.newHashSet();
 
   static {
-    labels.add(UnknownBlock);
-    labels.add(BadBlock);
-    labels.add(Metadata);
-    labels.add(Title);
-    labels.add(TitleContainer);
-    labels.add(Menu);
-    labels.add(Areas);
-    labels.add(Categories);
-    labels.add(Gallery);
-    labels.add(Links);
-    labels.add(DensyLinks);
-    labels.add(LinkImages);
-    labels.add(PureImages);
-    labels.add(SimilarEntity);
+    builtinLabels.add(UnknownBlock);
+    builtinLabels.add(BadBlock);
+    builtinLabels.add(Metadata);
+    builtinLabels.add(Title);
+    builtinLabels.add(TitleContainer);
+    builtinLabels.add(Menu);
+    builtinLabels.add(Areas);
+    builtinLabels.add(Categories);
+    builtinLabels.add(Gallery);
+    builtinLabels.add(SimilarEntity);
 
     inheritableLabels.add(Areas);
-    inheritableLabels.add(DensyLinks);
-    inheritableLabels.add(TitleContainer);
   }
 
   private String text;
@@ -66,19 +56,26 @@ public class BlockLabel implements Comparable<BlockLabel> {
     return null;
   }
 
-  public static List<String> mergeLabels(String... incoming) {
+  public static Set<String> mergeLabels(String... incoming) {
     return mergeLabels(Arrays.asList(incoming));
   }
 
-  public static List<String> mergeLabels(Collection<String> incoming) {
-    List<String> result = new ArrayList<String>();
+  public static Set<String> mergeLabels(Collection<String> incoming) {
+    Set<String> result = Sets.newHashSet(incoming);
 
-    for (BlockLabel l : labels) {
+    for (BlockLabel l : builtinLabels) {
       result.add(l.text());
     }
-    result.addAll(incoming);
 
     return result;
+  }
+
+  public boolean isBuiltin() {
+    return builtinLabels.contains(this);
+  }
+
+  public static boolean isBuiltin(BlockLabel label) {
+    return label.isBuiltin();
   }
 
   public boolean inheritable() {

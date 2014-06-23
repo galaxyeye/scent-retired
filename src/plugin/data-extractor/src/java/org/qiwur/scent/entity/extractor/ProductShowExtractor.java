@@ -5,17 +5,17 @@ import org.qiwur.scent.data.extractor.DomSegmentExtractor;
 import org.qiwur.scent.entity.PageEntity;
 import org.qiwur.scent.jsoup.block.DomSegment;
 
-public class ProductDetailExtractor extends DomSegmentExtractor {
+public class ProductShowExtractor extends DomSegmentExtractor {
 
-	public ProductDetailExtractor(DomSegment segment, PageEntity pageEntity, Configuration conf) {
-		super(segment, pageEntity, "ProductDetail");
+	public ProductShowExtractor(DomSegment segment, PageEntity pageEntity, Configuration conf) {
+		super(segment, pageEntity, "ProductShow");
 	}
 
 	@Override
 	public void process() {
     if (!valid()) return;
 
-    pageEntity().put("ProductDetail", getPrettyText(segment().text()), "ProductDetail");
+    pageEntity().put("ProductShow", getPrettyText(segment().text()), "ProductShow");
 	}
 
 	@Override

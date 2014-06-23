@@ -402,7 +402,11 @@ public final class StringUtil {
   }
 
   public static double parseDouble(String s) {
-    double r = 0.0;
+    return parseDouble(s, 0.0);
+  }
+
+  public static double parseDouble(String s, double defaultValue) {
+    double r = defaultValue;
 
     if (StringUtils.isEmpty(s)) {
       return r;
@@ -412,7 +416,6 @@ public final class StringUtil {
       r = Double.parseDouble(s);
     }
     catch (Exception e) {
-      
     }
 
     return r;

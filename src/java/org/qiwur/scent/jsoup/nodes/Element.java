@@ -1009,6 +1009,8 @@ public class Element extends Node {
       }
     }).traverse(this);
 
+    // TODO : add text cache
+
     return Entities.unescape(accum.toString()).replaceAll(StringUtil.NBSP, StringUtil.KeyboardWhitespace).trim();
   }
 
@@ -1357,25 +1359,15 @@ public class Element extends Node {
 
   public String prettyName() {
     String id = "";
-    if (id().length() > 0) {
-      id = "[#" + id() + "]";
+    if (!id().isEmpty()) {
+      id = "#" + id();
     }
 
-    String cls = "";
-    if (id == "" && className().length() > 0) {
-      cls = className();
-      // 太长影响排版
-      if (cls.length() > 20)
-        cls = cls.substring(0, 20);
-      cls = "[." + cls + "]";
+    String cls = className();
+    if (id.isEmpty() && !cls.isEmpty()) {
+      cls = "." + cls.replaceAll("\\s+", ".");
     }
 
-    String name = "";
-    while (depth-- > 0) {
-      name += '-';
-    }
-    name += "<" + nodeName() + id + cls + ">";
-
-    return name;
+    return String.format("%4d", sequence()) + "-" + nodeName() + id + cls;
   }
 }

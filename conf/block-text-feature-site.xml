@@ -104,5 +104,14 @@
         <phrase name="商家入驻" score="10" />
         <phrase name="友情链接" score="10" />
         <phrase name="备案编号" score="10" />
+
+        <phrase name="获取验证码" score="10" />
+        <phrase name="验证码错误" score="10" />
+        <phrase name="请查收短信" score="10" />
+        <phrase name="我的手机号" score="10" />
+        <phrase name="TA的手机号" score="10" />
+        <phrase name="手机号码错误" score="10" />
+        <phrase name="继续购物" score="10" />
+        <phrase name="去购物车结算" score="10" />
     </block>
 </block-features>

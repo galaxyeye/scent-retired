@@ -2,8 +2,6 @@ package org.qiwur.scent.block.locator;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.conf.Configuration;
-import org.qiwur.scent.feature.FeatureManager;
-import org.qiwur.scent.feature.HtmlTitleFeature;
 import org.qiwur.scent.jsoup.block.BlockLabel;
 import org.qiwur.scent.jsoup.block.DomSegment;
 import org.qiwur.scent.jsoup.nodes.Document;
@@ -73,10 +71,9 @@ public final class MenuLocator extends BlockLocator {
 	}
 
   public static DomSegment createMenu(Document doc, Configuration conf) {
-    Element body = doc.getElementsByTag("body").first();
-    Element ele = body.prependElement("ul");
+    Element ele = doc.body().prependElement("ul");
     ele.append("<li><a href='/'>首页</a></li>");
-    ele.sequence(body.sequence() + 100); // TODO : use a machine learned sequence
+    ele.sequence(doc.body().sequence() + 100); // TODO : use a machine learned sequence
 
     return DomSegment.create(ele, BlockLabel.Menu, FuzzyProbability.MUST_BE);
   }

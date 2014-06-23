@@ -33,8 +33,8 @@ public class Indicator implements Map.Entry<String, Double>, Cloneable {
   // temporary variables for internal usage
   public static final String ATW    = "--a-total-w";  // total link width
   public static final String ATH    = "--a-total-h";  // total link width
-  public static final String ITW    = "--i-total-w";  // total link width
-  public static final String ITH    = "--i-total-h";  // total link width
+  public static final String ITW    = "--img-total-w";  // total link width
+  public static final String ITH    = "--img-total-h";  // total link width
 
   public static final String[] names = {
     CH, OCH, TB, OTB, IMG, A, SIB, C, G, D, DEP, SEP, SEQ,

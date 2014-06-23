@@ -49,7 +49,12 @@ public class Image {
         continue;
       }
 
+      if (name.startsWith("data-") && value.equals("0")) {
+        continue;
+      }
+
       if (Link.maybeUrl(name, value)) {
+        // TODO : tricky
         if (name.contains("lazy")) {
           lazySrc = ele.absUrl(name);
         }

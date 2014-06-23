@@ -20,12 +20,15 @@ package org.qiwur.scent.configuration;
 import java.util.Collection;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.qiwur.scent.jsoup.block.BlockLabel;
 import org.qiwur.scent.jsoup.nodes.Indicator;
+
+import com.google.common.collect.Sets;
 
 /**
  * Utility to create Hadoop {@link Configuration}s that include Scent-specific
@@ -106,15 +109,10 @@ public class ScentConfiguration {
   }
 
   public static void rebuildLabels(Configuration conf) {
-    Collection<String> labels = conf.getStringCollection("scent.html.block.labels");
-    for (BlockLabel label : BlockLabel.labels) {
-      if (!labels.contains(label.text())) {
-        labels.add(label.text());
-      }
-    }
-    conf.set("scent.html.block.labels", StringUtils.join(labels, ","));
+    Set<String> labels = BlockLabel.mergeLabels(conf.getStringCollection("scent.classifier.block.labels"));
+    conf.set("scent.classifier.block.labels", StringUtils.join(labels, ","));
 
-    Collection<String> inheritableLabels = conf.getStringCollection("scent.html.block.inheritable.labels");
+    Collection<String> inheritableLabels = conf.getStringCollection("scent.classifier.block.inheritable.labels");
     for (String label : inheritableLabels) {
       BlockLabel.inheritableLabels.add(BlockLabel.fromString(label));
     }

@@ -40,6 +40,14 @@ public class Parser {
         return treeBuilder;
     }
 
+    public void ignoreScript(boolean ignore) {
+      treeBuilder.ignoreScript = ignore;
+    }
+
+    public boolean ignoreScript() {
+      return treeBuilder.ignoreScript;
+    }
+
     /**
      * Update the TreeBuilder used when parsing content.
      * @param treeBuilder current TreeBuilder

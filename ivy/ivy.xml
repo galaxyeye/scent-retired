@@ -51,6 +51,7 @@
     <dependency org="com.google.code.gson" name="gson" rev="2.2.4"/>
     <dependency org="org.restlet.jse" name="org.restlet" rev="2.0.5" />
     <dependency org="net.sf.trove4j" name="trove4j" rev="3.0.3"/>
+    <dependency org="jtidy" name="jtidy" rev="4aug2000r7-dev"/>
 
     <dependency org="org.apache.hadoop" name="hadoop-common" rev="2.4.0">
       <exclude org="net.sf.kosmosfs" name="kfs" />

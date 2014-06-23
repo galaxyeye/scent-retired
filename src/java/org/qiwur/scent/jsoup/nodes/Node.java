@@ -165,6 +165,42 @@ public abstract class Node implements Cloneable, Comparable<Node> {
     return this;
   }
 
+  public double sniffWidth() {
+    String width = attr("width");
+
+    if (width.isEmpty() || width.equals("0")) {
+      width = attr("data-client-width");
+    }
+    
+    if (width.isEmpty() || width.equals("0")) {
+      width = attr("data-offset-width");
+    }
+
+    if (width.isEmpty() || width.equals("0")) {
+      width = attr("data-scroll-width");
+    }
+
+    return StringUtil.parseDouble(width, 0);
+  }
+
+  public double sniffHeith() {
+    String height = attr("height");
+
+    if (height.isEmpty() || height.equals("0")) {
+      height = attr("data-client-height");
+    }
+
+    if (height.isEmpty() || height.equals("0")) {
+      height = attr("data-offset-height");
+    }
+
+    if (height.isEmpty() || height.equals("0")) {
+      height = attr("data-scroll-height");
+    }
+
+    return StringUtil.parseDouble(height, 0);
+  }
+  
   /**
    * Get all of the element's indicators.
    * 
@@ -219,23 +255,23 @@ public abstract class Node implements Cloneable, Comparable<Node> {
     return this;
   }
 
-  public double likelihood(Node other, double tolerance, String... exceptIndicators) {
-    double[] values = new double[Indicator.names.length];
-    for (int i = 0; i < Indicator.names.length; ++i) {
-      values[i] = 0.0;
+  /**
+   * likelihood = 1 - Sum(|xi - yi| / (xi + yi)) / n
+   * */
+  public double likelihood(Node other, String... indicators) {
+    double[] rate = new double[indicators.length];
 
-      String name = Indicator.names[i];
-      if (!ArrayUtils.contains(exceptIndicators, name)) {
-        values[i] = Math.abs(indic(name) - other.indic(name));
-        if (values[i] > tolerance) values[i] -= tolerance;
-        if (values[i] <= tolerance) values[i] = 0;
+    for (int i = 0; i < indicators.length; ++i) {
+      double x = indic(indicators[i]);
+      double y = other.indic(indicators[i]);
+
+      rate[i] = 0;
+      if (x + y != 0) {
+        rate[i] = Math.abs(x - y) / (x + y);
       }
     }
 
-    double sd = StatUtils.variance(values) / tolerance;
-    if (sd > 1) return 0.0;
-
-    return 1 - sd;
+    return 1 - StatUtils.mean(rate);
   }
 
   public int sequence() {

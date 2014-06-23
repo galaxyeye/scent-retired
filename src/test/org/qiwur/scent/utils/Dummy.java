@@ -19,6 +19,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.qiwur.scent.configuration.ScentConfiguration;
 import org.qiwur.scent.jsoup.block.BlockLabel;
+import org.qiwur.scent.jsoup.block.BlockPattern;
 import org.qiwur.scent.jsoup.block.DomSegment;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -170,11 +171,11 @@ public class Dummy {
 
   private static void testBlockLabel() {
     Configuration conf = ScentConfiguration.create();
-    String[] labels = conf.getStrings("scent.html.block.labels");
+    String[] labels = conf.getStrings("scent.classifier.block.labels");
 
     for (String label : labels) {
       BlockLabel l = BlockLabel.fromString(label);
-      if (BlockLabel.labels.contains(l)) {
+      if (BlockLabel.builtinLabels.contains(l)) {
         System.out.println(l);
       }
     }
@@ -186,7 +187,7 @@ public class Dummy {
     DomSegment segment = new DomSegment(null, null, null);
 
     int count = 0;
-    for (BlockLabel label : BlockLabel.labels) {
+    for (BlockLabel label : BlockLabel.builtinLabels) {
       double sim = 0.1 + count++ / 10.0;
       // trackees.put(label, sim);
       // tracker.set(label, sim);
@@ -208,7 +209,8 @@ public class Dummy {
   }
 
   public static void main(String[] args) {
-    String[] range = ",-4".split(",", 2);
-    System.out.println(Arrays.asList(range));
+    String cls = "aa bb cc";
+    cls = cls.replaceAll("\\s+", ".");
+    System.out.println(cls);
   }
 }

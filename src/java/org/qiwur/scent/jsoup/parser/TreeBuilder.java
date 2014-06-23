@@ -11,6 +11,7 @@ import org.qiwur.scent.utils.Validate;
  * @author Jonathan Hedley
  */
 abstract class TreeBuilder {
+
     CharacterReader reader;
     Tokeniser tokeniser;
     protected Document doc; // current doc we are building into
@@ -18,6 +19,15 @@ abstract class TreeBuilder {
     protected String baseUri; // current base uri, for creating new elements
     protected Token currentToken; // currentToken is used only for error tracking.
     protected ParseErrorList errors; // null when not tracking errors
+    protected boolean ignoreScript = true; // do not create data node for script if true
+
+    public void ignoreScript(boolean ignore) {
+      ignoreScript = ignore;
+    }
+
+    public boolean ignoreScript() {
+      return ignoreScript;
+    }
 
     protected void initialiseParse(String input, String baseUri, ParseErrorList errors) {
         Validate.notNull(input, "String input must not be null");

@@ -6,14 +6,14 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.mahout.math.Matrix;
 import org.qiwur.scent.classifier.heuristics.CodeFeatureClassifier;
 import org.qiwur.scent.classifier.semantic.BlockTextFeatureClassifier;
 import org.qiwur.scent.classifier.semantic.BlockTitleFeatureClassifier;
 import org.qiwur.scent.classifier.sgd.LogisticRegressionClassifier;
 import org.qiwur.scent.classifier.statistics.CodeStructureFeatureClassifier;
+import org.qiwur.scent.diagnosis.ClassifierMatrixFormatter;
+import org.qiwur.scent.diagnosis.ScentDiagnoser;
 import org.qiwur.scent.jsoup.block.DomSegment;
 
 public class DomSegmentsClassifier extends BlockClassifier {
@@ -40,21 +40,17 @@ public class DomSegmentsClassifier extends BlockClassifier {
 
     normalize(-100, 100);
 
-    report();
-
     label();
 
     inheritLabels();
   }
 
-  public void report() {
-    final Logger logger = LogManager.getLogger(DomSegmentsClassifier.class);
-
+  public void report(ScentDiagnoser diagnoser) {
     for (BlockClassifier classifier : classifiers) {
-      logger.debug(classifier.getMatrixString());
+      diagnoser.addFormatter(new ClassifierMatrixFormatter(classifier, conf));
     }
 
-    logger.debug(getMatrixString());
+    diagnoser.addFormatter(new ClassifierMatrixFormatter(this, conf));
   }
 
   private void calculateOverallScore() {

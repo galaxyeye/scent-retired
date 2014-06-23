@@ -11,12 +11,17 @@ import org.apache.logging.log4j.Logger;
 import org.qiwur.scent.classifier.DomSegmentsBuilder;
 import org.qiwur.scent.classifier.DomSegmentsClassifier;
 import org.qiwur.scent.classifier.statistics.BlockVarianceCalculator;
+import org.qiwur.scent.diagnosis.BlockLabelFormatter;
+import org.qiwur.scent.diagnosis.BlockPatternFormatter;
+import org.qiwur.scent.diagnosis.DomSegmentFormatter;
+import org.qiwur.scent.diagnosis.IndicatorsFormatter;
+import org.qiwur.scent.diagnosis.ScentDiagnoser;
 import org.qiwur.scent.entity.PageEntity;
 import org.qiwur.scent.feature.FeatureManager;
 import org.qiwur.scent.jsoup.block.DomSegment;
 import org.qiwur.scent.jsoup.nodes.Document;
+import org.qiwur.scent.learning.BlockFeatureRecorder;
 import org.qiwur.scent.printer.BlockLabelPrinter;
-import org.qiwur.scent.printer.DomStatisticsPrinter;
 import org.qiwur.scent.utils.ObjectCache;
 
 import ruc.irm.similarity.word.hownet2.concept.BaseConceptParser;
@@ -60,34 +65,45 @@ public class WebExtractor {
   }
 
   public void refreshFeatures() {
-    // just for debug
+    // just for debug mode
     FeatureManager.create(conf).reloadAll();
   }
 
   public PageEntity extract(PageExtractor extractorImpl) {
     Validate.notNull(extractorImpl);
 
-    Document doc = extractorImpl.doc();
-
+    // reload features if necessary
     refreshFeatures();
 
+    Document doc = extractorImpl.doc();
+
+    ScentDiagnoser diagnoser = new ScentDiagnoser(doc, conf);
+
+    // calculate code blocks
     new BlockVarianceCalculator(doc, conf).process();
 
+    diagnoser.addFormatter(new IndicatorsFormatter(doc, conf));
+    diagnoser.addFormatter(new DomSegmentFormatter(doc, conf));
+
+    // build code segments, calculate code patterns
     Set<DomSegment> segmentSet = new DomSegmentsBuilder(doc, conf).build();
 
-    new DomStatisticsPrinter(doc).process();
-
+    // classify each code segment, add proper tags
     DomSegment[] segments = segmentSet.toArray(new DomSegment[segmentSet.size()]);
-    String[] labels = conf.getStrings("scent.html.block.labels");
-    new DomSegmentsClassifier(segments, labels, conf).classify();
+    String[] labels = conf.getStrings("scent.classifier.block.labels");
+    DomSegmentsClassifier classifier = new DomSegmentsClassifier(segments, labels, conf);
+    classifier.classify();
+    classifier.report(diagnoser);
 
-    // logger.info("打印已标注的标签");
-    new BlockLabelPrinter(doc, conf).process();
+    diagnoser.addFormatter(new BlockPatternFormatter(doc, conf));
+    diagnoser.addFormatter(new BlockLabelFormatter(doc, conf));
 
-//    new BlockFeatureRecorder(doc, conf).process();
+    // new BlockFeatureRecorder(doc, conf).process();
 
-    // logger.info("实体抽取");
+    // extract each code segment
     extractorImpl.process();
+
+    diagnoser.diagnose();
 
     return extractorImpl.pageEntity();
   }

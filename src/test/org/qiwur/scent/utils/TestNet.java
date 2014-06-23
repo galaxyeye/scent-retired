@@ -12,6 +12,7 @@ import java.util.Properties;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.qiwur.scent.jsoup.block.BlockPattern;
 
 public class TestNet {
 
@@ -50,12 +51,6 @@ public class TestNet {
 	}
 
 	public static void main(String s[]) throws Exception {
-    String href = StringUtils.stripEnd("http://www.suning.com", "/");
-    int count = StringUtils.countMatches(href, "/");
-
-    String text = StringUtil.stripNonChar("首页");
-    
-    System.out.println(count);
-    System.out.println(text.equals("首页"));
+    logger.debug("all block patterns : {}", BlockPattern.patterns);
   }
 }

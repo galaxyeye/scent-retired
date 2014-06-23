@@ -16,7 +16,7 @@ public final class GalleryExtractor extends DomSegmentExtractor {
 	private Set<Image> images = new HashSet<Image>();
 
 	public GalleryExtractor(DomSegment segment, PageEntity pageEntity, Configuration conf) {
-	  super(segment, pageEntity, BlockLabel.Gallery);
+	  super(segment, pageEntity, BlockLabel.Gallery.text());
 	}
 
 	@Override
@@ -28,14 +28,14 @@ public final class GalleryExtractor extends DomSegmentExtractor {
 		}
 
     if (!images.isEmpty()) {
-      pageEntity.put(sectionLabel, formatGallery(), segment.labels());
+      pageEntity().put(BlockLabel.Gallery.text(), formatGallery(), BlockLabel.Gallery.text());
     }
 	}
 
   protected String formatGallery() {
     StringBuilder gallery = new StringBuilder();
 
-    String cls = StringUtil.csslize(segment.labelTracker().getLabelsAsString());
+    String cls = StringUtil.csslize(segment().labelTracker().getLabelsAsString());
     String clazz = StringUtil.csslize(getClass().getSimpleName());
 
     gallery.append(String.format("<div class='%s' data-extractor='%s'>", cls, clazz));

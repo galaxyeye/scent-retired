@@ -10,29 +10,32 @@ import org.apache.commons.io.FileUtils;
 
 public class FileUtil {
   public static String getFileNameFromUri(String uri) {
-    String file = DigestUtils.md5Hex(uri) + ".html";
+    String file = DigestUtils.md5Hex(uri);
 
     return file;
   }
 
-  public static File createTempFileForPage(String uri, String directory) throws IOException {
-    StringBuilder sb = new StringBuilder();
-
-    sb.append(FileUtils.getTempDirectoryPath());
-    sb.append(File.separator);
-    if (directory != null) {
-      sb.append(directory);
-      sb.append(File.separator);
-    }
-
-    File file = new File(sb.toString());
+  public static File forceMkdir(String directory) throws IOException {
+    File file = new File(directory);
 
     if (!file.exists()) {
       FileUtils.forceMkdir(file);
     }
 
-    sb.append(getFileNameFromUri(uri));
-    file = new File(sb.toString());
+    return file;
+  }
+
+  public static String getDirForPage(String uri, String baseDir) throws IOException {
+    String dir = baseDir + File.separator + getFileNameFromUri(uri);
+    return forceMkdir(dir).getAbsolutePath();
+  }
+
+  public static String getFileForPage(String uri, String baseDir) throws IOException {
+    return getDirForPage(uri, baseDir) + File.separator + getFileNameFromUri(uri);
+  }
+
+  public static File createFileForPage(String uri, String directory) throws IOException {
+    File file = new File(getFileForPage(uri, directory));
 
     if (!file.exists()) {
       file.createNewFile();
@@ -48,6 +51,6 @@ public class FileUtil {
   public static void main(String[] args) throws IOException {
     System.out.println(FileUtils.getTempDirectoryPath());
     System.out.println(File.separator);
-    createTempFileForPage("http://baidu.com/", "web");
+    getFileForPage("http://baidu.com/", "web");
   }
 }

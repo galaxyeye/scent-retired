@@ -141,5 +141,6 @@
 	<classpathentry kind="lib" path="build/lib/xstream-1.4.4.jar"/>
 	<classpathentry kind="lib" path="build/lib/xz-1.0.jar"/>
 	<classpathentry kind="lib" path="build/lib/zookeeper-3.4.5.jar"/>
+	<classpathentry kind="lib" path="build/lib/jtidy-4aug2000r7-dev.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

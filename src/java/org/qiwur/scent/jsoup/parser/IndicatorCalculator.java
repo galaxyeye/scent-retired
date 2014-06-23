@@ -26,11 +26,11 @@ public class IndicatorCalculator extends InterruptiveNodeVisitor {
   public void tail(Node node, int depth) {
     if (node instanceof TextNode) {
       node.parent().accumIndics(
-          new Indicator(Indicator.OCH, node.indic(Indicator.OCH)),
-          new Indicator(Indicator.CH, node.indic(Indicator.CH)),
-          new Indicator(Indicator.OTB, 1.0),
-          new Indicator(Indicator.TB, 1.0),
-          new Indicator(Indicator.SEP, node.indic(Indicator.SEP))
+          node.getIndicator(Indicator.OCH),
+          node.getIndicator(Indicator.CH),
+          node.getIndicator(Indicator.OTB),
+          node.getIndicator(Indicator.TB),
+          node.getIndicator(Indicator.SEP)
       );
 
       return;
@@ -40,10 +40,10 @@ public class IndicatorCalculator extends InterruptiveNodeVisitor {
       Element e = (Element) node;
 
       // since the the sum has been calculated, we can get the average
-      e.indic(Indicator.IAW, division(e, Indicator.ITW, Indicator.IMG));
-      e.indic(Indicator.IAH, division(e, Indicator.ITH, Indicator.IMG));
-      e.indic(Indicator.AAW, division(e, Indicator.ATW, Indicator.A));
-      e.indic(Indicator.AAH, division(e, Indicator.ATH, Indicator.A));
+      e.indic(Indicator.IAW, divide(e, Indicator.ITW, Indicator.IMG, 0.0));
+      e.indic(Indicator.IAH, divide(e, Indicator.ITH, Indicator.IMG, 0.0));
+      e.indic(Indicator.AAW, divide(e, Indicator.ATW, Indicator.A, 0.0));
+      e.indic(Indicator.AAH, divide(e, Indicator.ATH, Indicator.A, 0.0));
 
       // 计算父节点的统计信息
       Element pe = e.parent();
@@ -95,76 +95,70 @@ public class IndicatorCalculator extends InterruptiveNodeVisitor {
     );
 
     if (node instanceof TextNode) {
-      double textLen = 0.0;
-      double numSeparator = 0.0;
+      double _ch = 0.0;
+      double _sep = 0.0;
 
-      String text = ((TextNode) node).text().replaceAll("\\s", "");
-      textLen = text.length();
+      String text = StringUtil.stripNonChar(((TextNode) node).text(), StringUtil.DefaultKeepChars).trim();
+      _ch = text.length();
 
       for (String sep : Indicator.separators) {
-        numSeparator += StringUtils.countMatches(text, sep);
+        _sep += StringUtils.countMatches(text, sep);
       }
 
-      if (textLen > 0) {
+      if (_ch > 0) {
         node.accumIndics(
-            new Indicator(Indicator.CH, textLen),
-            new Indicator(Indicator.OCH, textLen),
+            new Indicator(Indicator.CH, _ch),
+            new Indicator(Indicator.OCH, _ch),
             new Indicator(Indicator.OTB, 1.0),
             new Indicator(Indicator.TB, 1.0),
-            new Indicator(Indicator.SEP, numSeparator)
+            new Indicator(Indicator.SEP, _sep)
         );
       }
     }
 
     if (node instanceof Element) {
-      double numLink = 0.0;
-      double linkWidth = 0.0;
-      double linkHeight = 0.0;
-      double numImage = 0.0;
-      double imageWidth = 0.0;
-      double imageHeight = 0.0;
+      double _a = 0.0;
+      double _a_total_w = 0.0;
+      double _a_total_h = 0.0;
+      double _img = 0.0;
+      double _img_total_w = 0.0;
+      double _img_total_h = 0.0;
 
       if (node.nodeName().equals("a")) {
-        ++numLink;
-        linkWidth = StringUtil.parseDouble(node.attr("data-offset-width"));
-        linkHeight = StringUtil.parseDouble(node.attr("data-offset-height"));
+        ++_a;
+        _a_total_w = node.sniffWidth();
+        _a_total_h = node.sniffHeith();
       }
 
       if (node.nodeName().equals("img")) {
-        ++numImage;
-        imageWidth = StringUtil.parseDouble(node.attr("data-offset-width"));
-        imageHeight = StringUtil.parseDouble(node.attr("data-offset-height"));
+        ++_img;
+        _img_total_w = node.sniffWidth();
+        _img_total_h = node.sniffHeith();
       }
 
       node.accumIndics(
-          new Indicator(Indicator.A, numLink),
-          new Indicator(Indicator.AMW, linkWidth),
-          new Indicator(Indicator.AAW, linkWidth),
-          new Indicator(Indicator.AMH, linkHeight),
-          new Indicator(Indicator.AAH, linkHeight),
-          new Indicator(Indicator.ATW, linkWidth),
-          new Indicator(Indicator.ATH, linkHeight),
+          new Indicator(Indicator.A, _a),
+          new Indicator(Indicator.AMW, _a_total_w),
+          new Indicator(Indicator.AAW, _a_total_w),
+          new Indicator(Indicator.AMH, _a_total_h),
+          new Indicator(Indicator.AAH, _a_total_h),
+          new Indicator(Indicator.ATW, _a_total_w),
+          new Indicator(Indicator.ATH, _a_total_h),
 
-          new Indicator(Indicator.IMG, numImage),
-          new Indicator(Indicator.IMW, imageWidth),
-          new Indicator(Indicator.IAW, imageWidth),
-          new Indicator(Indicator.IMH, imageHeight),
-          new Indicator(Indicator.IAH, imageHeight),
-          new Indicator(Indicator.ITW, imageWidth),
-          new Indicator(Indicator.ITH, imageHeight)
+          new Indicator(Indicator.IMG, _img),
+          new Indicator(Indicator.IMW, _img_total_w),
+          new Indicator(Indicator.IAW, _img_total_w),
+          new Indicator(Indicator.IMH, _img_total_h),
+          new Indicator(Indicator.IAH, _img_total_h),
+          new Indicator(Indicator.ITW, _img_total_w),
+          new Indicator(Indicator.ITH, _img_total_h)
       );
     }
   }
 
-  private double division(Element ele, String numerator, String denominator) {
-    double res = 0.0;
+  private double divide(Element ele, String numerator, String denominator, double divideByZeroValue) {
+    double n = ele.indic(numerator), d = ele.indic(denominator);
 
-    double d = ele.indic(denominator);
-
-    if (d != 0) {
-      res = ele.indic(numerator) / ele.indic(denominator);
-    }
-
-    return res;
+    return d == 0 ? divideByZeroValue : n / d;
   }
 }

@@ -27,6 +27,7 @@ public class WebLoader {
   private int proxyPort = 19080;
   private ProxyPool proxyPool = null;
   private int minPageLength = 2000;
+  private String cacheDir = "/tmp/web/original";
   private final long localFileCacheExpires;
 
   public WebLoader(Configuration conf) {
@@ -61,9 +62,10 @@ public class WebLoader {
 
   protected Document doLoad(String uri) throws IOException, InterruptedException {
     // cache mechanism
-    File file = new File(FileUtil.getFileNameFromUri(uri));
+    File file = new File(FileUtil.getFileForPage(uri, cacheDir));
     if (checkLocalCacheAvailable(file, localFileCacheExpires)) {
       uri = "file://" + file.getAbsolutePath();
+      logger.debug("load from local file cache : {}", uri);
     }
 
     if (uri.startsWith("file://")) {
@@ -91,7 +93,7 @@ public class WebLoader {
     }
 
     if (localFileCacheExpires > 0) {
-      cachePage(uri, response.body(), "original");
+      cachePage(uri, response.body(), cacheDir);
     }
 
     if (response != null) {
@@ -121,7 +123,7 @@ public class WebLoader {
 
   private void cachePage(String url, String content, String dir) {
     try {
-      File file = FileUtil.createTempFileForPage(url, "web/" + dir);
+      File file = FileUtil.createFileForPage(url, dir);
       FileUtils.writeStringToFile(file, content);
     } catch (IOException e) {
       logger.error(e);
@@ -131,7 +133,11 @@ public class WebLoader {
   private boolean checkLocalCacheAvailable(File file, long expires) {
     if (expires > 0 && file.exists()) {
       long modified = file.lastModified();
-      if (System.currentTimeMillis() - modified < expires) {
+
+//      logger.debug("check expired : {}, {}, {}, {}", 
+//          System.currentTimeMillis(), modified, System.currentTimeMillis() - modified, expires);
+
+      if (System.currentTimeMillis() - modified < 1000 * expires) {
         return true;
       }
       else {

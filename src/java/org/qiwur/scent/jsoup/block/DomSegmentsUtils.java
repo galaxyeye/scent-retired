@@ -6,18 +6,20 @@ import ruc.irm.similarity.FuzzyProbability;
 
 public class DomSegmentsUtils {
 
-  public static DomSegments addOrTag(DomSegments segments, Element block, BlockLabel label) {
-    return addOrTag(segments, block, label, FuzzyProbability.VERY_LIKELY);
+  public static void addIfNotExist(DomSegments segments, Element block) {
+    if (!hasSegment(segments, block)) {
+      segments.add(DomSegment.create(block));
+    }
   }
 
-  public static DomSegments addOrTag(DomSegments segments, Element block, String label, FuzzyProbability p) {
-    return addOrTag(segments, block, BlockLabel.fromString(label), p);
+  public static DomSegments addOrTag(DomSegments segments, Element block, BlockLabel label) {
+    return addOrTag(segments, block, label, FuzzyProbability.VERY_LIKELY);
   }
 
   public static DomSegments addOrTag(DomSegments segments, Element block, BlockLabel label, FuzzyProbability p) {
     if (block == null) return new DomSegments();
 
-    DomSegments result = find(segments, block);
+    DomSegments result = findByBlock(segments, block);
 
     if (result.isEmpty()) {
       DomSegment segment = DomSegment.create(block);
@@ -35,7 +37,7 @@ public class DomSegmentsUtils {
   public static DomSegments addOrTag(DomSegments segments, Element block, BlockPattern pattern, FuzzyProbability p) {
     if (block == null) return new DomSegments();
 
-    DomSegments result = find(segments, block);
+    DomSegments result = findByBlock(segments, block);
 
     if (result.isEmpty()) {
       DomSegment segment = DomSegment.create(block);
@@ -47,14 +49,14 @@ public class DomSegmentsUtils {
       segment.tag(pattern, p);
     }
 
-    return result;    
+    return result;
   }
 
-  public static DomSegments find(DomSegments segments, Element block) {
+  public static DomSegments findByBlock(DomSegments segments, Element block) {
     DomSegments result = new DomSegments();
 
     for (DomSegment segment : segments) {
-      if (segment.body().equals(block) || segment.root().equals(block)) {
+      if (segment.body() == block || segment.root() == block) {
         result.add(segment);
       }
     }
@@ -63,7 +65,13 @@ public class DomSegmentsUtils {
   }
 
   public static boolean hasSegment(DomSegments segments, Element block) {
-    return !find(segments, block).isEmpty();
+    for (DomSegment segment : segments) {
+      if (segment.body() == block || segment.root() == block) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
 }

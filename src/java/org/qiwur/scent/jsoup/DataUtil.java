@@ -37,17 +37,25 @@ public class DataUtil {
      * @throws IOException on IO error
      */
     public static Document load(File in, String charsetName, String baseUri) throws IOException {
-        FileInputStream inStream = null;
-        try {
-            inStream = new FileInputStream(in);
-            ByteBuffer byteData = readToByteBuffer(inStream);
-            return parseByteData(byteData, charsetName, baseUri, Parser.htmlParser());
-        } finally {
-            if (inStream != null)
-                inStream.close();
-        }
+      return load(in, charsetName, baseUri, true);
     }
 
+    public static Document load(File in, String charsetName, String baseUri, boolean ignoreScript) throws IOException {
+      FileInputStream inStream = null;
+      try {
+          inStream = new FileInputStream(in);
+          ByteBuffer byteData = readToByteBuffer(inStream);
+
+          Parser parser = Parser.htmlParser();
+          parser.ignoreScript(ignoreScript);
+          return parseByteData(byteData, charsetName, baseUri, parser);
+      } finally {
+          if (inStream != null)
+              inStream.close();
+      }
+  }
+
+    
     /**
      * Parses a Document from an input steam.
      * @param in input stream to parse. You will need to close it.
