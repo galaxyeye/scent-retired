@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<block-features>
+    <block label="Areas" leaf-only="true">
+        <phrase name="省" score="2" />
+        <phrase name="市" score="2" />
+        <phrase name="岛" score="2" />
+        <phrase name="地区" score="2" />
+        <phrase name="自治区" score="2" />
+        <phrase name="自治州" score="2" />
+
+        <phrase name="华东" score="2" />
+        <phrase name="华南" score="2" />
+        <phrase name="华北" score="2" />
+        <phrase name="华中" score="2" />
+        <phrase name="东北" score="2" />
+        <phrase name="西南" score="2" />
+        <phrase name="西北" score="2" />
+
+        <phrase name="北京" score="2" />
+        <phrase name="上海" score="2" />
+        <phrase name="天津" score="2" />
+        <phrase name="重庆" score="2" />
+        <phrase name="河北" score="2" />
+        <phrase name="山西" score="2" />
+        <phrase name="河南" score="2" />
+        <phrase name="辽宁" score="2" />
+        <phrase name="吉林" score="2" />
+        <phrase name="黑龙江" score="2" />
+        <phrase name="内蒙古" score="2" />
+        <phrase name="江苏" score="2" />
+        <phrase name="山东" score="2" />
+        <phrase name="安徽" score="2" />
+        <phrase name="浙江" score="2" />
+        <phrase name="福建" score="2" />
+        <phrase name="湖北" score="2" />
+        <phrase name="湖南" score="2" />
+        <phrase name="广东" score="2" />
+        <phrase name="广西" score="2" />
+        <phrase name="江西" score="2" />
+        <phrase name="四川" score="2" />
+        <phrase name="海南" score="2" />
+        <phrase name="贵州" score="2" />
+        <phrase name="云南" score="2" />
+        <phrase name="西藏" score="2" />
+        <phrase name="陕西" score="2" />
+        <phrase name="甘肃" score="2" />
+        <phrase name="青海" score="2" />
+        <phrase name="宁夏" score="2" />
+        <phrase name="新疆" score="2" />
+        <phrase name="台湾" score="2" />
+        <phrase name="香港" score="2" />
+        <phrase name="澳门" score="2" />
+        <phrase name="钓鱼岛" score="2" />
+    </block>
+</block-features>

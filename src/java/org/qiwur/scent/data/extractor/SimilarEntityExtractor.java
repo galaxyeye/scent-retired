@@ -16,7 +16,7 @@ public final class SimilarEntityExtractor extends DomSegmentExtractor {
   private Set<Link> links = new HashSet<Link>();
 
 	public SimilarEntityExtractor(DomSegment segment, PageEntity pageEntity, Configuration conf) {
-    super(segment, pageEntity, BlockLabel.SimilarEntity);
+    super(segment, pageEntity, BlockLabel.SimilarEntity.text());
 	}
 
   @Override
@@ -24,18 +24,18 @@ public final class SimilarEntityExtractor extends DomSegmentExtractor {
     if (!valid()) return;
 
     for (Element ele : element().getElementsByTag("a")) {
-      if (!ele.attr("href").startsWith("#")) {
+      if (!Link.pseudoLink(ele.attr("href"))) {
         links.add(Link.create(ele));
       }
     }
 
-    pageEntity.put(sectionLabel, formatLinks(), segment.labels());
+    pageEntity().put(BlockLabel.SimilarEntity.text(), formatLinks(), BlockLabel.SimilarEntity.text());
   }
 
   protected String formatLinks() {
     StringBuilder sb = new StringBuilder();
 
-    String cls = StringUtil.csslize(segment.labelTracker().getLabelsAsString());
+    String cls = StringUtil.csslize(segment().labelTracker().getLabelsAsString());
     String clazz = StringUtil.csslize(getClass().getSimpleName());
 
     sb.append(String.format("<div class='%s' data-extractor='%s'>", cls, clazz));

@@ -6,7 +6,7 @@ import java.util.Set;
 import org.apache.hadoop.conf.Configuration;
 import org.qiwur.scent.entity.Image;
 import org.qiwur.scent.entity.PageEntity;
-import org.qiwur.scent.jsoup.block.BlockLabel;
+import org.qiwur.scent.jsoup.block.BlockPattern;
 import org.qiwur.scent.jsoup.block.DomSegment;
 import org.qiwur.scent.jsoup.nodes.Element;
 import org.qiwur.scent.utils.StringUtil;
@@ -16,7 +16,7 @@ public final class ImagesExtractor extends DomSegmentExtractor {
 	private Set<Image> images = new HashSet<Image>();
 
 	public ImagesExtractor(DomSegment segment, PageEntity pageEntity, Configuration conf) {
-    super(segment, pageEntity, BlockLabel.LinkImages);
+    super(segment, pageEntity, BlockPattern.Images.text());
 	}
 
 	@Override
@@ -28,14 +28,14 @@ public final class ImagesExtractor extends DomSegmentExtractor {
 		}
 
     if (!images.isEmpty()) {
-      pageEntity.put(sectionLabel, formatImages(), segment.labels());
+      pageEntity().put(displayLabel(), formatImages(), segment().labels());
     }
 	}
 
   protected String formatImages() {
     StringBuilder gallery = new StringBuilder();
 
-    String cls = StringUtil.csslize(segment.labelTracker().getLabelsAsString());
+    String cls = StringUtil.csslize(segment().labelTracker().getLabelsAsString());
     String clazz = StringUtil.csslize(getClass().getSimpleName());
 
     gallery.append(String.format("<div class='%s' data-extractor='%s'>", cls, clazz));

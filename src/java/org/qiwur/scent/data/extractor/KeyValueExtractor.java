@@ -35,47 +35,6 @@ public class KeyValueExtractor {
 	  this.root = root;
 	}
 
-	/*
-	 * 默认分别使用四种抽取方法
-	 * 
-	 * */
-	public void process() {
-		if (root == null) {
-		  return;
-		}
-
-		// 抽取特定标签
-		// 抽取dl
-		Elements dls = root.getElementsByTag("dl");
-		for (Element dl : dls) {
-			// logger.debug("try extract from dl");
-			extractDl(dl);
-			// logger.debug("size of attributes : {}", attributes.size());
-		}
-
-    // 抽取table
-		Elements tables = root.select("table,tbody");
-		for (Element table : tables) {
-			// logger.debug("try extract from table");
-			extractTable(table);
-			// logger.debug("size of attributes : {}", attributes.size());
-		}
-
-//		logger.debug(3 + ":N" + root.separatorNumber());
-
-		// 抽取I:I模式的key/value对
-		if (root.indic(Indicator.SEP) > 2) {
-			// logger.debug("try extract from I_I block");
-			extractIIPattern(root, I_I_PATTERN_SEPERATORS);
-			// logger.debug("size of attributes : {}", attributes.size());
-		}
-
-    // 抽取N:2模式的key/value对
-		if (root.indic(Indicator.C) > 3) {
-		  extractN2Pattern(element(), 4, "div", "p", "ol", "ul");
-		}
-	}
-
 	public boolean hasAttribute() {
 		return !attributes.isEmpty();
 	}
@@ -86,10 +45,6 @@ public class KeyValueExtractor {
 
   public Element element() {
     return root;
-  }
-
-  public boolean valid() {
-    return root != null;
   }
 
 	public void extractList(Element root) {
@@ -151,10 +106,6 @@ public class KeyValueExtractor {
 		TreeMultimap<Double, Element> map = 
 				DOMUtil.findMostChildrenElement(root, minChildren, desiredTags);
 
-//		for (Integer key : map.keySet()) {
-//			logger.debug("child number : {}, element count : {}", key, map.get(key).size());
-//		}
-
 		if (map.size() > 0) {
 		  extractMultimap(map);
 		}
@@ -194,12 +145,12 @@ public class KeyValueExtractor {
 		for (Double k : map.keySet()) {
 			for (Element root : map.get(k)) {
 
-				double numChildren = root.indic(Indicator.C);
-				double numGrandson = root.indic(Indicator.G);
-				double numTxtBlk = root.indic(Indicator.TB);
+				double _child = root.indic(Indicator.C);
+				double _grand_child = root.indic(Indicator.G);
+				double _txt_blk = root.indic(Indicator.TB);
 
-				double growth = (numGrandson - numChildren) / numChildren;
-				double growth2 = (numTxtBlk - numChildren) / numChildren;
+				double growth = (_grand_child - _child) / _child;
+				double growth2 = (_txt_blk - _child) / _child;
 
 				// 没有键值对
 				// 推导过程：

@@ -1,4 +1,4 @@
-package org.qiwur.scent.classifier.statistics;
+package org.qiwur.scent.classifier;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,31 +9,24 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import org.apache.commons.lang.Validate;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.qiwur.scent.classifier.statistics.StatIndicator;
 import org.qiwur.scent.jsoup.nodes.Element;
 import org.qiwur.scent.jsoup.nodes.Indicator;
 
-public class StatRule {
-
-  protected static final Logger logger = LogManager.getLogger(StatRule.class);
-
-  public static final double MIN_SCORE = -10000.0;
-  public static final double MAX_SCORE = 10000.0;
+public class StatRule extends ScentRule {
 
   private final StatIndicator indicator;
   private final double min;
   private final double max;
-  private final double score;
   private final double nag_score;
-  private Map<String, String> variables = new HashMap<String, String>();
   private Map<String, String> references = new HashMap<String, String>();
 
   public StatRule(StatIndicator indicator, double min, double max, double score, double nag_score) {
+    super(String.format("%s-%d-%d", indicator.name(), (int)min, (int)max), score);
+
     this.indicator = indicator;
     this.min = min < MIN_SCORE ? MIN_SCORE : min;
     this.max = max >  MAX_SCORE ?  MAX_SCORE : max;
-    this.score = score;
     this.nag_score = nag_score;
 
     var("$_result", "0.0");
@@ -41,10 +34,6 @@ public class StatRule {
 
   public void ref(String ref, String var) {
     references.put(ref, var);
-  }
-
-  public void var(String name, String value) {
-    variables.put(name, value);
   }
 
   public double getScore(Element ele) {
@@ -61,7 +50,7 @@ public class StatRule {
 
     double result = nag_score;
     if (value >= min && value <= max) {
-      result = score;
+      result = score();
     }
 
     return result;
@@ -77,7 +66,7 @@ public class StatRule {
     ScriptEngine engine = factory.getEngineByName("JavaScript");
 
     // inject variables
-    for (Entry<String, String> entry : variables.entrySet()) {
+    for (Entry<String, String> entry : variables().entrySet()) {
       engine.put(entry.getKey(), entry.getValue());
     }
 
@@ -111,16 +100,16 @@ public class StatRule {
 
   @Override
   public String toString() {
-    String report = String.format("min : %6.2f max : %6.2f score : %6.2f -score : %6.2f\n" 
-          + " indicators : %s\n"
-          + " variables : %s\n"
-          + " references : %s",
-        min, 
-        max, 
-        score, 
-        nag_score, 
-        indicator.toString(), 
-        variables.toString(), 
+    String report = String.format("\n\nmin : %6.2f max : %6.2f score : %6.2f -score : %6.2f\n" 
+          + "\n\nindicators : %s"
+          + "\n\nvariables : %s"
+          + "\n\nreferences : %s",
+        min,
+        max,
+        score(),
+        nag_score,
+        indicator.toString(),
+        variables().toString(),
         references.toString()
     );
 

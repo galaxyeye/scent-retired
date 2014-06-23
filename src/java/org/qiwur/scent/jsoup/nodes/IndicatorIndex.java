@@ -1,5 +1,6 @@
 package org.qiwur.scent.jsoup.nodes;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -17,9 +18,8 @@ public class IndicatorIndex {
   public IndicatorIndex() {
     for (String name : Indicator.names) {
       @SuppressWarnings("unchecked")
-      TreeMultimap<Double, Element> map = TreeMultimap.create(
-          ComparatorUtils.reversedComparator(ComparatorUtils.NATURAL_COMPARATOR),
-          ComparatorUtils.NATURAL_COMPARATOR);
+      TreeMultimap<Double, Element> map = TreeMultimap.create(Collections.reverseOrder(), 
+          ComparatorUtils.naturalComparator());
 
       indexes.put(name, map);
     }

@@ -6,19 +6,21 @@ import org.qiwur.scent.utils.Validate;
 
 public class Indicator implements Map.Entry<String, Double>, Cloneable {
   // code structure feature
-  public static final String CH   = "-char";   // chars
-  public static final String OCH  = "-own-char"; // own chars
-  public static final String TB   = "-txt-blk"; // text blocks
+  public static final String CH   = "-char";        // chars
+  public static final String CHM  = "-char-max";    // max chars
+  public static final String CHA  = "-char-ave";    // ave chars
+  public static final String OCH  = "-own-char";    // own chars
+  public static final String TB   = "-txt-blk";     // text blocks
   public static final String OTB  = "-own-txt-blk"; // text blocks
-  public static final String IMG  = "-img"; // images
-  public static final String A    = "-a";   // links
-  public static final String SIB  = "-sibling"; // siblings
-  public static final String C    = "-child"; // children
+  public static final String IMG  = "-img";         // images
+  public static final String A    = "-a";           // links
+  public static final String SIB  = "-sibling";     // siblings
+  public static final String C    = "-child";       // children
   public static final String G    = "-grant-child"; // grand children
-  public static final String D    = "-descend"; // descendants
-  public static final String DEP  = "-dep"; // element depth
-  public static final String SEP  = "-sep"; // separators
-  public static final String SEQ  = "-seq";   // sequence
+  public static final String D    = "-descend";     // descendants
+  public static final String DEP  = "-dep";         // element depth
+  public static final String SEP  = "-sep";         // separators
+  public static final String SEQ  = "-seq";         // sequence
 
   // vision feature
   public static final String AMW    = "-a-max-w";     // max link width
@@ -33,11 +35,12 @@ public class Indicator implements Map.Entry<String, Double>, Cloneable {
   // temporary variables for internal usage
   public static final String ATW    = "--a-total-w";  // total link width
   public static final String ATH    = "--a-total-h";  // total link width
-  public static final String ITW    = "--i-total-w";  // total link width
-  public static final String ITH    = "--i-total-h";  // total link width
+  public static final String ITW    = "--img-total-w";  // total link width
+  public static final String ITH    = "--img-total-h";  // total link width
 
   public static final String[] names = {
-    CH, OCH, TB, OTB, IMG, A, SIB, C, G, D, DEP, SEP, SEQ,
+    CH, CHM, CHA, OCH, 
+    TB, OTB, IMG, A, SIB, C, G, D, DEP, SEP, SEQ,
     AMW, AAW, AMH, AAH,
     IMW, IAW, IMH, IAH
   };
@@ -47,7 +50,7 @@ public class Indicator implements Map.Entry<String, Double>, Cloneable {
    * can be modified in configuration step
    * 
    * */
-  public static String[] separators = {":", "：", "|"};
+  public static String[] separators = {":", "："};
 
   private String name;
   private double value;

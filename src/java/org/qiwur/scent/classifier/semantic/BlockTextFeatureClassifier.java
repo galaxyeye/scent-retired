@@ -1,10 +1,8 @@
 package org.qiwur.scent.classifier.semantic;
 
 import java.util.Collection;
-import java.util.Map;
-import java.util.Map.Entry;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.Validate;
 import org.apache.hadoop.conf.Configuration;
 import org.qiwur.scent.classifier.RuleBasedBlockClassifier;
 import org.qiwur.scent.feature.FeatureManager;
@@ -21,26 +19,18 @@ public class BlockTextFeatureClassifier extends RuleBasedBlockClassifier {
     double weight = conf.getFloat("scent.block.text.feature.classifier.weight", 1.0f);
     this.weight(weight);
 
-    String featureFile = conf.get("scent.block.text.feature.file");
-    blockTextFeature = FeatureManager.get(conf, PhraseFeature.class, featureFile);
+    String[] featureFiles = conf.getStrings("scent.block.text.feature.file");
+    blockTextFeature = FeatureManager.get(conf, PhraseFeature.class, featureFiles);
   }
 
   /*
-   * 关键词指标
+   * keyword based classifier, the classifier affects only the leaf segments in the segment tree
    */
   @Override
   protected double getScore(DomSegment segment, String label) {
-    Map<String, Double> rules = blockTextFeature.getRules(label);
-    if (rules == null) return 0.0;
+    Validate.notNull(segment);
 
-    double score = 0.0;
-    String text = segment.body().text();
-    for (Entry<String, Double> rule : rules.entrySet()) {
-      int count = StringUtils.countMatches(text, rule.getKey());
-      score += count * rule.getValue();
-    }
-
-    return score;
+    return blockTextFeature.getScore(segment, label, segment.patternTracker().keySet());
   }
 
   @Override

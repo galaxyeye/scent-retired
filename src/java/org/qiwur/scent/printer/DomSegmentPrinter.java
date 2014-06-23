@@ -20,7 +20,7 @@ public class DomSegmentPrinter {
 
 	public void process() {
 		for (DomSegment seg : doc.domSegments()) {
-      logger.debug("%d %s---------------------------------", seg.root().sequence(), seg.root().prettyName());
+      logger.debug("%s---------------------------------", seg.block().prettyName());
 			logger.debug("%s\n", StringUtils.substring(seg.text(), 0, 150));
 		}
 	}

@@ -34,7 +34,7 @@ public final class HtmlTitleFeature extends LinedFeature {
       // 最少分隔
       Pattern.compile("[ ]*[»【】][ ]*"), };
 
-  public static final int MinTitleSize = 10;
+  public static final int MinTitleSize = 6;
 
   public static final int MaxTitleSize = 200;
 
@@ -59,25 +59,21 @@ public final class HtmlTitleFeature extends LinedFeature {
   public Set<String> getPotentialTitles(String title) {
     Set<String> potentialTitles = new TreeSet<String>(StringUtil.LongerFirstComparator);
 
-    if (!validate(title)) {
-      return potentialTitles;
-    }
-
-    // 移除后缀的 -xx网
-    title = strip(title);
-
     // step 1. add the whole original title
     potentialTitles.add(title);
 
-    if (!validate(title)) {
+    // 移除后缀的 -xx网
+    String candidate = strip(title);
+    if (!validate(candidate)) {
       return potentialTitles;
     }
 
-    // preprocessing finished
-    String candidate = title;
-
     // step 2. add the whole title preprocessed title
     potentialTitles.add(candidate);
+    // split into two parts, since some web page have repeated texts in the title
+    int middle = candidate.length() / 2;
+    potentialTitles.add(StringUtils.substring(candidate, 0, middle));
+    potentialTitles.add(StringUtils.substring(candidate, middle));
 
     // step 3, split by patterns, find out the longest part for each pattern
     for (Pattern pattern : PotentialTitlePatterns) {
@@ -90,19 +86,17 @@ public final class HtmlTitleFeature extends LinedFeature {
     // step 4, remove text in brackets, and then split by patterns, find out the longest part for each pattern
     // 将括号中的部分去除，然后分解
     candidate = PAT_REMOVE_COMMENT_POTION.matcher(title).replaceAll("").trim();
-
     if (!validate(candidate)) {
       return potentialTitles;
     }
-
     potentialTitles.add(candidate);
-
     for (Pattern pattern : PotentialTitlePatterns) {
       String p = StringUtil.getLongestPart(candidate, pattern);
       if (validate(p)) {
         potentialTitles.add(p);
       }
     }
+
     logger.debug("potential titles : {}", potentialTitles);
 
     return potentialTitles;
@@ -111,12 +105,8 @@ public final class HtmlTitleFeature extends LinedFeature {
   public Multiset<String> badWords() {
     return lines();
   }
-  
-  // 移除标题后缀，如xx网
-  public String strip(String title) {
-    if (!validate(title))
-      return "";
 
+  public String strip(String title) {
     int lastTitleLength = title.length();
     boolean removed = false;
 
@@ -137,8 +127,7 @@ public final class HtmlTitleFeature extends LinedFeature {
       }
     }
 
-    if (!validate(title))
-      title = "";
+    if (!validate(title)) title = "";
 
     return trim(title);
   }

@@ -4,6 +4,7 @@ import java.awt.event.KeyEvent;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
@@ -18,6 +19,8 @@ public final class StringUtil {
   public static final String KeyboardWhitespace = String.valueOf(' ');
 
   public static final String NBSP = String.valueOf(' ');
+
+  public static final Pattern PatternTime = Pattern.compile("[0-2][0-3]:[0-5][0-9]");
 
   // memoised padding up to 10
   private static final String[] padding = { "", " ", "  ", "   ", "    ", "     ", "      ", "       ", "        ",
@@ -381,6 +384,13 @@ public final class StringUtil {
     }
   }
 
+  public static int countTimeString(String text) {
+    Matcher  matcher = PatternTime.matcher(text);
+    int count = 0;
+    while (matcher.find()) count++;
+    return count;
+  }
+
   public static String getLongestPart(final String text, final String regex) {
     return getLongestPart(text, Pattern.compile(regex));
   }
@@ -402,7 +412,11 @@ public final class StringUtil {
   }
 
   public static double parseDouble(String s) {
-    double r = 0.0;
+    return parseDouble(s, 0.0);
+  }
+
+  public static double parseDouble(String s, double defaultValue) {
+    double r = defaultValue;
 
     if (StringUtils.isEmpty(s)) {
       return r;
@@ -412,7 +426,6 @@ public final class StringUtil {
       r = Double.parseDouble(s);
     }
     catch (Exception e) {
-      
     }
 
     return r;

@@ -2,6 +2,7 @@ package org.qiwur.scent.classifier.statistics;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.qiwur.scent.jsoup.nodes.Indicator;
+import org.qiwur.scent.utils.StringUtil;
 
 public class StatIndicator {
 
@@ -31,6 +32,11 @@ public class StatIndicator {
 
   @Override
   public String toString() {
-    return "name : " + name + ", script : " + script;
+    String s = name;
+    if (script != null) {
+      s += ", ";
+      s += StringUtil.stripNonChar(script);
+    }
+    return s;
   }
 }

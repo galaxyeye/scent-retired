@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.apache.commons.collections.ComparatorUtils;
 import org.qiwur.scent.jsoup.block.DomSegment;
-import org.qiwur.scent.jsoup.block.DomSegments;
 import org.qiwur.scent.jsoup.nodes.Element;
 import org.qiwur.scent.jsoup.nodes.Indicator;
 
@@ -41,7 +40,7 @@ public class DOMUtil {
 
   static public boolean isAncestor(DomSegment child, DomSegment ancestor) {
     if (child == null || ancestor == null) return false;
-    return isAncestor(child.root(), ancestor.root(), 1000000);
+    return isAncestor(child.block(), ancestor.block(), 1000000);
   }
 
   static public boolean isAncestor(Element child, Element ancestor) {
@@ -164,31 +163,47 @@ public class DOMUtil {
     return founder.getElementMap();
   }
 
-  /*
-   * Find the container complex enough
-   * 
-   * @param addTB required additional number of text blocks
-   * 
-   * @param addC1 required additional number of direct child elements
-   * 
-   * @param addCAll required additional number of all child elements
-   */
-  public static Element getContainerSatisfyAny(Element content, int addTB, int addC1, int addCAll) {
-    if (content == null || content.parent() == null)
-      return null;
+  public static boolean satisfyAny(Element ele, Indicator... indicators) {
+    boolean satisfied = false;
 
-    Element parent = content.parent();
-
-    while (parent != null) {
-      double numTextBlocks = parent.indic(Indicator.TB) - content.indic(Indicator.TB);
-      double childNumber = parent.indic(Indicator.C) - content.indic(Indicator.C);
-      double descendantNumber = parent.indic(Indicator.D) - content.indic(Indicator.D);
-
-      if (numTextBlocks >= addTB || childNumber >= addC1 || descendantNumber >= addCAll) {
+    for (Indicator indicator : indicators) {
+      double value = ele.indic(indicator.getKey());
+      if (value >= indicator.getValue()) {
+        satisfied = true;
         break;
       }
+    }
 
+    return satisfied;
+  }
+
+  public static boolean satisfyAll(Element ele, Indicator... indicators) {
+    boolean satisfied = true;
+
+    for (Indicator indicator : indicators) {
+      double value = ele.indic(indicator.getKey());
+      if (value < indicator.getValue()) {
+        satisfied = false;
+        break;
+      }
+    }
+
+    return satisfied;
+  }
+
+  /*
+   * Find the container complex enough
+   */
+  public static Element getContainerSatisfyAny(Element ele, Indicator... indicators) {
+    if (ele == null || ele.parent() == null)
+      return null;
+
+    Element parent = ele.parent();
+    boolean satisfied = satisfyAny(parent, indicators);
+
+    while (!satisfied && parent != null) {
       parent = parent.parent();
+      satisfied = satisfyAny(parent, indicators);
     }
 
     return parent;
@@ -196,29 +211,17 @@ public class DOMUtil {
 
   /*
    * Find the container complex enough
-   * 
-   * @param addTB required additional number of text blocks
-   * 
-   * @param addC1 required additional number of direct child elements
-   * 
-   * @param addCAll required additional number of all child elements
    */
-  public static Element getContainerSatisfyAll(Element content, int addTB, int addC1, int addCAll) {
-    if (content == null || content.parent() == null)
+  public static Element getContainerSatisfyAll(Element ele, Indicator... indicators) {
+    if (ele == null || ele.parent() == null)
       return null;
 
-    Element parent = content.parent();
+    Element parent = ele.parent();
+    boolean satisfied = satisfyAll(parent, indicators);
 
-    while (parent != null) {
-      double numTextBlocks = parent.indic(Indicator.TB) - content.indic(Indicator.TB);
-      double childNumber = parent.indic(Indicator.C) - content.indic(Indicator.C);
-      double descendantNumber = parent.indic(Indicator.D) - content.indic(Indicator.D);
-
-      if (numTextBlocks >= addTB && childNumber >= addC1 && descendantNumber >= addCAll) {
-        break;
-      }
-
+    while (!satisfied && parent != null) {
       parent = parent.parent();
+      satisfied = satisfyAll(parent, indicators);
     }
 
     return parent;

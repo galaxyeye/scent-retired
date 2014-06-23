@@ -1,22 +1,34 @@
 package org.qiwur.scent.block.locator;
 
+import java.util.Collections;
+import java.util.Set;
+
+import org.apache.commons.collections.ComparatorUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.conf.Configuration;
-import org.qiwur.scent.feature.FeatureManager;
-import org.qiwur.scent.feature.HtmlTitleFeature;
 import org.qiwur.scent.jsoup.block.BlockLabel;
 import org.qiwur.scent.jsoup.block.DomSegment;
 import org.qiwur.scent.jsoup.nodes.Document;
 import org.qiwur.scent.jsoup.nodes.Element;
 import org.qiwur.scent.jsoup.nodes.Indicator;
 import org.qiwur.scent.jsoup.select.ElementTraversor;
-import org.qiwur.scent.jsoup.select.Elements;
 import org.qiwur.scent.jsoup.select.InterruptiveElementVisitor;
 import org.qiwur.scent.utils.StringUtil;
 
 import ruc.irm.similarity.FuzzyProbability;
 
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
+import com.google.common.collect.TreeMultimap;
+
 public final class MenuLocator extends BlockLocator {
+
+  // TODO : use feature file
+  public static Set<String> badWords = Sets.newHashSet();
+
+  static {
+    badWords.add("商品分类");
+  }
 
 	public MenuLocator(Document doc) {
 		super(doc, BlockLabel.Menu);
@@ -28,7 +40,7 @@ public final class MenuLocator extends BlockLocator {
     DomSegment menu = null;
 
     for (DomSegment segment : doc.domSegments()) {
-      double score = getScore(segment.body());
+      double score = getScore(segment.block());
 
       // logger.debug("menu score : {} : {}", segment.body().prettyName(), score);
 
@@ -47,25 +59,12 @@ public final class MenuLocator extends BlockLocator {
 
 	@Override
   protected DomSegment deepLocate() {
-		Elements menuCandidates = findMenuCandidates();
-
-    double maxScore = 3;
-    Element menu = null;
-
-    for (Element candidate : menuCandidates) {
-      double score = getScore(candidate);
-
-      // logger.debug("menu score : {} : {}", item.prettyName(), score);
-
-      if (score > maxScore) {
-        maxScore = score;
-        menu = candidate;
-      }
-    }
+    MenuItemFounder founder = new MenuItemFounder();
+    new ElementTraversor(founder).traverse(doc());
 
     DomSegment segment = null;
-    if (menu != null) {
-      segment = new DomSegment(null, null, menu);
+    if (!founder.getMenuItems().isEmpty()) {
+      segment = new DomSegment(null, null, founder.getMenuItems().values().iterator().next());
       segment.tag(targetLabel, FuzzyProbability.MUST_BE);
     }
 
@@ -73,15 +72,15 @@ public final class MenuLocator extends BlockLocator {
 	}
 
   public static DomSegment createMenu(Document doc, Configuration conf) {
-    Element body = doc.getElementsByTag("body").first();
-    Element ele = body.prependElement("ul");
+    Element ele = doc.body().prependElement("ul class='created'");
     ele.append("<li><a href='/'>首页</a></li>");
-    ele.sequence(body.sequence() + 100); // TODO : use a machine learned sequence
+    ele.sequence(doc.body().sequence() + 100); // TODO : use a machine learned sequence
 
     return DomSegment.create(ele, BlockLabel.Menu, FuzzyProbability.MUST_BE);
   }
 
-	private int getScore(Element root) {
+  // TODO : use classifier system
+	private double getScore(Element root) {
     if (root == null) return 0;
 
 	  int score = 0;
@@ -141,24 +140,6 @@ public final class MenuLocator extends BlockLocator {
     return score;
 	}
 
-	/*
-	 * find out all menu candidates in the document
-	 * */
-	private Elements findMenuCandidates() {
-	  MenuItemFounder founder = new MenuItemFounder();
-	  new ElementTraversor(founder).traverse(doc());
-
-	  // logger.debug("menu items : {}", founder.getMenuItems());
-
-	  Elements candidates = new Elements();
-	  for (Element item : founder.getMenuItems()) {
-	    Element menu = getMenuFromItem(item);
-	    if (menu != null) candidates.add(menu);
-	  }
-
-	  return candidates;
-	}
-
   /*
    * 通过一个菜单项，找到整个菜单的根节点
    * */
@@ -195,31 +176,41 @@ public final class MenuLocator extends BlockLocator {
 
   private class MenuItemFounder extends InterruptiveElementVisitor {
 
-    private Elements menuItems = new Elements();
+    private Multimap<Double, Element> menuItems = TreeMultimap.create(Collections.reverseOrder(), ComparatorUtils.NATURAL_COMPARATOR);
 
-    public Elements getMenuItems() {
+    public Multimap<Double, Element> getMenuItems() {
       return menuItems;
     }
 
     @Override
     public void head(Element ele, int depth) {
-      if (!ele.tagName().equals("a")) {
-        return;
-      }
+//      if (!ele.tagName().equals("a")) {
+//        return;
+//      }
 
       // logger.debug("find menu item : {}, {}", ele.prettyName(), ele.text());
 
+      double score = 0.0;
       String text = StringUtil.stripNonChar(ele.text());
       if (text.equals("首页")) {
-        menuItems.add(ele);
-        return;
+        Element menu = getMenuFromItem(ele);
+        score = getScore(ele);
+        menuItems.put(score, ele);
+      }
+      else {
+        String href = StringUtils.stripEnd(ele.attr("href"), "/");
+        int count = StringUtils.countMatches(href, "/");
+        // only http:// or https:// or no "/"
+        if (count <= 2) {
+          Element menu = getMenuFromItem(ele);
+          score = getScore(ele);
+          menuItems.put(score, ele);
+        }
       }
 
-      String href = StringUtils.stripEnd(ele.attr("href"), "/");
-      int count = StringUtils.countMatches(href, "/");
-      // only http:// or https:// or no "/"
-      if (count <= 2) {
-        menuItems.add(ele);
+      if (score >= 10) {
+        stop();
+        return;
       }
     }
   }

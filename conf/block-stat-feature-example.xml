@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<block-features>
+    <indicators>
+        <!-- 
+            examples, use to check js engine
+        -->
+        <indicator name="fibs" type="script">
+            var fibs = [0, 1];
+            for (var i = 0; i < 100; ++i) {
+                fibs.push(fibs[fibs.length - 1] + fibs[fibs.length - 2]);
+            }
+            $_result = fibs[fibs.length - 1];
+        </indicator>
+    </indicators>
+</block-features>

@@ -6,7 +6,7 @@ import java.util.Set;
 import org.apache.hadoop.conf.Configuration;
 import org.qiwur.scent.entity.Link;
 import org.qiwur.scent.entity.PageEntity;
-import org.qiwur.scent.jsoup.block.BlockLabel;
+import org.qiwur.scent.jsoup.block.BlockPattern;
 import org.qiwur.scent.jsoup.block.DomSegment;
 import org.qiwur.scent.jsoup.nodes.Element;
 import org.qiwur.scent.utils.StringUtil;
@@ -16,7 +16,7 @@ public final class LinksExtractor extends DomSegmentExtractor {
 	private Set<Link> links = new HashSet<Link>();
 
 	public LinksExtractor(DomSegment segment, PageEntity pageEntity, Configuration conf) {
-    super(segment, pageEntity, BlockLabel.Links);
+    super(segment, pageEntity, BlockPattern.Links.text());
 	}
 
 	@Override
@@ -24,21 +24,20 @@ public final class LinksExtractor extends DomSegmentExtractor {
     if (!valid()) return;
 
     for (Element ele : element().getElementsByTag("a")) {
-      String href = ele.attr("href");
-      if (!href.startsWith("#") && !href.contains("javascript")) {
+      if (!Link.pseudoLink(ele.attr("href"))) {
         links.add(Link.create(ele));
       }
 		}
 
     if (!links.isEmpty()) {
-      pageEntity.put(sectionLabel, formatLinks(), segment.labels());
+      pageEntity().put(displayLabel(), formatLinks(), segment().labels());
     }
 	}
 
   protected String formatLinks() {
     StringBuilder sb = new StringBuilder();
 
-    String cls = StringUtil.csslize(segment.labelTracker().getLabelsAsString());
+    String cls = StringUtil.csslize(segment().labelTracker().getLabelsAsString());
     String clazz = StringUtil.csslize(getClass().getSimpleName());
 
     sb.append(String.format("<div class='%s' data-extractor='%s'>", cls, clazz));

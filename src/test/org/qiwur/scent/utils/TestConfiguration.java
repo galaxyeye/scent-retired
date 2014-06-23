@@ -6,7 +6,7 @@ import java.util.Map.Entry;
 import org.apache.hadoop.conf.Configuration;
 import org.qiwur.scent.configuration.ScentConfiguration;
 
-public class ConfigurationTest {
+public class TestConfiguration {
 
   public static void main(String[] args) throws IOException {
     Configuration conf = ScentConfiguration.create();
@@ -18,7 +18,7 @@ public class ConfigurationTest {
       }
     }
 
-    for (String s : conf.getStrings("scent.html.block.labels")) {
+    for (String s : conf.getStrings("scent.classifier.block.labels")) {
       System.out.println(s);
     }
   }

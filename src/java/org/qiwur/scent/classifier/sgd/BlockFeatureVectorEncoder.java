@@ -81,7 +81,7 @@ public class BlockFeatureVectorEncoder extends ContinuousValueEncoder {
     Document doc = Document.createShell("");
     Element body = doc.select("body").first();
     body.append(html);
-    doc.rebuildIndicators();
+    doc.calculateIndicators();
 
     if (!body.children().isEmpty()) {
       encode(body.child(0), v);

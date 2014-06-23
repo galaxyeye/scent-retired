@@ -1,5 +1,7 @@
 package org.qiwur.scent.classifier.statistics;
 
+import java.util.Set;
+
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.logging.log4j.LogManager;
@@ -10,6 +12,7 @@ import org.qiwur.scent.jsoup.nodes.Indicator;
 import org.qiwur.scent.jsoup.nodes.IndicatorIndex;
 import org.qiwur.scent.utils.StringUtil;
 
+import com.google.common.collect.Sets;
 import com.google.common.collect.TreeMultimap;
 
 /*
@@ -19,16 +22,6 @@ import com.google.common.collect.TreeMultimap;
 public class BlockVarianceCalculator {
 
   private static final Logger logger = LogManager.getFormatterLogger(BlockVarianceCalculator.class);
-
-  /*
-   * 属性文本的最小尺寸，低于这个值的文本，不认为是属性值
-   * */
-  public static final int MinAttributeTextSize = 1;
-
-  /*
-   * 属性文本的最大尺寸，超过这个值的文本，不认为是属性值
-   * */
-  public static final int MaxAttributeTextSize = 50;
 
   /*
    * 样本的最小孩子数
@@ -53,7 +46,12 @@ public class BlockVarianceCalculator {
   /*
    * 是否打印统计结果细节
    */
-  private final boolean log;
+  private final boolean logVariance;
+
+  private final String columnSeparator = "^^";
+
+  private String reportHeader = "";
+  private final Set<String> reportRows = Sets.newLinkedHashSet();
 
   private final Document doc;
 
@@ -62,7 +60,7 @@ public class BlockVarianceCalculator {
   public BlockVarianceCalculator(Document doc, Configuration conf) {
     numMinItem = conf.getInt("scent.stat.segment.item.min", 3);
     sampleSize = conf.getInt("scent.stat.segment.variance.sample.max", 100);
-    log = conf.getBoolean("scent.stat.segment.variance.log", false);
+    logVariance = conf.getBoolean("scent.stat.segment.variance.log", false);
     varianceReferenceValue = conf.getInt("scent.stat.segment.variance.reference.value", 3);
     indicators = conf.getStrings("scent.stat.segment.variance.indicators");
 
@@ -70,7 +68,7 @@ public class BlockVarianceCalculator {
     this.conf = conf;
   }
 
-  public void process() {
+  public void calculate() {
     if (indicators.length == 0) {
       logger.error("can not calculate block variance, no any indicator");
       return;
@@ -79,6 +77,17 @@ public class BlockVarianceCalculator {
     // 寻找内部结构相似度高的区域
     TreeMultimap<Double, Element> blocks = calculateVariance(doc.indicatorIndex(Indicator.C));
     doc.indicatorIndex(IndicatorIndex.Blocks, blocks);
+  }
+
+  public String getVarianceString() {
+    StringBuilder sb = new StringBuilder();
+
+    sb.append(reportHeader);
+    for (String row : reportRows) {
+      sb.append(row);
+    }
+
+    return sb.toString();
   }
 
   private TreeMultimap<Double, Element> calculateVariance(TreeMultimap<Double, Element> sampleRoots) {
@@ -90,19 +99,19 @@ public class BlockVarianceCalculator {
       stats[i] = new DescriptiveStatistics();
     }
 
-    if (log) {
-      logger.info(buildLogHeader());
+    if (logVariance) {
+      buildLogHeader();
     }
 
     // 样本集是以直接子孩子的个数排序的，孩子数多的排在前面
     int counter = 0;
-    for (Double n : sampleRoots.keys()) {
-      if (n < numMinItem || counter++ > sampleSize) {
+    for (Double _child : sampleRoots.keys()) {
+      if (_child < numMinItem || counter++ > sampleSize) {
         // 已经计算了足够多的数据，不用继续下去，直接结束
         break;
       }
 
-      for (Element root : sampleRoots.get(n)) {
+      for (Element root : sampleRoots.get(_child)) {
         if (!probablyCandidate(root, minDepth, sampleSize)) {
           // 确定是噪音数据点，计算下一个
           continue;
@@ -110,15 +119,15 @@ public class BlockVarianceCalculator {
 
         stats = calculate(root, stats);
 
-        double varianceMean = stats[indicators.length].getMean() / n;
+        double varianceMean = stats[indicators.length].getMean();
 
         // 一组高度相似的数据，平均方差一般小于1，这里放宽到3
-        if (varianceMean / n < varianceReferenceValue) {
-          blocks.put(varianceMean / n, root);
+        if (varianceMean < varianceReferenceValue) {
+          blocks.put(varianceMean, root);
         }
 
-        if (log) {
-          logger.info(buildLogLine(root, stats));
+        if (logVariance) {
+          buildLogLine(root, stats);
         }
       }
     } // for
@@ -148,32 +157,37 @@ public class BlockVarianceCalculator {
     return stats;
   }
 
-  private String buildLogHeader() {
-    String report = "";
+  private void buildLogHeader() {
+    reportHeader = String.format("%-40s%s%13s%s", "Element", columnSeparator, "-child", columnSeparator);
 
-    report += String.format("%-40s", "[name]");
     for (int i = 0; i < indicators.length; ++i) {
-      report += String.format("%-13s", indicators[i]);
+      reportHeader += String.format("%-13s%s", indicators[i], columnSeparator);
     }
-    report += "\n";
 
-    return report;
+    reportHeader += String.format("%-13s%s", "Mean", columnSeparator);
+    reportHeader += "\n";
   }
 
-  private String buildLogLine(Element root, DescriptiveStatistics[] stats) {
-    String report = "";
-
-    report += String.format("%-40s", root.prettyName());
+  private void buildLogLine(Element root, DescriptiveStatistics[] stats) {
+    String row = String.format("%-40s%s%-13.2f%s", root.prettyName(), columnSeparator, root.indic(Indicator.C), columnSeparator);
 
     for (int i = 0; i < stats.length; ++i) {
-      report += String.format("%-13.2f", stats[i].getVariance());
+      double value = stats[i].getVariance();
+
+      if (i == stats.length - 1) {
+        value = stats[i].getMean();
+      }
+
+      row += String.format("%-13.2f%s", value, columnSeparator);      
     }
 
-    return report;
+    row += "\n";
+
+    reportRows.add(row);
   }
 
-  /*
-	 * 
+  /**
+	 * a primary filter
 	 * */
   private boolean probablyCandidate(Element root, int minDepth, int sampleSize) {
     if (root.depth() < minDepth) {
@@ -181,28 +195,28 @@ public class BlockVarianceCalculator {
     }
 
     // And more?
-    if (StringUtil.in(root.tagName(), "form")) {
+    if (StringUtil.in(root.tagName(), "form", "style")) {
       return false;
     }
 
-    boolean hasImage = root.indic(Indicator.IMG) > 0;
-    boolean hasText = root.indic(Indicator.CH) > 0;
+    double _img = root.indic(Indicator.IMG);
+    double _ch = root.indic(Indicator.CH);
+    double _a = root.indic(Indicator.A);
+    double _blk_txt = root.indic(Indicator.TB);
 
-    // 既没有图像也没有文本
-    if (!hasImage && !hasText) {
+    if (_img >= 3 || _a >= 3) {
+      return true;
+    }
+
+    if (_img + _blk_txt + _a <= 3) {
       return false;
     }
 
-    if (!hasImage) {
-      // 如果单个文本块中的字符数超过一定阀值，那么这不是数据密集区而是文本密集区
-      // 譬如：商品评论就是文本密集区而不是数据密集区
-      double aveTxtBlkSize = root.indic(Indicator.CH) / root.indic(Indicator.TB);
-
-      if (aveTxtBlkSize <= MinAttributeTextSize || aveTxtBlkSize >= MaxAttributeTextSize) {
-        return false;
-      }
+    if (_img == 0 && (_ch / _blk_txt <= 1 || _ch / _blk_txt >= 50)) {
+      return false;
     }
 
     return true;
   }
+
 }

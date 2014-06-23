@@ -4,7 +4,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -13,10 +12,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.qiwur.scent.classifier.statistics.BlockRule;
+import org.qiwur.scent.classifier.BlockRule;
+import org.qiwur.scent.classifier.ScentRule;
+import org.qiwur.scent.classifier.StatRule;
 import org.qiwur.scent.classifier.statistics.StatIndicator;
-import org.qiwur.scent.classifier.statistics.StatRule;
 import org.qiwur.scent.jsoup.Jsoup;
+import org.qiwur.scent.jsoup.block.BlockPattern;
 import org.qiwur.scent.jsoup.nodes.Document;
 import org.qiwur.scent.jsoup.nodes.Element;
 import org.qiwur.scent.jsoup.parser.Parser;
@@ -24,6 +25,7 @@ import org.qiwur.scent.utils.StringUtil;
 
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
 public final class BlockStatFeature implements WebFeature {
@@ -34,18 +36,17 @@ public final class BlockStatFeature implements WebFeature {
 
   private Configuration conf;
 
-  private final List<String> featureFiles;
+  private final List<String> featureFiles = Lists.newArrayList();
 
-  private Map<String, String> globalVars = new HashMap<String, String>();
+  private Map<String, String> globalVars = Maps.newHashMap();
 
-  private Map<String, StatIndicator> indicators = new HashMap<String, StatIndicator>();
+  private Map<String, StatIndicator> indicators = Maps.newHashMap();
 
   private Multimap<String, BlockRule> blockRules = LinkedListMultimap.create();
 
   private int maxPlaceholders = 10;
 
   public BlockStatFeature(Configuration conf, String... featureFiles) {
-    this.featureFiles = Lists.newArrayList();
     this.featureFiles.add(defaultConfigFile); // must come first
     this.featureFiles.addAll(Arrays.asList(featureFiles));
 
@@ -65,15 +66,15 @@ public final class BlockStatFeature implements WebFeature {
    * all block rules with the same block label are independent
    * the final score is the max score calculated by all rules with the same block
    * */
-  public double getScore(Element ele, String label) {
+  public double getScore(Element ele, String label, Collection<BlockPattern> patterns) {
     Collection<BlockRule> rules = getRules(label);
     if (rules.isEmpty()) return 0.0;
 
     // implements the OR logic : if there are several block rules for one label, 
     // take the one who has max score
-    double maxScore = StatRule.MIN_SCORE;
+    double maxScore = ScentRule.MIN_SCORE;
     for (BlockRule rule : rules) {
-      double score = rule.getScore(ele);
+      double score = rule.getScore(ele, patterns);
       if (score > maxScore) maxScore = score;
     }
 
@@ -146,22 +147,33 @@ public final class BlockStatFeature implements WebFeature {
     }
 
     for (Element block : doc.select("block-features block")) {
-      if (StringUtils.isEmpty(block.attr("type"))) continue;
+      if (StringUtils.isEmpty(block.attr("label"))) continue;
 
       BlockRule blockRule = parseBlockRule(block);
       blockRules.put(blockRule.getLabel(), blockRule);
     }
   }
 
+  private String getBlockRuleId(Element eleBlock) {
+    String label = eleBlock.attr("label");
+    return eleBlock.baseUri() + "/" + label + "#" + eleBlock.attr("id");
+  }
+
   private BlockRule parseBlockRule(Element block) {
-    String type = block.attr("type");
-    BlockRule blockRule = new BlockRule(type);
+    String label = block.attr("label");
+    String id = getBlockRuleId(block);
+    String leafOnly = block.attr("leaf-only");
+    String domain = block.attr("domain");
+    String allowedPatterns = block.attr("patterns");
+    String disallowedPatterns = block.attr("-patterns");
+    BlockRule blockRule = new BlockRule(id, label, leafOnly.equals("true"), domain,
+        parsePatterns(allowedPatterns), parsePatterns(disallowedPatterns));
 
     for (Element eleRule : block.getElementsByTag("rule")) {
       StatIndicator indicator = indicators.get(eleRule.attr("indicator"));
 
       if (indicator == null) {
-        logger.error("invalid rule, miss indicator");
+        logger.error("invalid rule, miss indicator {}", eleRule.attr("indicator"));
         continue;
       }
 
@@ -196,6 +208,19 @@ public final class BlockStatFeature implements WebFeature {
     }
 
     return blockRule;
+  }
+
+  private List<BlockPattern> parsePatterns(String text) {
+    List<BlockPattern> patterns = Lists.newArrayList();
+
+    for (String pattern : text.split(",")) {
+      BlockPattern p = BlockPattern.fromString(pattern);
+      if (BlockPattern.patterns.contains(p)) {
+        patterns.add(p);
+      }
+    }
+
+    return patterns;
   }
 
   public String dumpGlobalVars() {

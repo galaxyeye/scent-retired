@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.qiwur.scent.entity.EntityAttribute;
 import org.qiwur.scent.entity.PageEntity;
@@ -19,7 +20,7 @@ import org.qiwur.scent.utils.StringUtil;
 
 public class ProductHTMLBuilder extends ProductBuilder {
 
-  public static final String[] labels = {
+  public static final String[] displayLabels = {
       "Title",
       "Categories",
       "Metadata",
@@ -32,24 +33,46 @@ public class ProductHTMLBuilder extends ProductBuilder {
       "Links",
   };
 
+  public static final String[] formats = {"Simplified", "Waterfall", "All"};
+
+  private String format = "Simplified";
+
   private Document doc;
 
   public ProductHTMLBuilder(PageEntity pageEntity, Configuration conf) {
     super(pageEntity, conf);
 
     try {
-      doc = Jsoup.parse(new File("conf/product.template.html"), "utf-8");
+      doc = Jsoup.parse(new File("wwwroot/template/product.template.html"), "utf-8", false);
     } catch (IOException e) {
       logger.error(e);
     }
   }
 
+  public void setFormat(String format) {
+    if (ArrayUtils.contains(formats, format)) {
+      this.format = format;
+    }
+  }
+
   public void process() {
+    if (format.equalsIgnoreCase("Waterfall")) {
+      buildWaterfall();
+    }
+    else if (format.equalsIgnoreCase("All")) {
+      buildAll();
+    }
+    else {
+      buildSimplified();
+    }
+  }
+
+  protected void buildSimplified() {
     Validate.notNull(doc);
 
-    Element body = doc.select("body").first();
+    Element body = doc.body();
 
-    for (String label : labels) {
+    for (String label : displayLabels) {
       String section = StringUtil.humanize(label);
       Set<EntityAttribute> attributes = pageEntity.getCategorized(label);
       if (attributes.isEmpty()) continue;
@@ -96,6 +119,24 @@ public class ProductHTMLBuilder extends ProductBuilder {
     adjustAttributes(doc);
   }
 
+  protected void buildAll() {
+    Validate.notNull(doc);
+
+    Element body = doc.body();
+    Element div = body.appendElement("div");
+    Element table = div.appendElement("table");
+    table.attr("class", "table tablesorter");
+    buildTableHead(table, "labels", "key", "value");
+
+    for (EntityAttribute attr : pageEntity.attributes()) {
+      buildTableRow(table, attr.simpleCategoriesString(), attr.name(), attr.value());
+    }
+  }
+
+  protected void buildWaterfall() {
+    
+  }
+
   public Document doc() {
     return this.doc;
   }
@@ -138,6 +179,38 @@ public class ProductHTMLBuilder extends ProductBuilder {
     }
 
     return root;
+  }
+
+  private Element buildTableHead(Element table, String col, String col2, String col3) {
+    Element tbody = table.appendElement("thead");
+
+    Element tr = tbody.appendElement("tr");
+
+    Element th = tr.appendElement("th");
+    Element th2 = tr.appendElement("th");
+    Element th3 = tr.appendElement("th");
+
+    th.text(col);
+    th2.text(col2);
+    th3.append(col3);
+
+    return tr;
+  }
+
+  private Element buildTableRow(Element table, String col, String col2, String col3) {
+    Element tr = table.appendElement("tr");
+
+    Element th = tr.appendElement("th");
+    Element td = tr.appendElement("td");
+    Element td2 = tr.appendElement("td");
+
+    th.attr("data-seperate-line", StringUtils.repeat("-", 100));
+
+    th.text(col);
+    td.text(col2);
+    td2.append(col3);
+
+    return tr;
   }
 
   private Element buildTable(Element root, Collection<EntityAttribute> attributes) {

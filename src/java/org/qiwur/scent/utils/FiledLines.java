@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -47,7 +48,7 @@ public class FiledLines {
     try {
       load(files);
     } catch (IOException e) {
-      logger.error(e);
+      logger.error("{}, files : {}", e, Arrays.asList(files));
     }
   }
 

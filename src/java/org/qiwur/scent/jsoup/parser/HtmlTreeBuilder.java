@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.qiwur.scent.jsoup.nodes.Comment;
+import org.qiwur.scent.jsoup.nodes.DataNode;
 import org.qiwur.scent.jsoup.nodes.Document;
 import org.qiwur.scent.jsoup.nodes.Element;
 import org.qiwur.scent.jsoup.nodes.FormElement;
@@ -201,7 +202,6 @@ class HtmlTreeBuilder extends TreeBuilder {
 
     void insert(Element el) {
         insertNode(el);
-        el.sequence(++sequence);
         stack.add(el);
     }
 
@@ -241,8 +241,12 @@ class HtmlTreeBuilder extends TreeBuilder {
         // characters in script and style go in as datanodes, not text nodes
         if (StringUtil.in(currentElement().tagName(), TagsScriptStyle)) {
           // vincent : we do not need script
-          // node = new DataNode(characterToken.getData(), baseUri);
-          node = new TextNode(" ", baseUri);
+          if (ignoreScript()) {
+            node = new TextNode(" ", baseUri);
+          }
+          else {
+            node = new DataNode(characterToken.getData(), baseUri);
+          }
         }
         else {
             node = new TextNode(characterToken.getData(), baseUri);

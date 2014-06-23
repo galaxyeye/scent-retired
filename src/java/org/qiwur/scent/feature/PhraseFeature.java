@@ -1,53 +1,102 @@
 package org.qiwur.scent.feature;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.Validate;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.qiwur.scent.jsoup.Jsoup;
-import org.qiwur.scent.jsoup.nodes.Document;
+import org.qiwur.scent.classifier.BlockRule;
+import org.qiwur.scent.classifier.PhraseRule;
+import org.qiwur.scent.classifier.ScentRule;
+import org.qiwur.scent.jsoup.block.BlockPattern;
+import org.qiwur.scent.jsoup.block.DomSegment;
 import org.qiwur.scent.jsoup.nodes.Element;
-import org.qiwur.scent.jsoup.parser.Parser;
-import org.qiwur.scent.utils.StringUtil;
+
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.TreeMultimap;
 
 public class PhraseFeature implements WebFeature {
 
 	final Logger logger = LogManager.getLogger(PhraseFeature.class);
 
-	private final String featureFile;
+	private final String[] featureFiles;
 
 	private Configuration conf;
 
-	private Map<String, Map<String, Double>> blockPhrases = new HashMap<String, Map<String, Double>>();
+  private Multimap<String, BlockRule> blockRules = TreeMultimap.create();
+  private Map<String, Double> phraseRules = null;
 
-	public PhraseFeature(Configuration conf, String... featureFile) {
-    this.featureFile = featureFile[0];
+	public PhraseFeature(Configuration conf, String... featureFiles) {
+    this.featureFiles = featureFiles;
     this.conf = conf;
 
-    load();
+    try {
+      load();
+    }
+    catch (Exception e) {
+      logger.error(e);
+    }
 	}
 
-	public String featureFile() {
-		return featureFile;
+	public String[] featureFiles() {
+		return featureFiles;
 	}
 
 	public Set<String> getLabels() {
-		return blockPhrases.keySet();
+		return blockRules.keySet();
 	}
 
-	public Map<String, Double> getRules(String label) {
-		return blockPhrases.get(label);
-	}
+  /**
+   * all block rules with the same block label are independent
+   * the final score is the max score calculated by all rules with the same block
+   * */
+  public double getScore(DomSegment segment, String label, Collection<BlockPattern> patterns) {
+    Collection<BlockRule> rules = getRules(label);
+    if (rules.isEmpty()) return 0.0;
+
+    // implements the OR logic : if there are several block rules for one label, 
+    // take the one who has max score
+    double maxScore = ScentRule.MIN_SCORE;
+    Element ele = segment.block();
+    for (BlockRule rule : rules) {
+      if (rule.leafOnly() && segment.hasChild()) {
+        continue;
+      }
+
+      double score = rule.getScore(ele, patterns);
+      if (score > maxScore) maxScore = score;
+    }
+
+    return maxScore;
+  }
+
+  public Collection<BlockRule> getRules(String label) {
+    return blockRules.get(label);
+  }
+
+  // TODO : not correct
+  public Map<String, Double> getPhraseRules(String label) {
+    if (phraseRules == null) {
+      phraseRules = Maps.newHashMap();
+      for (BlockRule blockRule : blockRules.get(label)) {
+        for (ScentRule rule : blockRule.getRules()) {
+          if (rule instanceof PhraseRule) {
+            PhraseRule r = (PhraseRule)rule;
+            phraseRules.put(r.phrase(), r.score());
+          }
+        }
+      }
+    }
+
+    return phraseRules;
+  }
 
 	@Override
 	public String toString() {
-	  return blockPhrases.toString();
+	  return blockRules.toString();
 	}
 
   @Override
@@ -61,46 +110,21 @@ public class PhraseFeature implements WebFeature {
   }
 
   @Override
+  public void reload() {
+    load();
+  }
+
+  @Override
   public void reset() {
-    blockPhrases.clear();
+    this.blockRules.clear();
+    if (this.phraseRules != null) {
+      this.phraseRules.clear();
+    }
   }
 
   @Override
   public void load() {
-    Validate.notEmpty(featureFile);
-
-    try {
-      Document doc = Jsoup.parse(new FileInputStream(featureFile), "utf-8", "", Parser.xmlParser());
-
-      parse(doc);
-    } catch (IOException e) {
-      logger.error(e);
-    }    
+    PhraseFeatureParser parser = new PhraseFeatureParser(this.featureFiles);
+    this.blockRules = parser.parse();
   }
-
-  @Override
-  public void reload() {
-    reset();
-    load();
-  }
-
-  private void parse(Document doc) {
-    for (Element eleBlock : doc.select("block-features block")) {
-      String type = eleBlock.attr("type");
-      Map<String, Double> phrases = new HashMap<String, Double>();
-
-      for (Element elePhrase : eleBlock.getElementsByTag("phrase")) {
-        String name = elePhrase.attr("name");
-        String score = elePhrase.attr("score");
-
-        if (!name.isEmpty()) {
-          phrases.put(name, StringUtil.parseDouble(score));
-        }
-      }
-
-      if (!phrases.isEmpty()) {
-        blockPhrases.put(type, phrases);
-      }
-    }
-  }  
 }

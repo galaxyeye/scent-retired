@@ -35,7 +35,7 @@ public class BlockTitleFeatureClassifier extends RuleBasedBlockClassifier {
 
       if (text != null) {
         // we use 10 marked system, so map [0, 1] to [0, 10]
-        score = 10 * getMaxSimilarity(text, blockTitleFeature.getRules(label));
+        score = 10 * getMaxSimilarity(text, blockTitleFeature.getPhraseRules(label));
       }
     }
 

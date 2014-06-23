@@ -2,11 +2,11 @@ package org.qiwur.scent.classifier.statistics;
 
 import java.util.Collection;
 
+import org.apache.commons.lang.Validate;
 import org.apache.hadoop.conf.Configuration;
 import org.qiwur.scent.classifier.RuleBasedBlockClassifier;
 import org.qiwur.scent.feature.BlockStatFeature;
 import org.qiwur.scent.feature.FeatureManager;
-import org.qiwur.scent.feature.PhraseFeature;
 import org.qiwur.scent.jsoup.block.DomSegment;
 
 public class CodeStructureFeatureClassifier extends RuleBasedBlockClassifier {
@@ -31,9 +31,9 @@ public class CodeStructureFeatureClassifier extends RuleBasedBlockClassifier {
 
   @Override
   protected double getScore(DomSegment segment, String label) {
-    if (segment.body() == null) return 0.0;
+    Validate.notNull(segment);
 
-    return blockStatFeature.getScore(segment.body(), label);
+    return blockStatFeature.getScore(segment.block(), label, segment.patternTracker().keySet());
   }
 
   @Override

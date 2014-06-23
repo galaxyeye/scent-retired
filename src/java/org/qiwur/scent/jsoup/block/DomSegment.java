@@ -1,5 +1,6 @@
 package org.qiwur.scent.jsoup.block;
 
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -12,9 +13,11 @@ import org.qiwur.scent.jsoup.parser.Tag;
 
 import ruc.irm.similarity.FuzzyProbability;
 
+import com.google.common.collect.Lists;
+
 public class DomSegment implements Comparable<DomSegment> {
 
-  private static final Logger logger = LogManager.getLogger(DomSegment.class);
+  public static final Logger logger = LogManager.getLogger(DomSegment.class);
 
   public static final FuzzyProbability DefaultPassmark = FuzzyProbability.MAYBE;
 
@@ -24,38 +27,41 @@ public class DomSegment implements Comparable<DomSegment> {
   // 经验值，如一个很长的短语（14字符）："看过此商品后顾客买的其它商品"
   public final static int MaxTitleLength = 18;
 
-  Element root = null;
-  Element title = null;
-  Element body = null;
+  private Element root = null;
+  private Element title = null;
+  private Element block = null;
+
+  private DomSegment parent = null;
+  private List<DomSegment> children = Lists.newArrayList();
 
   BlockLabelTracker labelTracker = new BlockLabelTracker();
   BlockPatternTracker patternTracker = new BlockPatternTracker();
 
-  public DomSegment(Element root, Element title, Element body) {
-    Validate.notNull(body);
+  public DomSegment(Element root, Element title, Element block) {
+    Validate.notNull(block);
 
     if (title != null && title.text() == "") {
       title = null;
     }
 
     if (root == null) {
-      root = body;
+      root = block;
     }
 
     this.root = root;
     this.title = title;
-    this.body = body;
+    this.block = block;
 
     root.attr("data-segmented", "1");
-    body.attr("data-segmented", "1");
+    block.attr("data-segmented", "1");
   }
 
   public DomSegment(Element baseBlock) {
     Validate.notNull(baseBlock);
 
-    body = baseBlock;
+    block = baseBlock;
 
-    findBlockRootAndHeader(body);
+    findBlockRootAndHeader(block);
 
     if (title != null && title.text() == "") {
       title = null;
@@ -63,11 +69,11 @@ public class DomSegment implements Comparable<DomSegment> {
 
     if (root == null) {
       title = null;
-      root = body;
+      root = block;
     }
 
     root.attr("data-segmented", "1");
-    body.attr("data-segmented", "1");
+    block.attr("data-segmented", "1");
   }
 
   public static DomSegment create(Element block) {
@@ -90,18 +96,14 @@ public class DomSegment implements Comparable<DomSegment> {
     return segment;
   }
 
-  public Element root() {
-    return root;
-  }
-
   public Element title() {
     return title;
   }
 
-  public Element body() {
-    Validate.notNull(body);
+  public Element block() {
+    Validate.notNull(block);
 
-    return body;
+    return block;
   }
 
   public String titleText() {
@@ -136,11 +138,72 @@ public class DomSegment implements Comparable<DomSegment> {
     return root.text();
   }
 
+  public boolean hasParent() {
+    return this.parent != null;
+  }
+
+  public DomSegment parent() {
+    return this.parent;
+  }
+
+  public void parent(DomSegment parent) {
+    this.parent = parent;
+  }
+
+  public List<DomSegment> children() {
+    return this.children;
+  }
+
+  /**
+  * append the specified segment to the children list, make it's parent be this segment
+  * */
+  public void appendChild(DomSegment child) {
+    if (child != null) {
+      this.children.add(child);
+      child.parent(this);
+    }
+  }
+
+  public boolean hasChild() {
+    return !children.isEmpty();
+  }
+
+  /**
+   * remove this segment from the tree, make it's parent be null,
+   * append all it's child to it's parent if any
+   * */
+  public void remove() {
+    for (DomSegment child : children) {
+      child.parent(parent);
+    }
+
+    if (parent != null) {
+      parent.removeChild(this);
+      this.parent = null;
+    }
+  }
+
+  /**
+   * remove the specified segment from the children, make it's parent be null,
+   * */
+  public void removeChild(DomSegment child) {
+    if (child != null) {
+      this.children.remove(child);
+      child.parent(null);
+    }
+  }
+
   /**
    * return a value between [0, 1]
    * */
-  public double likelihood(DomSegment other, double tolerance) {
-    return body.likelihood(other.body(), tolerance, Indicator.SEQ);
+  public double likelihood(DomSegment other) {
+    final String[] indicators = {
+        Indicator.CH, Indicator.TB,
+        Indicator.A, Indicator.IMG,
+        Indicator.D, Indicator.C, Indicator.G
+    };
+
+    return block.likelihood(other.block(), indicators);
   }
 
   public void tag(BlockLabel label) {
@@ -237,24 +300,24 @@ public class DomSegment implements Comparable<DomSegment> {
     return labelTracker.certainly(label);
   }
 
-  public boolean is(BlockPattern label, FuzzyProbability p) {
-    return patternTracker.is(label, p);
+  public boolean is(BlockPattern pattern, FuzzyProbability p) {
+    return patternTracker.is(pattern, p);
   }
 
-  public boolean maybe(BlockPattern label) {
-    return patternTracker.maybe(label);
+  public boolean maybe(BlockPattern pattern) {
+    return patternTracker.maybe(pattern);
   }
 
-  public boolean veryLikely(BlockPattern label) {
-    return patternTracker.veryLikely(label);
+  public boolean veryLikely(BlockPattern pattern) {
+    return patternTracker.veryLikely(pattern);
   }
 
-  public boolean mustBe(BlockPattern label) {
-    return patternTracker.mustBe(label);
+  public boolean mustBe(BlockPattern pattern) {
+    return patternTracker.mustBe(pattern);
   }
 
-  public boolean certainly(BlockPattern label) {
-    return patternTracker.certainly(label);
+  public boolean certainly(BlockPattern pattern) {
+    return patternTracker.certainly(pattern);
   }
 
   private void findBlockRootAndHeader(Element baseBlock) {
@@ -320,9 +383,13 @@ public class DomSegment implements Comparable<DomSegment> {
     return null;
   }
 
+  public String name() {
+    return block().prettyName();
+  }
+
   @Override
   public String toString() {
-    return root().toString();
+    return block().toString();
   }
 
   @Override

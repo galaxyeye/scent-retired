@@ -34,7 +34,7 @@ public class BlockFeatureRecorder {
 
     this.segments = doc.domSegments();
     this.conf = conf;
-    this.labels = conf.getStrings("scent.html.block.labels");
+    this.labels = conf.getStrings("scent.classifier.block.labels");
     this.baseDir = conf.get("scent.sgd.train.base.dir");
   }
 
@@ -53,7 +53,7 @@ public class BlockFeatureRecorder {
         FileUtils.forceMkdir(dir);
       }
 
-      String path = dir.getAbsolutePath() + File.separator + DigestUtils.md5Hex(segment.root().baseUri()) + ".htm";
+      String path = dir.getAbsolutePath() + File.separator + DigestUtils.md5Hex(segment.block().baseUri()) + ".htm";
       PrintWriter writer = new PrintWriter(path, "UTF-8");
       writer.write(segment.outerHtml());
       writer.close();

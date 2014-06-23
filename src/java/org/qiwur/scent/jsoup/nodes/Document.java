@@ -6,11 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.qiwur.scent.jsoup.block.DomSegments;
+import org.qiwur.scent.jsoup.parser.CodeCleaner;
 import org.qiwur.scent.jsoup.parser.IndicatorCalculator;
 import org.qiwur.scent.jsoup.parser.IndicatorIndexer;
 import org.qiwur.scent.jsoup.parser.Tag;
 import org.qiwur.scent.jsoup.select.ElementTraversor;
 import org.qiwur.scent.jsoup.select.Elements;
+import org.qiwur.scent.jsoup.select.InterruptiveElementVisitor;
 import org.qiwur.scent.jsoup.select.NodeTraversor;
 import org.qiwur.scent.utils.StringUtil;
 import org.qiwur.scent.utils.Validate;
@@ -179,10 +181,44 @@ public class Document extends Element {
     return this;
   }
 
-  public void rebuildIndicators() {
+  public void evict(Element ele) {
+    if (ele.sequence() < 0) {
+      return;
+    }
+
+    // TODO : optimization
+    Element colony = getElementById("scent-colony");
+    if (colony == null) {
+      colony = body().appendElement("section").attr("id", "scent-colony");
+    }
+
+    ele.sequence(-1);
+    new ElementTraversor(new InterruptiveElementVisitor() {
+      @Override
+      public void head(Element e, int depth) {
+        e.sequence(-1);
+      }
+    }).traverse(ele);
+    colony.appendChild(ele.addClass("evicted"));
+  }
+
+  public void calculateIndicators() {
     // calculate indicators
     new NodeTraversor(new IndicatorCalculator()).traverse(this);
-    new ElementTraversor(new IndicatorIndexer(this.indicatorIndex())).traverse(this);
+
+    // do the clean work
+    new ElementTraversor(new CodeCleaner()).traverse(this);
+
+//    for (Element ele : getElementsByClass("evict")) {
+//      evict(ele);
+//    }
+//
+//    // and recalculate indicators, which can be optimized
+//    // TODO : optimization
+    new NodeTraversor(new IndicatorCalculator()).traverse(this);
+
+    // calculate indicator index
+    new ElementTraversor(new IndicatorIndexer(indicatorIndex())).traverse(this);
   }
 
   // does not recurse.

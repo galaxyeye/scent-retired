@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.math3.stat.StatUtils;
 import org.qiwur.scent.jsoup.parser.Parser;
 import org.qiwur.scent.jsoup.select.NodeTraversor;
@@ -140,6 +140,17 @@ public abstract class Node implements Cloneable, Comparable<Node> {
     return attributes.hasKey(attributeKey);
   }
 
+  public void addAttr(String attributeKey, String attributeValue) {
+    addAttr(attributeKey, attributeValue, " ");
+  }
+
+  public void addAttr(String attributeKey, String attributeValue, String separator) {
+    String value = attr(attributeKey);
+    if (!value.isEmpty()) value += separator;
+    value += attributeValue;
+    attr(attributeKey, value);
+  }
+
   /**
    * Remove an attribute from this element.
    * 
@@ -163,6 +174,72 @@ public abstract class Node implements Cloneable, Comparable<Node> {
   public Node clearAttrs() {
     attributes.clear();
     return this;
+  }
+
+  public double sniffWidth() {
+    String width = "";
+
+    String[] attributeKeys = {"width", "data-width", "data-client-width", "data-offset-width", "data-scroll-width"};
+    for (String attributeKey : attributeKeys) {
+      width = attr(attributeKey);
+      if (!width.isEmpty() && !width.equals("0")) {
+        break;
+      }
+    }
+
+    if (width.isEmpty() || width.equals("0")) {
+      width = getStyle("width");
+    }
+
+    return pixelatedValue(width, 0);
+  }
+
+  public double sniffHeith() {
+    String height = "";
+
+    String[] attributeKeys = {"height", "data-height", "data-client-height", "data-offset-height", "data-scroll-height"};
+    for (String attributeKey : attributeKeys) {
+      height = attr(attributeKey);
+      if (!height.isEmpty() && !height.equals("0")) {
+        break;
+      }
+    }
+
+    if (height.isEmpty() || height.equals("0")) {
+      height = getStyle("height");
+    }
+
+    return pixelatedValue(height, 0);
+  }
+
+  public String[] parseStyle() {
+    return StringUtil.stripNonChar(attr("style"), ":;").split(";");
+  }
+
+  public String getStyle(String[] styles, String styleKey) {
+    String styleValue = "";
+
+    String search = styleKey + ":";
+    for (String style : styles) {
+      if (style.startsWith(search)) {
+        return style.substring(search.length());
+      }
+    }
+
+    return styleValue;
+  }
+
+  public String getStyle(String styleKey) {
+    return getStyle(parseStyle(), styleKey);
+  }
+
+  public double pixelatedValue(String value, double defaultValue) {
+    // TODO : we currently handle only px
+    final String[] units = {"in", "%", "cm", "mm", "ex", "pt", "pc", "px"};
+
+    value = StringUtils.removeEnd(value, "px");
+
+    return StringUtil.parseDouble(value, defaultValue);
   }
 
   /**
@@ -219,23 +296,23 @@ public abstract class Node implements Cloneable, Comparable<Node> {
     return this;
   }
 
-  public double likelihood(Node other, double tolerance, String... exceptIndicators) {
-    double[] values = new double[Indicator.names.length];
-    for (int i = 0; i < Indicator.names.length; ++i) {
-      values[i] = 0.0;
+  /**
+   * likelihood = 1 - Sum(|xi - yi| / (xi + yi)) / n
+   * */
+  public double likelihood(Node other, String... indicators) {
+    double[] rate = new double[indicators.length];
 
-      String name = Indicator.names[i];
-      if (!ArrayUtils.contains(exceptIndicators, name)) {
-        values[i] = Math.abs(indic(name) - other.indic(name));
-        if (values[i] > tolerance) values[i] -= tolerance;
-        if (values[i] <= tolerance) values[i] = 0;
+    for (int i = 0; i < indicators.length; ++i) {
+      double x = indic(indicators[i]);
+      double y = other.indic(indicators[i]);
+
+      rate[i] = 0;
+      if (x + y != 0) {
+        rate[i] = Math.abs(x - y) / (x + y);
       }
     }
 
-    double sd = StatUtils.variance(values) / tolerance;
-    if (sd > 1) return 0.0;
-
-    return 1 - sd;
+    return 1 - StatUtils.mean(rate);
   }
 
   public int sequence() {
@@ -244,6 +321,7 @@ public abstract class Node implements Cloneable, Comparable<Node> {
 
   public void sequence(int sequence) {
     this.sequence = sequence;
+    indic(Indicator.SEQ, 1.0 * sequence);
   }
 
   public int depth() {
@@ -252,6 +330,7 @@ public abstract class Node implements Cloneable, Comparable<Node> {
 
   public void depth(int depth) {
     this.depth = depth;
+    indic(Indicator.DEP, 1.0 * sequence);
   }
 
   public int siblingSize() {

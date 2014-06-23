@@ -55,19 +55,19 @@ public class Link {
       link.setImage(Image.create(image));
     }
 
-    // sniff link text
-    String text = StringUtils.trimToNull(ele.text());
-    if (text == null) text = StringUtils.trimToNull(ele.attr("title"));
-    if (text == null && image != null) text = StringUtils.trimToNull(image.attr("alt"));
-    link.setText(text);
+    link.setText(sniffLinkText(ele, image));
 
-    final List<String> ignoredAttrs = Arrays.asList("id", "class", "style", "_target", "target");
+    final List<String> ignoredAttrs = Arrays.asList("id", "class", "style", "_target", "target", "title");
 
     for (Attribute attr : ele.attributes()) {
       String name = attr.getKey();
       String value = attr.getValue();
 
       if (ignoredAttrs.contains(name)) {
+        continue;
+      }
+
+      if (name.startsWith("data-") && value.equals("0")) {
         continue;
       }
 
@@ -84,6 +84,14 @@ public class Link {
     return link;
   }
 
+  public static String sniffLinkText(Element link, Element image) {
+    String text = StringUtils.trimToNull(link.text());
+    if (text == null) text = StringUtils.trimToNull(link.attr("title"));
+    if (text == null && image != null) text = StringUtils.trimToNull(image.attr("alt"));
+
+    return text;
+  }
+
   public static boolean maybeUrl(String attrName, String attrValue) {
     final List<String> urlAttrs = Arrays.asList("src", "url", "data-url");
 
@@ -92,6 +100,10 @@ public class Link {
     if (StringUtils.countMatches(attrValue, "/") > 3) return true;
 
     return false;
+  }
+
+  public static boolean pseudoLink(String href) {
+    return href.startsWith("#") && !href.startsWith("java") && !href.startsWith("void"); 
   }
 
   @Override

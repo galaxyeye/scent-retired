@@ -16,11 +16,14 @@
  ******************************************************************************/
 package org.qiwur.scent.api;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.qiwur.scent.data.builder.EntityBuilder;
 import org.qiwur.scent.data.builder.ProductHTMLBuilder;
 import org.qiwur.scent.data.extractor.DataExtractorNotFound;
 import org.qiwur.scent.data.extractor.PageExtractor;
@@ -28,6 +31,7 @@ import org.qiwur.scent.data.extractor.PageExtractorFactory;
 import org.qiwur.scent.data.extractor.WebExtractor;
 import org.qiwur.scent.entity.PageEntity;
 import org.qiwur.scent.jsoup.nodes.Document;
+import org.qiwur.scent.utils.FileUtil;
 import org.restlet.resource.Get;
 import org.restlet.resource.ServerResource;
 
@@ -38,63 +42,73 @@ public class ExtractionResource extends ServerResource {
   public static final String DESCR = "Service extraction actions";
 
   private final Configuration conf;
+  private final String baseDir;
   private final WebExtractor extractor;
   private final PageExtractorFactory extractorFactory;
 
   public ExtractionResource() {
     this.conf = ScentApp.server.conf;
-    extractorFactory = new PageExtractorFactory(conf);
-    extractor = WebExtractor.create(conf);
+
+    this.baseDir = conf.get("scent.web.cache.file.dir", "/tmp/web");
+    this.extractor = WebExtractor.create(conf);
+    this.extractorFactory = new PageExtractorFactory(conf);
   }
 
   @Get("json|xml|html|txt")
   public Object execute() throws DataExtractorNotFound {
-    String cmd = (String) getRequestAttributes().get(Params.CMD);
+    String url = getQuery().getValues("target");
+    String format = getQuery().getFirstValue("format", "html");
 
-    if ("extract".equalsIgnoreCase(cmd)) {
-      String url = getQuery().getValues("target");
-      String format = getQuery().getValues("format");
-      if (format == null) format = "html";
+    Document doc = extractor.getWebLoader().load(url);
 
-      Document doc = extractor.getWebLoader().load(url);
-
-      if (doc == null) {
-        return "invalid doc";
-      }
-
-      long time = System.currentTimeMillis();
-      PageExtractor extractorImpl = extractorFactory.create("product", doc);
-      PageEntity pageEntity = extractor.extract(extractorImpl);
-
-      logger.debug(pageEntity);
-
-      time = System.currentTimeMillis() - time;
-      logger.info("extraction time : {}s\n\n", time / 1000.0);
-
-      if (format.equals("txt")) {
-        return "<pre>" + StringEscapeUtils.escapeHtml(buildText(pageEntity)) + "</pre>";
-      }
-
-      return buildHtml(pageEntity);
-      // return extractor.generateWiki(pageEntity, Page.ProductPage);
-    } else if ("statistics".equalsIgnoreCase(cmd)) {
-      // new BlockVarianceCalculator(doc, conf).process();
-    } else if ("segment".equalsIgnoreCase(cmd)) {
-
-    } else if ("tag".equalsIgnoreCase(cmd)) {
-
-    } else if ("wikilize".equalsIgnoreCase(cmd)) {
-
-    } else if ("config".equalsIgnoreCase(cmd)) {
-      return cmd;
-    } else {
+    if (doc == null) {
+      return "invalid doc";
     }
 
-    return "Unknown command " + cmd;
+    long time = System.currentTimeMillis();
+    PageExtractor extractorImpl = extractorFactory.create("product", doc);
+    PageEntity pageEntity = extractor.extract(extractorImpl);
+
+    logger.debug(pageEntity);
+
+    time = System.currentTimeMillis() - time;
+    logger.info("extraction time : {}s\n\n", time / 1000.0);
+
+    if (format.equals("txt")) {
+      return "<pre>" + StringEscapeUtils.escapeHtml(buildText(pageEntity)) + "</pre>";
+    }
+    else if (format.equals("all")) {
+      return buildAllHtml(pageEntity);
+    }
+    else if (format.equals("diagnosis")) {
+      return getDiagnosis(url);
+    }
+
+    return buildHtml(pageEntity);
+  }
+
+  private String getDiagnosis(String url) {
+    try {
+      File file = new File(FileUtil.getFileForPage(url, baseDir, "diag"));
+      return FileUtils.readFileToString(file, "utf-8");
+    }
+    catch (IOException e) {
+      return "404 not found";
+    }    
   }
 
   private String buildText(PageEntity pageEntity) {
-    return new EntityBuilder(pageEntity, conf).toString();
+    ProductHTMLBuilder builder = new ProductHTMLBuilder(pageEntity, conf);
+    builder.process();
+
+    return builder.doc().toString();
+  }
+
+  private String buildAllHtml(PageEntity pageEntity) {
+    ProductHTMLBuilder builder = new ProductHTMLBuilder(pageEntity, conf);
+    builder.setFormat("All");
+    builder.process();
+    return builder.doc().toString();
   }
 
   private String buildHtml(PageEntity pageEntity) {

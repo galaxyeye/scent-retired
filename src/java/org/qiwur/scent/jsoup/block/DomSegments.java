@@ -13,20 +13,15 @@ public final class DomSegments implements Set<DomSegment> {
 
   public static final FuzzyProbability DefaultProbability = FuzzyProbability.MAYBE;
 
-  Set<DomSegment> segments = new TreeSet<DomSegment>();
+  private Set<DomSegment> segments = new TreeSet<DomSegment>();
 
   public DomSegments() {
-    super();
+    
   }
 
   // 寻找相似度最大的区块
   public DomSegment get(BlockLabel label) {
     return get(label, DefaultProbability);
-  }
-
-  // 寻找相似度最大的区块
-  public DomSegments get(Collection<BlockLabel> labels) {
-    return get(labels, DefaultProbability);
   }
 
   // 寻找大于p的相似度最大的区块
@@ -49,6 +44,10 @@ public final class DomSegments implements Set<DomSegment> {
   }
 
   // 寻找相似度最大的区块
+  public DomSegments get(Collection<BlockLabel> labels) {
+    return get(labels, DefaultProbability);
+  }
+
   public DomSegments get(Collection<BlockLabel> labels, FuzzyProbability p) {
     DomSegments segments = new DomSegments();
 
@@ -65,6 +64,22 @@ public final class DomSegments implements Set<DomSegment> {
 
   public DomSegments getAll(BlockLabel label) {
     return getAll(label, DefaultProbability);
+  }
+
+  public DomSegments getAll(BlockPattern pattern, FuzzyProbability p) {
+    DomSegments result = new DomSegments();
+
+    for (DomSegment segment : segments) {
+      if (segment.is(pattern, p)) {
+        result.add(segment);
+      }
+    }
+
+    return result;
+  }
+
+  public DomSegments getAll(BlockPattern pattern) {
+    return getAll(pattern, DefaultProbability);
   }
 
   public DomSegments getAll(BlockLabel label, FuzzyProbability p) {

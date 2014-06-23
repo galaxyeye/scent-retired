@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<block-features>
+    <indicators>
+        <!-- 
+            build in block patterns
+            TODO : not used currently
+        -->
+        <indicator name="pattern-dl" type="script">
+            $_result = 1;
+		    if ($_child < 3 || $_grant_child / $_child > 5) {
+		      $_result = 0;
+		    }
+        </indicator>
+        <indicator name="pattern-table" type="script">
+            if ($_tag == "table" || $_tag == "tbody") {
+	            $_result = 1;
+	            if (_child < 3 || _grant_child / _child > 5) {
+	                $_result = 0;
+	            }
+            }
+        </indicator>
+        <indicator name="pattern-list" type="script">
+        </indicator>
+        <indicator name="pattern-n2" type="script">
+            if ($_img > 0 && $_a / $_img <= 0.2 && $_txt_blk / $_img <= 1.5) {
+              $_result = 1;
+            }
+        </indicator>
+        <indicator name="pattern-image" type="script">
+		    if ($_img > 0 && $_a / $_img <= 0.2 && $_txt_blk / $_img <= 1.5) {
+		      $_result = 1;
+		    }
+        </indicator>
+        <indicator name="pattern-links" type="script">
+            if ($_img > 0 && $_a / $_img <= 0.2 && $_txt_blk / $_img <= 1.5) {
+              $_result = 1;
+            }
+        </indicator>
+        <indicator name="pattern-link-images" type="script">
+		    // too few images or links
+		    if (_img < 3 || _a < 3) {
+		      return;
+		    }
+
+		    // long text not permitted, tooo many text block not permitted
+		    if (_char / _a > 80 || _txt_blk / Math.max(_a, _img) > 8) {
+		      return;
+		    }
+
+		    var rate = _a / _img;
+		    if ((rate >= 0.8 && rate <= 1.2) || (rate >= 1.8 && rate <= 2.2) || (rate >= 2.8 && rate <= 3.2)) {
+		      $_result = 1;
+		    }
+        </indicator>
+        <indicator name="pattern-dense-links" type="script">
+            if ($_img > 0 && $_a / $_img <= 0.2 && $_txt_blk / $_img <= 1.5) {
+              $_result = 1;
+            }
+        </indicator>
+        <indicator name="pattern-dense-text" type="script">
+            if ($_img > 0 && $_a / $_img <= 0.2 && $_txt_blk / $_img <= 1.5) {
+              $_result = 1;
+            }
+        </indicator>
+    </indicators>
+</block-features>

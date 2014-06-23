@@ -19,7 +19,7 @@ public final class EntityNameFeature extends LinedFeature {
 
   static final Logger logger = LogManager.getLogger(EntityNameFeature.class);
 
-  public static final int MinProductTitleSize = 8;
+  public static final int MinProductTitleSize = 6;
 
   public static final int MaxProductTitleSize = 100;
 

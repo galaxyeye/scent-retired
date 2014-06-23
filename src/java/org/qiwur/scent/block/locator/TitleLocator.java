@@ -6,7 +6,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.apache.commons.collections.ComparatorUtils;
+import org.apache.commons.lang.Validate;
 import org.apache.hadoop.conf.Configuration;
 import org.qiwur.scent.feature.EntityNameFeature;
 import org.qiwur.scent.feature.FeatureManager;
@@ -25,19 +25,15 @@ import org.qiwur.scent.utils.StringUtil;
 import ruc.irm.similarity.FuzzyProbability;
 
 /**
- * 通过比较文本块和网页标题的相似度来找到商品标题
- * 
+ * 通过比较文本和网页标题的相似度来找到标题
  */
 public final class TitleLocator extends BlockLocator {
 
-  @SuppressWarnings("unchecked")
-  private static final Comparator<Double> ReversedDoubleComparator = ComparatorUtils
-      .reversedComparator(ComparatorUtils.NATURAL_COMPARATOR);
-
-  private final Configuration conf;  private final HtmlTitleFeature htmlTitleFeature;
+  private final Configuration conf;  
+  private final HtmlTitleFeature htmlTitleFeature;
 
   private final Set<String> potentialTitles;
-  private final TreeMap<Double, Element> candiateTitles = new TreeMap<Double, Element>(ReversedDoubleComparator);
+  private final TreeMap<Double, Element> candiateTitles = new TreeMap<Double, Element>(Collections.reverseOrder());
 
   public TitleLocator(Document doc, Configuration conf) {
     super(doc, BlockLabel.Title);
@@ -46,6 +42,8 @@ public final class TitleLocator extends BlockLocator {
     htmlTitleFeature = FeatureManager.get(conf, HtmlTitleFeature.class, conf.get("scent.bad.html.title.feature.file"));
 
     potentialTitles = htmlTitleFeature.getPotentialTitles(doc.title());
+
+    logger.debug("potential titles : {}", potentialTitles);    
   }
 
   @Override
@@ -77,12 +75,10 @@ public final class TitleLocator extends BlockLocator {
   }
 
   public static DomSegment createTitle(Document doc, Configuration conf) {
-    Element body = doc.getElementsByTag("body").first();
+    Element ele = doc.body().prependElement("h1 class='created'");
+    ele.sequence(doc.body().sequence() + 200); // TODO : use a machine learned sequence
 
-    Element ele = body.prependElement("h1");
-    ele.sequence(body.sequence() + 200); // TODO : use a machine learned sequence
-
-    String featureFile = conf.get("scent.html.title.feature.file");
+    String featureFile = conf.get("scent.bad.html.title.feature.file");
     HtmlTitleFeature titleFeature = FeatureManager.get(conf, HtmlTitleFeature.class, featureFile);
     ele.html(titleFeature.strip(doc.title()));
 
@@ -95,6 +91,7 @@ public final class TitleLocator extends BlockLocator {
     double sim = 0.0, sim2 = 0.0, sim3 = 0.0;
     String name = ele.text(), name2 = ele.ownText();
 
+    // TODO : optimization
     sim2 = EntityNameFeature.getMaxSimilarity(name, potentialTitles);
     if (name.length() > name2.length()) {
       sim3 = EntityNameFeature.getMaxSimilarity(name2, potentialTitles);
@@ -130,15 +127,14 @@ public final class TitleLocator extends BlockLocator {
 
     public EntityTitleFounder(Document doc) {
       this.doc = doc;
-      body = doc.select("body").first();
+      body = doc.body();
 
-      if (body == null) {
-        logger.error("bad document");
-      }
+      Validate.notNull(body);
     }
 
     public void head(Element e, int depth) {
       if (shouldStop(e)) {
+        stop();
         return;
       }
 
@@ -149,7 +145,7 @@ public final class TitleLocator extends BlockLocator {
     private boolean shouldStop(Element e) {
       // 2/3
       if (e.sequence() > 0.6667 * body.indic(Indicator.D)) {
-        logger.debug("tooo far away the beginnig to find a title, abort. sequence : {}", e.sequence());
+        logger.debug("tooo far away from the beginning to find a title, abort. sequence : {}", e.sequence());
         return true;
       }
 

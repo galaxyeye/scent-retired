@@ -42,10 +42,10 @@ public class ScentApp extends Application {
       router.attach("/" + AdminResource.PATH, AdminResource.class);
       router.attach("/" + AdminResource.PATH + "/{" + Params.CMD + "}", AdminResource.class);
 
-      // jobs
+      // extraction
       router.attach("/" + ExtractionResource.PATH, ExtractionResource.class);
-      router.attach("/" + ExtractionResource.PATH + "/{" + Params.CMD + "}", ExtractionResource.class);
-      router.attach("/" + ExtractionResource.PATH + "/{" + Params.CMD + "}/{" + Params.ARGS + "}", ExtractionResource.class);
+//      router.attach("/" + ExtractionResource.PATH + "/{" + Params.CMD + "}", ExtractionResource.class);
+//      router.attach("/" + ExtractionResource.PATH + "/{" + Params.CMD + "}/{" + Params.ARGS + "}", ExtractionResource.class);
 
       return router;
   }

@@ -31,7 +31,7 @@ public class GalleryBuilder extends EntityBuilder {
 
   public GalleryBuilder(PageEntity pageEntity, Configuration conf) throws IOException {
     super(pageEntity, conf);
-    doc = Jsoup.parse(new File("conf/page-entity-gallery-template.html"), "utf-8");
+    doc = Jsoup.parse(new File("wwwroot/template/page-entity-gallery-template.html"), "utf-8");
   }
 
   public void process() {

@@ -4,22 +4,28 @@
 <!-- Put site-specific property overrides in this file. -->
 
 <configuration>
+
     <!-- labels -->
     <property>
-        <name>scent.html.block.labels</name>
-        <value>CategoryList,RelativeProduct,ShopIntro,ProductSpec,ProductDetail,Comment</value>
+        <name>scent.classifier.block.labels</name>
+        <value>CategoryList,RelativeProduct,ShopIntro,ProductSpec,SimilarEntity,ProductDetail,Comment,DealHistory</value>
         <description>Notice : do not split into lines</description>
     </property>
 
     <property>
-        <name>scent.html.block.inheritable.labels</name>
-        <value>CategoryList,ProductSpec,ProductDetail,Comment</value>
+        <name>scent.classifier.block.inheritable.labels</name>
+        <value>Comment,DealHistory,CategoryList</value>
         <description>Notice : do not split into lines</description>
     </property>
 
     <property>
-        <name>scent.diagnose.html.block.labels</name>
-        <value>CategoryList,Categories,TitleContainer,RelativeProduct,ProductSpec,ProductDetail,Comment,Areas,BadBlock</value>
+        <name>scent.extractor.bad.blocks</name>
+        <value>BadBlock,Areas,DenseLinks</value>
+    </property>
+
+    <property>
+        <name>scent.diagnose.classifier.block.labels</name>
+        <value>Gallery,CategoryList,Categories,TitleContainer,RelativeProduct,ProductSpec,SimilarEntity,ProductDetail,Areas,Comment,DealHistory,BadBlock</value>
         <description>Notice : do not split into lines</description>
     </property>
 </configuration>

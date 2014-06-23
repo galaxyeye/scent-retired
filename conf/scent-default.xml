@@ -23,7 +23,6 @@
         <name>scent.net.proxy.max.pool.size</name>
         <value>5</value>
     </property>
-
 	<property>
 		<name>scent.net.proxy.host</name>
 		<value>localhost</value>
@@ -33,7 +32,11 @@
 		<value>19080</value>
 	</property>
     <property>
-        <name>scent.local.file.cache.expires</name>
+        <name>scent.web.cache.file.dir</name>
+        <value>/tmp/web</value>
+    </property>
+    <property>
+        <name>scent.web.cache.file.expires</name>
         <value>108000</value>
         <description>
         eg : 
@@ -50,6 +53,10 @@
 		<name>scent.server.port</name>
 		<value>8282</value>
 	</property>
+    <property>
+        <name>scent.server.wwwroot</name>
+        <value>wwwroot</value>
+    </property>
 
 	<property>
 		<name>scent.page.length.min</name>
@@ -63,7 +70,7 @@
 	<!-- code statistics analysis -->
     <property>
         <name>scent.stat.indicator.separators</name>
-        <value>:,：,>,|</value>
+        <value>:,：,></value>
         <description>affect -sep indicator</description>
     </property>
 	<property>
@@ -130,10 +137,6 @@
 	<property>
 		<name>scent.block.stat.feature.file</name>
 		<value>conf/block-stat-feature-site.xml</value>
-	</property>
-	<property>
-		<name>scent.block.code.feature.file</name>
-		<value>conf/block-code-feature-site.xml</value>
 	</property>
 
 	<!-- classifier result weight -->

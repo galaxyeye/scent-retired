@@ -16,8 +16,6 @@ public final class FeatureManager {
 
   private static final Logger logger = LogManager.getLogger(FeatureManager.class);
 
-//  public static Multimap<String, String> FeatureFiles = TreeMultimap.create();
-
   private Set<String> cacheIds = Sets.newHashSet();
   private final Configuration conf;
 
@@ -40,18 +38,18 @@ public final class FeatureManager {
   }
 
   @SuppressWarnings("unchecked")
-  public static <T extends WebFeature> T get(Configuration conf, Class<T> clazz, String... featureFile) {
-    return (T) FeatureManager.create(conf).getFeature(clazz.getName(), featureFile);
+  public static <T extends WebFeature> T get(Configuration conf, Class<T> clazz, String... featureFiles) {
+    return (T) FeatureManager.create(conf).getFeature(clazz.getName(), featureFiles);
   }
 
-  public WebFeature getFeature(String clazzName, String... featureFile) {
+  public WebFeature getFeature(String clazzName, String... featureFiles) {
     ObjectCache objectCache = ObjectCache.get(conf);
-    final String cacheId = clazzName + Lists.newArrayList(featureFile).toString();
+    final String cacheId = clazzName + Lists.newArrayList(featureFiles).toString();
 
     if (objectCache.getObject(cacheId) != null) {
       return (WebFeature) objectCache.getObject(cacheId);
     } else {
-      WebFeature feature = getFeatureObject(conf, clazzName, featureFile);
+      WebFeature feature = getFeatureObject(conf, clazzName, featureFiles);
       objectCache.setObject(cacheId, feature);
       cacheIds.add(cacheId);
       return feature;
@@ -86,13 +84,13 @@ public final class FeatureManager {
     }
   }
 
-  protected WebFeature getFeatureObject(Configuration conf, String clazzName, String... featureFile) {
+  protected WebFeature getFeatureObject(Configuration conf, String clazzName, String... featureFiles) {
     WebFeature feature = null;
 
     try {
       Class<?> clazz = Class.forName(clazzName, false, this.getClass().getClassLoader());
       Constructor<?> constructor = clazz.getConstructor(new Class[] { Configuration.class, String[].class });
-      feature = (WebFeature) constructor.newInstance(conf, featureFile);
+      feature = (WebFeature) constructor.newInstance(conf, featureFiles);
     } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchMethodException
         | SecurityException | IllegalArgumentException | InvocationTargetException e) {
       logger.error(e);

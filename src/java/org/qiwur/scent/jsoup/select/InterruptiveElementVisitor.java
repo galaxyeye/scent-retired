@@ -7,10 +7,10 @@ public abstract class InterruptiveElementVisitor implements ElementVisitor {
 	protected boolean stopped = false;
 
 	@Override
-	public abstract void head(Element node, int depth);
+	public abstract void head(Element ele, int depth);
 
 	@Override
-	public void tail(Element node, int depth) {
+	public void tail(Element ele, int depth) {
 	}
 
 	public void stop() {

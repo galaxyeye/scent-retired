@@ -14,9 +14,9 @@ import org.qiwur.scent.wiki.Page;
 
 public class ProductWikiBuilder extends ProductBuilder {
 
-	private static final String ProductTemplateFileName = "conf/pageEntity.template.wiki";
-	private static final String ProductTradeTemplateFileName = "conf/pageEntity.trade.template.wiki";
-	private static final String ProductIntroduceTemplateFileName = "conf/pageEntity.introduce.template.wiki";
+	private static final String ProductTemplateFileName = "wwwroot/template/product.template.wiki";
+	private static final String ProductTradeTemplateFileName = "wwwroot/template/product.trade.template.wiki";
+	private static final String ProductIntroduceTemplateFileName = "wwwroot/template/product.introduce.template.wiki";
 
 	String pageEntityTitle = null;
 	String pageEntityName = null;

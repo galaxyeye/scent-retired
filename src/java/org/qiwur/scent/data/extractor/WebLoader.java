@@ -27,6 +27,7 @@ public class WebLoader {
   private int proxyPort = 19080;
   private ProxyPool proxyPool = null;
   private int minPageLength = 2000;
+  private final String cacheDir;
   private final long localFileCacheExpires;
 
   public WebLoader(Configuration conf) {
@@ -44,37 +45,41 @@ public class WebLoader {
     }
 
     minPageLength = conf.getInt("scent.page.length.min", 2000);
-    localFileCacheExpires = conf.getLong("scent.local.file.cache.expires", 3 * 60 * 1000);
+    cacheDir = conf.get("scent.web.cache.file.dir", "/tmp/web");
+    localFileCacheExpires = conf.getLong("scent.web.cache.file.expires", 3 * 60 * 1000);
   }
 
-  public Document load(String uri) {
+  public Document load(final String url) {
     Document doc = null;
 
     try {
-      doc = doLoad(uri);
+      doc = doLoad(url);
     } catch (IOException | InterruptedException e) {
-      logger.info("can not fetch {}, {}", uri, e);
+      logger.info("can not fetch {}, {}", url, e);
     }
 
     return doc;
   }
 
-  protected Document doLoad(String uri) throws IOException, InterruptedException {
+  protected Document doLoad(final String url) throws IOException, InterruptedException {
+    String uri = url;
+
     // cache mechanism
-    File file = new File(FileUtil.getFileNameFromUri(uri));
+    File file = new File(FileUtil.getFileForPage(uri, cacheDir, "html"));
     if (checkLocalCacheAvailable(file, localFileCacheExpires)) {
       uri = "file://" + file.getAbsolutePath();
+      logger.debug("load from local file cache : {}", uri);
     }
 
     if (uri.startsWith("file://")) {
-      return Jsoup.parse(file, "utf-8");
+      return Jsoup.parse(file, "utf-8", url);
     }
     else {
       return parse(fetch(uri));
     }
   }
 
-  protected Response fetch(String uri) throws IOException, InterruptedException {
+  protected Response fetch(final String uri) throws IOException, InterruptedException {
     Response response = null;
 
     if (useProxyPool) {
@@ -91,7 +96,7 @@ public class WebLoader {
     }
 
     if (localFileCacheExpires > 0) {
-      cachePage(uri, response.body(), "original");
+      cachePage(uri, response.body(), cacheDir);
     }
 
     if (response != null) {
@@ -121,7 +126,7 @@ public class WebLoader {
 
   private void cachePage(String url, String content, String dir) {
     try {
-      File file = FileUtil.createTempFileForPage(url, "web/" + dir);
+      File file = FileUtil.createFileForPage(url, dir, "html");
       FileUtils.writeStringToFile(file, content);
     } catch (IOException e) {
       logger.error(e);
@@ -131,7 +136,11 @@ public class WebLoader {
   private boolean checkLocalCacheAvailable(File file, long expires) {
     if (expires > 0 && file.exists()) {
       long modified = file.lastModified();
-      if (System.currentTimeMillis() - modified < expires) {
+
+//      logger.debug("check expired : {}, {}, {}, {}", 
+//          System.currentTimeMillis(), modified, System.currentTimeMillis() - modified, expires);
+
+      if (System.currentTimeMillis() - modified < 1000 * expires) {
         return true;
       }
       else {

@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Set;
 
 import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.collect.Sets;
 
@@ -81,8 +82,9 @@ public class EntityAttribute implements Comparable<EntityAttribute> {
   }
 
   public void categorize(String category) {
-    if (category != null)
+    if (StringUtils.isNotEmpty(category)) {
       this.categories.add(new EntityCategory(category));
+    }
   }
 
   public void categorize(Collection<String> categories) {
