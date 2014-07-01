@@ -127,7 +127,11 @@ public class ProductPageBuilder {
 
   private void savePage(String url, String content, String dir) {
     try {
+<<<<<<< HEAD
       File file = FileUtil.createFileForPage(url, "web/" + dir, "html");
+=======
+      File file = FileUtil.createFileForPage(url, "web/" + dir);
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
       FileUtils.writeStringToFile(file, content);
     } catch (IOException e) {
       logger.error(e);

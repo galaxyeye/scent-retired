@@ -25,7 +25,7 @@
 
     <property>
         <name>scent.diagnose.classifier.block.labels</name>
-        <value>Gallery,CategoryList,Categories,TitleContainer,RelativeProduct,ProductSpec,SimilarEntity,ProductDetail,Areas,Comment,DealHistory,BadBlock</value>
+        <value>Gallery,CategoryList,Categories,TitleContainer,RelativeProduct,ProductSpec,SimilarEntity,ProductDetail,Comment,DealHistory,Areas,BadBlock</value>
         <description>Notice : do not split into lines</description>
     </property>
 </configuration>

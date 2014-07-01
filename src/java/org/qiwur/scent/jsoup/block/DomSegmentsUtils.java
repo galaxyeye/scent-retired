@@ -13,6 +13,7 @@ import com.google.common.collect.Lists;
 
 public class DomSegmentsUtils {
 
+<<<<<<< HEAD
   public static void addIfNotExist(DomSegments segments, Element block, String reason) {
     if (!hasSegment(segments, block)) {
       if (StringUtil.isNotEmpty(reason)) {
@@ -24,6 +25,12 @@ public class DomSegmentsUtils {
 
   public static void addIfNotExist(DomSegments segments, Element block) {
     addIfNotExist(segments, block, null);
+=======
+  public static void addIfNotExist(DomSegments segments, Element block) {
+    if (!hasSegment(segments, block)) {
+      segments.add(DomSegment.create(block));
+    }
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
   }
 
   public static DomSegments addOrTag(DomSegments segments, Element block, BlockLabel label) {
@@ -59,6 +66,13 @@ public class DomSegmentsUtils {
       result.add(segment);
     }
 
+<<<<<<< HEAD
+=======
+    for (DomSegment segment : result) {
+      segment.tag(pattern, p);
+    }
+
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
     return result;
   }
 
@@ -66,7 +80,11 @@ public class DomSegmentsUtils {
     DomSegments result = new DomSegments();
 
     for (DomSegment segment : segments) {
+<<<<<<< HEAD
       if (segment.block() == block) {
+=======
+      if (segment.body() == block || segment.root() == block) {
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
         result.add(segment);
       }
     }
@@ -80,12 +98,17 @@ public class DomSegmentsUtils {
 
   public static boolean hasSegment(DomSegments segments, Element block) {
     for (DomSegment segment : segments) {
+<<<<<<< HEAD
       if (segment.block() == block) {
+=======
+      if (segment.body() == block || segment.root() == block) {
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
         return true;
       }
     }
 
     return false;
+<<<<<<< HEAD
   }
 
   public static void destroyTree(DomSegments segments) {
@@ -151,6 +174,8 @@ public class DomSegmentsUtils {
     }
 
     return removal;
+=======
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
   }
 
 }

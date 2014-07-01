@@ -27,7 +27,11 @@ public class WebLoader {
   private int proxyPort = 19080;
   private ProxyPool proxyPool = null;
   private int minPageLength = 2000;
+<<<<<<< HEAD
   private final String cacheDir;
+=======
+  private String cacheDir = "/tmp/web/original";
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
   private final long localFileCacheExpires;
 
   public WebLoader(Configuration conf) {
@@ -65,7 +69,11 @@ public class WebLoader {
     String uri = url;
 
     // cache mechanism
+<<<<<<< HEAD
     File file = new File(FileUtil.getFileForPage(uri, cacheDir, "html"));
+=======
+    File file = new File(FileUtil.getFileForPage(uri, cacheDir));
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
     if (checkLocalCacheAvailable(file, localFileCacheExpires)) {
       uri = "file://" + file.getAbsolutePath();
       logger.debug("load from local file cache : {}", uri);
@@ -126,7 +134,11 @@ public class WebLoader {
 
   private void cachePage(String url, String content, String dir) {
     try {
+<<<<<<< HEAD
       File file = FileUtil.createFileForPage(url, dir, "html");
+=======
+      File file = FileUtil.createFileForPage(url, dir);
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
       FileUtils.writeStringToFile(file, content);
     } catch (IOException e) {
       logger.error(e);

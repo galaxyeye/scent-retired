@@ -90,10 +90,11 @@ if there are several block with the same type, we calculate the max score, see, 
         <rule indicator="-img"            range="1,"      score="0" -score="-100" />
         <rule indicator="-img"            range="2,"      score="2" -score="0" />
         <rule indicator="-img"            range="4,"      score="2" -score="0" />
-        <rule indicator="-img-ave-w"      range="10,100"  score="-100" -score="0" />
+        <rule indicator="-img-ave-w"      range=",10"     score="0" -score="-100" />
         <rule indicator="-img-ave-w"      range="300,"    score="2" -score="0" />
         <rule indicator="-img-ave-w"      range="400,"    score="2" -score="0" />
         <rule indicator="-img-ave-w"      range="500,"    score="2" -score="0" />
+        <rule indicator="-img-ave-w"      range=",10"     score="0" -score="-100" />
         <rule indicator="-img-ave-h"      range="10,100"  score="-100" -score="0" />
         <rule indicator="-img-ave-h"      range="300,"    score="2" -score="0" />
         <rule indicator="-img-ave-h"      range="400,"    score="2" -score="0" />

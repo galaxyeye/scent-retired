@@ -36,8 +36,14 @@ public class DomSegmentsBuilder {
   public static final int MinListItemNumber = 4;
 
   public static final int MinImageNumberInPureImage = 3;
+<<<<<<< HEAD
 
   public static final int MinLinkNumberInDenseLinkArea = 50;
+=======
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
+
+  // TODO : we should calculate out a threshold value
+  public static final double BlockLikihoodThreshold = 0.8;
 
   // TODO : we should calculate out a threshold value
   public static final double BlockLikihoodThreshold = 0.8;
@@ -55,6 +61,7 @@ public class DomSegmentsBuilder {
     // 建立文档片段集合
     DomSegments segments = doc.domSegments();
 
+<<<<<<< HEAD
     // table blocks
     for (Element block : findTables()) {
       DomSegmentsUtils.addIfNotExist(segments, block, "table");
@@ -68,10 +75,23 @@ public class DomSegmentsBuilder {
     // dl blocks
     for (Element block : findDls()) {
       DomSegmentsUtils.addIfNotExist(segments, block, "dl");
+=======
+    // variance based blocks, the blocks are list-like
+    for (Element block : blocks.values()) {
+      block.attr("data-blocking-rule", "variance");
+      DomSegmentsUtils.addIfNotExist(segments, block);
+    }
+
+    // table blocks
+    for (Element block : findTables()) {
+      block.attr("data-blocking-rule", "table");
+      DomSegmentsUtils.addIfNotExist(segments, block);
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
     }
 
     // image without links blocks
     for (Element block : findPureImageAreas()) {
+<<<<<<< HEAD
       DomSegmentsUtils.addIfNotExist(segments, block, "image");
     }
 
@@ -84,19 +104,46 @@ public class DomSegmentsBuilder {
     Multimap<Double, Element> blocks = doc.indicatorIndex(IndicatorIndex.Blocks);
     for (Element block : blocks.values()) {
       DomSegmentsUtils.addIfNotExist(segments, block, "variance");
+=======
+      block.attr("data-blocking-rule", "pure-image");
+      DomSegmentsUtils.addIfNotExist(segments, block);
+    }
+
+    // very dense links blocks
+    for (Element block : findDensyLinks()) {
+      block.attr("data-blocking-rule", "densy-links");
+      DomSegmentsUtils.addIfNotExist(segments, block);
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
     }
 
     DomSegment segMenu = findMenu();
     DomSegment segTitle = findTitle();
 
+<<<<<<< HEAD
     Element block = findTitleContainer(segTitle.block());
     DomSegmentsUtils.addOrTag(segments, block, BlockLabel.TitleContainer, FuzzyProbability.MUST_BE);
+=======
+    Element block = findTitleContainer(segTitle.body());
+    DomSegmentsUtils.addOrTag(segments, block, BlockLabel.TitleContainer, FuzzyProbability.MUST_BE);
+
+    // TODO : do not modify conf?
+    doc.attr("data-title", segTitle.text());
+    doc.attr("data-title-seq", String.valueOf(segTitle.body().sequence()));
+    conf.setInt("scent.page.title.sequence", segTitle.body().sequence());
+
+    doc.attr("data-menu-seq", String.valueOf(segMenu.body().sequence()));
+    conf.setInt("scent.page.menu.sequence", segMenu.body().sequence());
+
+    doc.attr("data-node-count", String.valueOf(doc.indic(Indicator.D)));
+    conf.setInt("scent.page.all.node.count", doc.indic(Indicator.D).intValue());
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
 
     // calculate block pattern
     for (DomSegment segment : segments) {
       tagPattern(segment);
     }
 
+<<<<<<< HEAD
     // no body
     DomSegmentsUtils.removeByBlock(segments, doc.body());
 
@@ -118,6 +165,12 @@ public class DomSegmentsBuilder {
 
     doc.attr("data-node-count", String.valueOf(doc.indic(Indicator.D)));
     conf.setInt("scent.page.all.node.count", doc.indic(Indicator.D).intValue());
+=======
+    // TODO : make DomSegment be a tree just like jsoup.nodes.Document
+    segments.buildTree();
+
+    segments.mergeSegments(BlockLikihoodThreshold);
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
 
     logger.debug("there are {} segments", doc.domSegments().size());
 
@@ -164,6 +217,7 @@ public class DomSegmentsBuilder {
     Validate.notNull(eleTitle);
 
     return DOMUtil.getContainerSatisfyAny(eleTitle, new Indicator(Indicator.TB, 20), new Indicator(Indicator.D, 50));
+<<<<<<< HEAD
   }
 
   private void adjustMenu(Element menu) {
@@ -172,6 +226,8 @@ public class DomSegmentsBuilder {
         ele.remove();
       }
     }
+=======
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
   }
 
   // dense link area should be a unabridged block
@@ -191,6 +247,7 @@ public class DomSegmentsBuilder {
     doc.domSegments().removeAll(removal);
   }
 
+<<<<<<< HEAD
   private boolean isNoDescendantSegment(DomSegment segment) {
     Validate.notNull(segment);
 
@@ -203,11 +260,17 @@ public class DomSegmentsBuilder {
     return false;
   }
 
+=======
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
   /*
    * 标注区块模式
    */
   private void tagPattern(DomSegment segment) {
+<<<<<<< HEAD
     Element ele = segment.block();
+=======
+    Element ele = segment.body();
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
 
     for (BlockPattern pattern : BlockPattern.patterns) {
       if (BlockPattern.is(ele, pattern)) {
@@ -262,6 +325,7 @@ public class DomSegmentsBuilder {
     Multimap<Double, Element> indicatorIndex = doc.indicatorIndex(Indicator.C);
 
     for (Entry<Double, Element> entry : indicatorIndex.entries()) {
+<<<<<<< HEAD
       double _child = entry.getKey();
       Element ele = entry.getValue();
 
@@ -300,12 +364,31 @@ public class DomSegmentsBuilder {
       }
 
       if (BlockPattern.listLikely(ele)) {
+=======
+      double _a = entry.getKey();
+      Element ele = entry.getValue();
+
+      if (_a < MinLinkNumberInDensyLinkArea) {
+        break;
+      }
+
+      if (ele.depth() <= doc.body().depth() + 2) {
+        continue;
+      }
+
+      if (!StringUtil.in(ele.tagName(), "div", "ul")) {
+        continue;
+      }
+
+      if (BlockPattern.isDensyLinks(ele)) {
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
         candidates.add(ele);
       }
     }
 
     return candidates;
   }
+<<<<<<< HEAD
 
   private Elements findDenseLinks() {
     Elements candidates = new Elements();
@@ -334,4 +417,6 @@ public class DomSegmentsBuilder {
 
     return candidates;
   }
+=======
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
 }

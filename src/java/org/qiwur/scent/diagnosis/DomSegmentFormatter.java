@@ -1,12 +1,18 @@
 package org.qiwur.scent.diagnosis;
 
+<<<<<<< HEAD
 import java.text.DecimalFormat;
 
+=======
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.qiwur.scent.jsoup.block.DomSegment;
 import org.qiwur.scent.jsoup.nodes.Document;
+<<<<<<< HEAD
 import org.qiwur.scent.jsoup.nodes.Indicator;
+=======
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
 
 public class DomSegmentFormatter extends DiagnosisFormatter {
 
@@ -16,6 +22,7 @@ public class DomSegmentFormatter extends DiagnosisFormatter {
 	  super(conf);
 
 		this.doc = doc;
+<<<<<<< HEAD
 		buildHeader("Segment", "Parent", "Patterns", "Labels", "Blocking", "Detail");
 	}
 
@@ -43,6 +50,14 @@ public class DomSegmentFormatter extends DiagnosisFormatter {
           segment.labelTracker().toString(),
           segment.block().attr("data-blocking-reason"),
           detail);
+=======
+		buildHeader("name", "text");
+	}
+
+	public void process() {
+		for (DomSegment seg : doc.domSegments()) {
+		  buildRow(seg.root().prettyName(), StringUtils.substring(seg.text(), 0, 1500));
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
 		}
 	}
 }

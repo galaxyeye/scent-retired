@@ -29,7 +29,11 @@ public class DomSegment implements Comparable<DomSegment> {
 
   private Element root = null;
   private Element title = null;
+<<<<<<< HEAD
   private Element block = null;
+=======
+  private Element body = null;
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
 
   private DomSegment parent = null;
   private List<DomSegment> children = Lists.newArrayList();
@@ -203,7 +207,11 @@ public class DomSegment implements Comparable<DomSegment> {
         Indicator.D, Indicator.C, Indicator.G
     };
 
+<<<<<<< HEAD
     return block.likelihood(other.block(), indicators);
+=======
+    return body.likelihood(other.body(), indicators);
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
   }
 
   public void tag(BlockLabel label) {
@@ -384,7 +392,11 @@ public class DomSegment implements Comparable<DomSegment> {
   }
 
   public String name() {
+<<<<<<< HEAD
     return block().prettyName();
+=======
+    return root().prettyName();
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
   }
 
   @Override

@@ -41,13 +41,21 @@ public class BlockLabelPrinter {
       for (DomSegment segment : doc.domSegments().getAll(BlockLabel.fromString(label))) {
         String parentName = "";
         if (segment.parent() != null) {
+<<<<<<< HEAD
           parentName = segment.parent().block().prettyName();
+=======
+          parentName = segment.parent().root().prettyName();
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
         }
 
         ++counter;
         formatter.format("%-20s %-20s %-20s body:%-70s\n",
             StringUtils.substring(label + ":" + segment.labelTracker().get(BlockLabel.fromString(label)), 0, 20),
+<<<<<<< HEAD
             StringUtils.substring(segment.block().prettyName(), 0, 20),
+=======
+            StringUtils.substring(segment.root().prettyName(), 0, 20),
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
             StringUtils.substring(parentName, 0, 20),
             StringUtils.substring(segment.text(), 0, 70));
       }

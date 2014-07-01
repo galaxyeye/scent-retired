@@ -43,7 +43,11 @@ public class ProductHTMLBuilder extends ProductBuilder {
     super(pageEntity, conf);
 
     try {
+<<<<<<< HEAD
       doc = Jsoup.parse(new File("wwwroot/template/product.template.html"), "utf-8", false);
+=======
+      doc = Jsoup.parse(new File("conf/product.template.html"), "utf-8", false);
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
     } catch (IOException e) {
       logger.error(e);
     }

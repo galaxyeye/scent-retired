@@ -107,7 +107,11 @@ public class Jsoup {
 
     public static Document parse(File in, String charsetName, boolean ignoreScript) throws IOException {
       return DataUtil.load(in, charsetName, in.getAbsolutePath(), ignoreScript);
+<<<<<<< HEAD
     }
+=======
+  }
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
 
      /**
      Read an input stream, and parse it to a Document.

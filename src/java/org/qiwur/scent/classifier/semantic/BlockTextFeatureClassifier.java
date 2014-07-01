@@ -28,7 +28,14 @@ public class BlockTextFeatureClassifier extends RuleBasedBlockClassifier {
    */
   @Override
   protected double getScore(DomSegment segment, String label) {
+<<<<<<< HEAD
     Validate.notNull(segment);
+=======
+    if (!segment.hasChild()) return 0.0;
+
+    Map<String, Double> rules = blockTextFeature.getRules(label);
+    if (rules == null) return 0.0;
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
 
     return blockTextFeature.getScore(segment, label, segment.patternTracker().keySet());
   }

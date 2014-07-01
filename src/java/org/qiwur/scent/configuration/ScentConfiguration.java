@@ -28,6 +28,8 @@ import org.apache.hadoop.conf.Configuration;
 import org.qiwur.scent.jsoup.block.BlockLabel;
 import org.qiwur.scent.jsoup.nodes.Indicator;
 
+import com.google.common.collect.Sets;
+
 /**
  * Utility to create Hadoop {@link Configuration}s that include Scent-specific
  * resources.

@@ -75,10 +75,17 @@ public final class TitleLocator extends BlockLocator {
   }
 
   public static DomSegment createTitle(Document doc, Configuration conf) {
+<<<<<<< HEAD
     Element ele = doc.body().prependElement("h1 class='created'");
     ele.sequence(doc.body().sequence() + 200); // TODO : use a machine learned sequence
 
     String featureFile = conf.get("scent.bad.html.title.feature.file");
+=======
+    Element ele = doc.body().prependElement("h1");
+    ele.sequence(doc.body().sequence() + 200); // TODO : use a machine learned sequence
+
+    String featureFile = conf.get("scent.html.title.feature.file");
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
     HtmlTitleFeature titleFeature = FeatureManager.get(conf, HtmlTitleFeature.class, featureFile);
     ele.html(titleFeature.strip(doc.title()));
 

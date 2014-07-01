@@ -20,12 +20,21 @@ public class ScentDiagnoser {
 
   protected static final Logger logger = LogManager.getLogger(ScentDiagnoser.class);
 
+<<<<<<< HEAD
   private final Document doc;
   private final Configuration conf;
   private final String docTemplate = "wwwroot/template/diagnosis.template.html";
   private final String baseDir;
   private final String pageUri;
   private final List<DiagnosisFormatter> formatters = Lists.newArrayList();
+=======
+  private Document doc;
+  private Configuration conf;
+  private String docTemplate = "wwwroot/template/diagnosis.template.html";
+  private String baseDir = "/tmp/web/diagnosis";
+  private String pageUri;
+  private List<DiagnosisFormatter> formatters = Lists.newArrayList();
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
 
   public ScentDiagnoser(Document doc, Configuration conf) {
     Validate.notNull(doc);
@@ -34,7 +43,10 @@ public class ScentDiagnoser {
     this.doc = doc;
     this.conf = conf;
 
+<<<<<<< HEAD
     this.baseDir = conf.get("scent.web.cache.file.dir", "/tmp/web");
+=======
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
     this.pageUri = doc.baseUri();
   }
 
@@ -61,14 +73,21 @@ public class ScentDiagnoser {
       Element menu = diagnosisDoc.getElementById("diagosis-menu");
       menu.appendElement("ul");
       for (DiagnosisFormatter formatter : formatters) {
+<<<<<<< HEAD
         menu.appendElement("li")
           .appendElement("a")
           .text(formatter.caption())
           .attr("href", "#" + formatter.caption());
+=======
+        menu.appendElement("li").appendElement("a")
+          .text(formatter.getClass().getSimpleName())
+          .attr("href", "#" + formatter.getClass().getName());
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
       }
 
       Element body = diagnosisDoc.getElementById("diagosis-body");
       for (DiagnosisFormatter formatter : formatters) {
+<<<<<<< HEAD
         body.appendElement("div")
           .attr("class", "back-to-top")
           .appendElement("a").attr("name", formatter.caption())
@@ -76,6 +95,9 @@ public class ScentDiagnoser {
           .text("⇡ 回顶部 ⇡")
           .attr("href", "#");
 
+=======
+        body.appendElement("a").attr("name", formatter.getClass().getName());
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
         body.append(formatter.asTable());
         body.append("<br /><br />");
       }
@@ -87,7 +109,11 @@ public class ScentDiagnoser {
   }
 
   private void write(String content) throws IOException {
+<<<<<<< HEAD
     File file = new File(FileUtil.getFileForPage(pageUri, baseDir, "diag"));
+=======
+    File file = new File(FileUtil.getFileForPage(pageUri, baseDir));
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
     FileUtils.write(file, content);
   }
 }

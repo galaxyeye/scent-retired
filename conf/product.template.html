@@ -2,10 +2,20 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>scent diagnosis</title>
-<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+<title>product</title>
+<script type="text/javascript" src="http://www.sinorelo.com/js/jquery/jquery-2.1.1.min.js"></script>
 <script type="text/javascript" src="http://www.sinorelo.com/js/jquery/jquery.tablesorter.js"></script>
 <style type="text/css">
+a.link.image {
+  display: block;
+  width: 50%
+}
+
+a.link.text {
+  display: block;
+  width: 50%
+}
+
 table.table {
   border: 1px solid #A0BF7C;
   border-collapse: collapse;
@@ -15,8 +25,6 @@ table.table {
 table.table tr td, table.table tr th {
   border-bottom: 1px dotted #A0BF7C;
   border-right: 1px dotted #A0BF7C;
-  text-align: left;
-  padding:5px;
 }
 
 table.table table {
@@ -24,13 +32,8 @@ table.table table {
   empty-cells: hide;
 }
 
-table.table caption {
-  text-align: left;
-  font-size: xx-large;
-}
-
-div.back-to-top {
-  text-align: right;
+table.table table tr td, table.table table tr th {
+  border:none;  
 }
 
 .headerSortUp:after {
@@ -48,16 +51,7 @@ div.back-to-top {
 </script>
 </head>
 
-<body class="diagosis">
-  <div id="diagosis-menu">
-    <h2>menu</h2>
-    <hr />
-  </div>
-  <br />
-  <div id="diagosis-body">
-    <h2>reports</h2>
-    <hr />
-  </div>
+<body class="product">
 </body>
 
 </html>

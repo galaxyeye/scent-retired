@@ -177,6 +177,7 @@ public abstract class Node implements Cloneable, Comparable<Node> {
   }
 
   public double sniffWidth() {
+<<<<<<< HEAD
     String width = "";
 
     String[] attributeKeys = {"width", "data-width", "data-client-width", "data-offset-width", "data-scroll-width"};
@@ -242,6 +243,43 @@ public abstract class Node implements Cloneable, Comparable<Node> {
     return StringUtil.parseDouble(value, defaultValue);
   }
 
+=======
+    String width = attr("width");
+
+    if (width.isEmpty() || width.equals("0")) {
+      width = attr("data-client-width");
+    }
+    
+    if (width.isEmpty() || width.equals("0")) {
+      width = attr("data-offset-width");
+    }
+
+    if (width.isEmpty() || width.equals("0")) {
+      width = attr("data-scroll-width");
+    }
+
+    return StringUtil.parseDouble(width, 0);
+  }
+
+  public double sniffHeith() {
+    String height = attr("height");
+
+    if (height.isEmpty() || height.equals("0")) {
+      height = attr("data-client-height");
+    }
+
+    if (height.isEmpty() || height.equals("0")) {
+      height = attr("data-offset-height");
+    }
+
+    if (height.isEmpty() || height.equals("0")) {
+      height = attr("data-scroll-height");
+    }
+
+    return StringUtil.parseDouble(height, 0);
+  }
+  
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
   /**
    * Get all of the element's indicators.
    * 

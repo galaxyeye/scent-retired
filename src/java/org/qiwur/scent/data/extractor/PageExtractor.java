@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
@@ -20,13 +21,19 @@ import org.qiwur.scent.jsoup.block.BlockPattern;
 import org.qiwur.scent.jsoup.block.DomSegment;
 import org.qiwur.scent.jsoup.block.DomSegments;
 import org.qiwur.scent.jsoup.nodes.Document;
+import org.qiwur.scent.jsoup.nodes.Element;
 import org.qiwur.scent.jsoup.select.Elements;
 import org.qiwur.scent.learning.EntityAttributeLearner;
 import org.qiwur.scent.storage.WebPage.Field;
 import org.qiwur.scent.utils.NetUtil;
+import org.qiwur.scent.utils.StringUtil;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+<<<<<<< HEAD
+=======
+import com.google.common.collect.Sets;
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
 
 public abstract class PageExtractor implements DataExtractor {
 
@@ -42,7 +49,11 @@ public abstract class PageExtractor implements DataExtractor {
     builtinExtractors.put(BlockLabel.SimilarEntity, SimilarEntityExtractor.class);
 
     patternExtractors.put(BlockPattern.Links, LinksExtractor.class);
+<<<<<<< HEAD
     patternExtractors.put(BlockPattern.DenseLinks, LinksExtractor.class);
+=======
+    patternExtractors.put(BlockPattern.DensyLinks, LinksExtractor.class);
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
     patternExtractors.put(BlockPattern.Images, ImagesExtractor.class);
     patternExtractors.put(BlockPattern.LinkImages, LinkImagesExtractor.class);
   }
@@ -64,7 +75,11 @@ public abstract class PageExtractor implements DataExtractor {
     Validate.notNull(conf);
 
     cleanDocument();
+<<<<<<< HEAD
     // cleanSegments();
+=======
+    cleanSegments();
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
 
     clearPreviousExtractors();
     installExtractors();
@@ -173,9 +188,19 @@ public abstract class PageExtractor implements DataExtractor {
 
   private void cleanDocument() {
     String[] labels = conf.getStrings("scent.extractor.bad.blocks");
+<<<<<<< HEAD
     DomSegments segments = getSegments(labels);
     for (DomSegment segment : segments) {
       doc.evict(segment.block());
+=======
+    for (String label : labels) {
+      Element div = doc.body().appendElement("div");
+      div.attr("class", StringUtil.csslize(label));
+
+      for (DomSegment segment : getSegments(label)) {
+        div.appendChild(segment.root());
+      }
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
     }
   }
 

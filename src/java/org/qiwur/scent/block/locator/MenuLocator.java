@@ -72,7 +72,11 @@ public final class MenuLocator extends BlockLocator {
 	}
 
   public static DomSegment createMenu(Document doc, Configuration conf) {
+<<<<<<< HEAD
     Element ele = doc.body().prependElement("ul class='created'");
+=======
+    Element ele = doc.body().prependElement("ul");
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
     ele.append("<li><a href='/'>首页</a></li>");
     ele.sequence(doc.body().sequence() + 100); // TODO : use a machine learned sequence
 

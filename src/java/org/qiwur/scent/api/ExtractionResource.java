@@ -69,7 +69,16 @@ public class ExtractionResource extends ServerResource {
     PageExtractor extractorImpl = extractorFactory.create("product", doc);
     PageEntity pageEntity = extractor.extract(extractorImpl);
 
+<<<<<<< HEAD
     logger.debug(pageEntity);
+=======
+      if (format.equals("txt")) {
+        return "<pre>" + StringEscapeUtils.escapeHtml(buildText(pageEntity)) + "</pre>";
+      }
+      else if (format.equals("all")) {
+        return buildAllHtml(pageEntity);
+      }
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
 
     time = System.currentTimeMillis() - time;
     logger.info("extraction time : {}s\n\n", time / 1000.0);

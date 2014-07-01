@@ -25,7 +25,11 @@ public class DomSegmentExtractor extends KeyValueExtractor implements DataExtrac
   private final String displayLabel;
 
   public DomSegmentExtractor(DomSegment segment, PageEntity pageEntity, String displayLabel) {
+<<<<<<< HEAD
     super(segment.block());
+=======
+    super(segment.body());
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
 
     Validate.notNull(segment);
     Validate.notNull(pageEntity);
@@ -112,6 +116,11 @@ public class DomSegmentExtractor extends KeyValueExtractor implements DataExtrac
   @Override
   public String toString() {
     return "extractor_" + displayLabel + "_" + segment.block().prettyName();
+  }
+
+  @Override
+  public String toString() {
+    return "extractor_" + displayLabel + "_" + segment.root().prettyName();
   }
 
 	@Override

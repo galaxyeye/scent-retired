@@ -14,6 +14,7 @@ import org.qiwur.scent.jsoup.block.BlockLabel;
 import org.qiwur.scent.jsoup.block.DomSegment;
 import org.qiwur.scent.jsoup.select.DOMUtil;
 import org.qiwur.scent.utils.MatrixUtil;
+import org.qiwur.scent.utils.StringUtil;
 
 import ruc.irm.similarity.FuzzyProbability;
 
@@ -128,7 +129,11 @@ public abstract class BlockClassifier {
     String[] diagnoseLabels = conf.getStrings("scent.diagnose.classifier.block.labels");
 
     String report = "";
+<<<<<<< HEAD
     report += String.format("%-30s%s", getClass().getSimpleName(), columnSeparator);
+=======
+    report += String.format("%-20s%s", getClass().getSimpleName(), columnSeparator);
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
     for (int col = 0; col < labels.length; ++col) {
       if (!ArrayUtils.contains(diagnoseLabels, labels[col])) {
         continue;
@@ -139,15 +144,24 @@ public abstract class BlockClassifier {
     report += "\n";
 
     for (int row = 0; row < segments.length; ++row) {
+<<<<<<< HEAD
       report += String.format("%-30s%s", StringUtils.substring(segments[row].name(), 0, 30), columnSeparator);
+=======
+      report += String.format("%-20s%s", StringUtils.substring(segments[row].name(), 0, 20), columnSeparator);
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
       for (int col = 0; col < labels.length; ++col) {
         if (!ArrayUtils.contains(diagnoseLabels, labels[col])) {
           continue;
         }
 
         double score = scoreMatrix.get(row, col);
+<<<<<<< HEAD
         if (score == 0) {
           report += String.format("%-14s", ".");
+=======
+        if (score <= 0) {
+          report += String.format("%-12.2s", ".");
+>>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
         }
         else if (score < 0.6) {
           report += String.format("%-12.2f", score);
