@@ -31,11 +31,8 @@ public class IndicatorCalculator extends InterruptiveNodeVisitor {
       node.parent().accumIndics(
           node.getIndicator(Indicator.OCH),
           node.getIndicator(Indicator.CH),
-<<<<<<< HEAD
           node.getIndicator(Indicator.CHM),
           node.getIndicator(Indicator.CHA),
-=======
->>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
           node.getIndicator(Indicator.OTB),
           node.getIndicator(Indicator.TB),
           node.getIndicator(Indicator.SEP)
@@ -48,10 +45,7 @@ public class IndicatorCalculator extends InterruptiveNodeVisitor {
       Element e = (Element) node;
 
       // since the the sum has been calculated, we can get the average
-<<<<<<< HEAD
       e.indic(Indicator.CHA, divide(e, Indicator.CH, Indicator.TB, 0.0));
-=======
->>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
       e.indic(Indicator.IAW, divide(e, Indicator.ITW, Indicator.IMG, 0.0));
       e.indic(Indicator.IAH, divide(e, Indicator.ITH, Indicator.IMG, 0.0));
       e.indic(Indicator.AAW, divide(e, Indicator.ATW, Indicator.A, 0.0));
@@ -109,19 +103,12 @@ public class IndicatorCalculator extends InterruptiveNodeVisitor {
     if (node instanceof TextNode) {
       double _ch = 0.0;
       double _sep = 0.0;
-<<<<<<< HEAD
-=======
-
-      String text = StringUtil.stripNonChar(((TextNode) node).text(), StringUtil.DefaultKeepChars).trim();
-      _ch = text.length();
->>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
 
       String text = ((TextNode) node).text();
       for (String sep : Indicator.separators) {
         _sep += StringUtils.countMatches(text, sep);
       }
 
-<<<<<<< HEAD
       // Must strip after separators are counted
       text = StringUtil.stripNonChar(text, StringUtil.DefaultKeepChars).trim();
       _ch = text.length();
@@ -131,11 +118,6 @@ public class IndicatorCalculator extends InterruptiveNodeVisitor {
             new Indicator(Indicator.CH, _ch),
             new Indicator(Indicator.CHM, _ch),
             new Indicator(Indicator.CHA, _ch),
-=======
-      if (_ch > 0) {
-        node.accumIndics(
-            new Indicator(Indicator.CH, _ch),
->>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
             new Indicator(Indicator.OCH, _ch),
             new Indicator(Indicator.OTB, 1.0),
             new Indicator(Indicator.TB, 1.0),
@@ -151,16 +133,13 @@ public class IndicatorCalculator extends InterruptiveNodeVisitor {
       double _img = 0.0;
       double _img_total_w = 0.0;
       double _img_total_h = 0.0;
-<<<<<<< HEAD
 
       if (node.sequence() == -1) {
         node.sequence(--evictedSequence);
       }
       else {
-        node.sequence(++sequence); 
+        node.sequence(++sequence);        
       }
-=======
->>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
 
       if (node.nodeName().equals("a")) {
         ++_a;

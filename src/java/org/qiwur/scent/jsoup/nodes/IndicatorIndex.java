@@ -1,10 +1,7 @@
 package org.qiwur.scent.jsoup.nodes;
 
 import java.util.Collections;
-<<<<<<< HEAD
-=======
 import java.util.Comparator;
->>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;

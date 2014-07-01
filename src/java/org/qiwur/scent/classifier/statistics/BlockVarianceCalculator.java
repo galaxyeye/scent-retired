@@ -1,5 +1,6 @@
 package org.qiwur.scent.classifier.statistics;
 
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -119,19 +120,11 @@ public class BlockVarianceCalculator {
 
         stats = calculate(root, stats);
 
-<<<<<<< HEAD
         double varianceMean = stats[indicators.length].getMean();
 
         // 一组高度相似的数据，平均方差一般小于1，这里放宽到3
         if (varianceMean < varianceReferenceValue) {
           blocks.put(varianceMean, root);
-=======
-        double varianceMean = stats[indicators.length].getMean() / _child;
-
-        // 一组高度相似的数据，平均方差一般小于1，这里放宽到3
-        if (varianceMean / _child < varianceReferenceValue) {
-          blocks.put(varianceMean / _child, root);
->>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
         }
 
         if (logVariance) {

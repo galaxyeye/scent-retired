@@ -2,6 +2,8 @@ package org.qiwur.scent.diagnosis;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.lang.Validate;
@@ -51,7 +53,6 @@ public class DiagnosisFormatter implements Configurable {
 
       for (int i = 0; i < row.size(); ++i) {
         if (i == 0) {
-<<<<<<< HEAD
           r += String.format("<th title='%s'>%s</th>", row.get(i), StringUtils.substring(row.get(i), 0, 30));
         }
         else if (i == row.size() - 1) {
@@ -59,12 +60,6 @@ public class DiagnosisFormatter implements Configurable {
         }
         else {
           r += String.format("<td title='%s'>%s</td>", row.get(i), StringUtils.substring(row.get(i), 0, 20));
-=======
-          r += String.format("<th>%s</th>", StringUtils.substring(row.get(0), 0, 20));
-        }
-        else {
-          r += String.format("<td>%s</td>", row.get(i));
->>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
         }
       }
 
@@ -74,27 +69,18 @@ public class DiagnosisFormatter implements Configurable {
 
     table.append("</table>");
 
-<<<<<<< HEAD
     if (StringUtils.isEmpty(description)) {
       description = String.format("total %s columns, %s rows", headers.size(), rows.size());
     }
     table.append("<p>" + description.replaceAll("\n", "<br />") + "</p>");
-=======
-    if (StringUtils.isNotEmpty(description)) {
-      table.append("<p>" + description.replaceAll("\n", "<br />") + "</p>");
-    }
->>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
 
     return table.toString();
   }
 
-<<<<<<< HEAD
   public String caption() {
     return this.caption;
   }
 
-=======
->>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
   protected void setCaption(String caption) {
     this.caption = caption;
   }
@@ -103,7 +89,6 @@ public class DiagnosisFormatter implements Configurable {
     this.description = description;
   }
 
-<<<<<<< HEAD
   protected void buildHeader(String... columnValues) {
     buildHeader(Arrays.asList(columnValues));
   }
@@ -118,39 +103,10 @@ public class DiagnosisFormatter implements Configurable {
 
   protected void buildRow(Collection<String> columnValues) {
     List<String> row = Lists.newArrayList();
-=======
-  protected void buildHeader(String name, String... columnValues) {
-    buildHeader(name, Arrays.asList(columnValues));
-  }
-
-  protected void buildHeader(String name, Collection<String> columnNames) {
-    headers.add(name);
-    headers.addAll(columnNames);
-  }
-
-  protected void buildHeader(Collection<String> columnNames) {
-    this.buildHeader("", columnNames);
-  }
-
-  protected void buildRow(String name, String... columnValues) {
-    buildRow(name, Arrays.asList(columnValues));
-  }
-
-  protected void buildRow(String name, Collection<String> columnValues) {
-    List<String> row = Lists.newArrayList();
-    row.add(name);
->>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
     row.addAll(columnValues);
     rows.add(row);
   }
 
-<<<<<<< HEAD
-=======
-  protected void buildRow(Collection<String> columnValues) {
-    this.buildRow("", columnValues);
-  }
-
->>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
   @Override
   public Configuration getConf() {
     return conf;

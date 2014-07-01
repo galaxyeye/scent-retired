@@ -13,10 +13,7 @@ import org.qiwur.scent.classifier.DomSegmentsClassifier;
 import org.qiwur.scent.classifier.statistics.BlockVarianceCalculator;
 import org.qiwur.scent.diagnosis.BlockLabelFormatter;
 import org.qiwur.scent.diagnosis.BlockPatternFormatter;
-<<<<<<< HEAD
 import org.qiwur.scent.diagnosis.BlockVarianceFormatter;
-=======
->>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
 import org.qiwur.scent.diagnosis.DomSegmentFormatter;
 import org.qiwur.scent.diagnosis.IndicatorsFormatter;
 import org.qiwur.scent.diagnosis.ScentDiagnoser;
@@ -24,11 +21,6 @@ import org.qiwur.scent.entity.PageEntity;
 import org.qiwur.scent.feature.FeatureManager;
 import org.qiwur.scent.jsoup.block.DomSegment;
 import org.qiwur.scent.jsoup.nodes.Document;
-<<<<<<< HEAD
-=======
-import org.qiwur.scent.learning.BlockFeatureRecorder;
-import org.qiwur.scent.printer.BlockLabelPrinter;
->>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
 import org.qiwur.scent.utils.ObjectCache;
 
 import ruc.irm.similarity.word.hownet2.concept.BaseConceptParser;
@@ -82,9 +74,9 @@ public class WebExtractor {
 
     Document doc = extractorImpl.doc();
 
-<<<<<<< HEAD
     // Calculate all indicators, this step is essential for the extraction
     doc.calculateIndicators();
+
 
     ScentDiagnoser diagnoser = new ScentDiagnoser(doc, conf);
     diagnoser.addFormatter(new IndicatorsFormatter(doc, conf));
@@ -94,15 +86,6 @@ public class WebExtractor {
     BlockVarianceCalculator calculator = new BlockVarianceCalculator(doc, conf);
     calculator.calculate();
     diagnoser.addFormatter(new BlockVarianceFormatter(calculator, conf));
-=======
-    ScentDiagnoser diagnoser = new ScentDiagnoser(doc, conf);
-
-    // calculate code blocks
-    new BlockVarianceCalculator(doc, conf).process();
-
-    diagnoser.addFormatter(new IndicatorsFormatter(doc, conf));
-    diagnoser.addFormatter(new DomSegmentFormatter(doc, conf));
->>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
 
     // build code segments, calculate code patterns
     Set<DomSegment> segmentSet = new DomSegmentsBuilder(doc, conf).build();
@@ -114,11 +97,7 @@ public class WebExtractor {
     classifier.classify();
     classifier.report(diagnoser);
 
-<<<<<<< HEAD
     diagnoser.addFormatter(new DomSegmentFormatter(doc, conf));
-=======
-    diagnoser.addFormatter(new BlockPatternFormatter(doc, conf));
->>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
     diagnoser.addFormatter(new BlockLabelFormatter(doc, conf));
 
     // new BlockFeatureRecorder(doc, conf).process();

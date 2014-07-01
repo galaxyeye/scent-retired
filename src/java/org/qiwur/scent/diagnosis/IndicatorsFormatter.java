@@ -2,10 +2,7 @@ package org.qiwur.scent.diagnosis;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-<<<<<<< HEAD
 import java.util.List;
-=======
->>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
 
 import org.apache.hadoop.conf.Configuration;
 import org.qiwur.scent.jsoup.nodes.Document;
@@ -21,25 +18,17 @@ public class IndicatorsFormatter extends DiagnosisFormatter {
 
   private final Document doc;
 
-<<<<<<< HEAD
   boolean segmentedOnly = false;
-=======
-  boolean segmentedOnly = true;
->>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
 
   public IndicatorsFormatter(Document doc, Configuration conf) {
     super(conf);
 
     this.doc = doc;
 
-<<<<<<< HEAD
     List<String> headers = Lists.newArrayList();
     headers.add("Element");
     headers.addAll(Arrays.asList(Indicator.names));
     buildHeader(headers);
-=======
-    buildHeader("name", Arrays.asList(Indicator.names));
->>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
   }
 
   @Override
@@ -65,19 +54,11 @@ public class IndicatorsFormatter extends DiagnosisFormatter {
       }
 
       ArrayList<String> row = Lists.newArrayList();
-<<<<<<< HEAD
       row.add(e.prettyName());
       for (int i = 0; i < Indicator.names.length; ++i) {
         row.add(String.format("%4.2f", e.indic(Indicator.names[i])));
       }
-
       buildRow(row);
-=======
-      for (int i = 0; i < Indicator.names.length; ++i) {
-        row.add(String.format("%4.2f", e.indic(Indicator.names[i])));
-      }
-      buildRow(e.prettyName(), row);
->>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
     }
   }
 }

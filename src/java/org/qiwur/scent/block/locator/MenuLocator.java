@@ -1,8 +1,10 @@
 package org.qiwur.scent.block.locator;
 
+import java.util.Map.Entry;
 import java.util.Collections;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.ComparatorUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.conf.Configuration;
@@ -30,12 +32,12 @@ public final class MenuLocator extends BlockLocator {
     badWords.add("商品分类");
   }
 
-	public MenuLocator(Document doc) {
-		super(doc, BlockLabel.Menu);
-	}
+  public MenuLocator(Document doc) {
+    super(doc, BlockLabel.Menu);
+  }
 
   @Override
-	protected DomSegment quickLocate() {
+  protected DomSegment quickLocate() {
     double maxScore = 3;
     DomSegment menu = null;
 
@@ -57,7 +59,7 @@ public final class MenuLocator extends BlockLocator {
     return menu;
   }
 
-	@Override
+  @Override
   protected DomSegment deepLocate() {
     MenuItemFounder founder = new MenuItemFounder();
     new ElementTraversor(founder).traverse(doc());
@@ -68,15 +70,11 @@ public final class MenuLocator extends BlockLocator {
       segment.tag(targetLabel, FuzzyProbability.MUST_BE);
     }
 
-		return segment;
-	}
+    return segment;
+  }
 
   public static DomSegment createMenu(Document doc, Configuration conf) {
-<<<<<<< HEAD
     Element ele = doc.body().prependElement("ul class='created'");
-=======
-    Element ele = doc.body().prependElement("ul");
->>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
     ele.append("<li><a href='/'>首页</a></li>");
     ele.sequence(doc.body().sequence() + 100); // TODO : use a machine learned sequence
 
@@ -84,15 +82,15 @@ public final class MenuLocator extends BlockLocator {
   }
 
   // TODO : use classifier system
-	private double getScore(Element root) {
+  private double getScore(Element root) {
     if (root == null) return 0;
 
-	  int score = 0;
+    int score = 0;
 
-	  double seq = root.indic(Indicator.SEQ);
-	  double a = root.indic(Indicator.A);
-	  double img = root.indic(Indicator.IMG);
-	  double c = root.indic(Indicator.C);
+    double seq = root.indic(Indicator.SEQ);
+    double a = root.indic(Indicator.A);
+    double img = root.indic(Indicator.IMG);
+    double c = root.indic(Indicator.C);
     double tb = root.indic(Indicator.TB);
     double sep = root.indic(Indicator.SEP);
     double aah = root.indic(Indicator.AAH);
@@ -142,7 +140,7 @@ public final class MenuLocator extends BlockLocator {
     }
 
     return score;
-	}
+  }
 
   /*
    * 通过一个菜单项，找到整个菜单的根节点

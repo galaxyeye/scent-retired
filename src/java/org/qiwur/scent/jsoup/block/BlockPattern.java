@@ -3,10 +3,6 @@ package org.qiwur.scent.jsoup.block;
 import java.util.HashSet;
 import java.util.Set;
 
-<<<<<<< HEAD
-=======
-import org.apache.commons.lang.StringUtils;
->>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
 import org.qiwur.scent.jsoup.nodes.Element;
 import org.qiwur.scent.jsoup.nodes.Indicator;
 import org.qiwur.scent.utils.StringUtil;
@@ -22,17 +18,10 @@ public class BlockPattern implements Comparable<BlockPattern> {
   public static BlockPattern List = BlockPattern.fromString("List");
 
   public static BlockPattern Links = BlockPattern.fromString("Links");
-<<<<<<< HEAD
   public static BlockPattern DenseLinks = BlockPattern.fromString("DenseLinks");
   public static BlockPattern Images = BlockPattern.fromString("Images");
   public static BlockPattern LinkImages = BlockPattern.fromString("LinkImages");
   public static BlockPattern DenseText = BlockPattern.fromString("DenseText");
-=======
-  public static BlockPattern DensyLinks = BlockPattern.fromString("DensyLinks");
-  public static BlockPattern Images = BlockPattern.fromString("Images");
-  public static BlockPattern LinkImages = BlockPattern.fromString("LinkImages");
-  public static BlockPattern DensyText = BlockPattern.fromString("DensyText");
->>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
 
   public static Set<BlockPattern> patterns = Sets.newHashSet();
 
@@ -44,17 +33,10 @@ public class BlockPattern implements Comparable<BlockPattern> {
     patterns.add(List);
 
     patterns.add(Links);
-<<<<<<< HEAD
     patterns.add(DenseLinks);
     patterns.add(Images);
     patterns.add(LinkImages);
     patterns.add(DenseText);
-=======
-    patterns.add(DensyLinks);
-    patterns.add(Images);
-    patterns.add(LinkImages);
-    patterns.add(DensyText);
->>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
   }
 
   private String text;
@@ -100,13 +82,8 @@ public class BlockPattern implements Comparable<BlockPattern> {
       return isLinks(ele);
     }
 
-<<<<<<< HEAD
     if (pattern.equals(DenseLinks)) {
       return isDenseLinks(ele);
-=======
-    if (pattern.equals(DensyLinks)) {
-      return isDensyLinks(ele);
->>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
     }
 
     if (pattern.equals(Images)) {
@@ -121,7 +98,7 @@ public class BlockPattern implements Comparable<BlockPattern> {
   }
 
   public static boolean isTable(Element ele) {
-    if (!StringUtil.in(ele.tagName(), "table", "tbody")) {
+    if (!StringUtil.in(ele.tagName(), "table", "tbody", "tr")) {
       return false;
     }
 
@@ -161,7 +138,6 @@ public class BlockPattern implements Comparable<BlockPattern> {
   public static boolean isII(Element ele) {
     double _img = ele.indic(Indicator.IMG);
     double _sep = ele.indic(Indicator.SEP);
-<<<<<<< HEAD
     double _char_ave = ele.indic(Indicator.CHA);
     double _char_max = ele.indic(Indicator.CHM);
     double _txt_blk = ele.indic(Indicator.TB);
@@ -178,20 +154,6 @@ public class BlockPattern implements Comparable<BlockPattern> {
     }
 
     return listLikely(ele);
-=======
-    double _char = ele.indic(Indicator.CH);
-    double _txt_blk = ele.indic(Indicator.TB);
-
-    if (_sep >= 3 && _img <= 2 && _char / _txt_blk <= 10) {
-      int count = StringUtils.countMatches(ele.text(), ">");
-
-      if (_sep - count >= 3) {
-        return true;
-      }
-    }
-
-    return false;
->>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
   }
 
   public static boolean isN2(Element ele) {
@@ -231,7 +193,6 @@ public class BlockPattern implements Comparable<BlockPattern> {
   }
 
   public static boolean isList(Element ele) {
-<<<<<<< HEAD
     double _child = ele.indic(Indicator.C);
     double _grant_child = ele.indic(Indicator.G);
 
@@ -257,47 +218,12 @@ public class BlockPattern implements Comparable<BlockPattern> {
     double _img = ele.indic(Indicator.IMG);
 
     if (_a >= 3 && _img / _a <= 0.2) {
-=======
-    // calculate the likelihood of the children, if the children are very
-    // likely, it's a list-like code block
-    double _child = ele.indic(Indicator.C);
-    double _grant_child = ele.indic(Indicator.G);
-    
-    // tooo few children, or tooo many grand children
-    if (_child < 3 || _grant_child / _child > 5) {
-      return false;
-    }
-
-    Set<String> childTags = new HashSet<String>();
-    Set<Double> numGrandson = new HashSet<Double>();
-
-    for (Element child : ele.children()) {
-      childTags.add(child.tagName());
-      numGrandson.add(child.indic(Indicator.C));
-    }
-
-    // 如果列表项的tag标签和直接子孩子数高度相似，那么可以忽略内部结构的相似性，这是对基于方差判断方法的补充
-    // 0.2 表示 : 每5个里边允许有一个干扰项
-    if (childTags.size() / _child <= 0.2 && numGrandson.size() / _child <= 0.2) {
       return true;
     }
 
     return false;
   }
 
-  public static boolean isLinks(Element ele) {
-    double _a = ele.indic(Indicator.A);
-    double _img = ele.indic(Indicator.IMG);
-
-    if (_a > 0 && _img / _a < 0.15) {
->>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
-      return true;
-    }
-
-    return false;
-  }
-
-<<<<<<< HEAD
   public static boolean isDenseLinks(Element ele) {
     double _a = ele.indic(Indicator.A);
     double _img = ele.indic(Indicator.IMG);
@@ -314,15 +240,6 @@ public class BlockPattern implements Comparable<BlockPattern> {
     }
 
     if (_a >= 100 && _txt_blk >= 100 && _char_ave >= 2 && _char_ave <= 6 && _char_max <= 15 && _img < 0.3 * _a) {
-=======
-  public static boolean isDensyLinks(Element ele) {
-    double _a = ele.indic(Indicator.A);
-    double _img = ele.indic(Indicator.IMG);
-    double _char = ele.indic(Indicator.CH);
-    double _txt_blk = ele.indic(Indicator.TB);
-
-    if (_a >= 50 && _img / _a <= 0.15 && _char / _txt_blk <= 6) {
->>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
       return true;
     }
 
@@ -332,7 +249,6 @@ public class BlockPattern implements Comparable<BlockPattern> {
   public static boolean isImages(Element ele) {
     double _a = ele.indic(Indicator.A);
     double _img = ele.indic(Indicator.IMG);
-<<<<<<< HEAD
     double _img_max_w = ele.indic(Indicator.IMW);
     double _img_max_h = ele.indic(Indicator.IMH);
     double _img_ave_w = ele.indic(Indicator.IAW);
@@ -351,17 +267,12 @@ public class BlockPattern implements Comparable<BlockPattern> {
 
     // or, if there are many images but few links, we mark it as "Images" block
     if (_img > 3 && _a / _img <= 0.2 && _txt_blk / _img <= 1.5) {
-=======
-
-    if (_img > 0 && _a / _img <= 0.2) {
->>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
       return true;
     }
 
     return false;
   }
 
-<<<<<<< HEAD
   /**
    * link-image example : 
    * 
@@ -400,13 +311,6 @@ public class BlockPattern implements Comparable<BlockPattern> {
 
     double rate = _a / _img;
     if ((rate >= 0.8 && rate <= 1.2) || (rate >= 1.8 && rate <= 2.2) || (rate >= 2.8 && rate <= 3.2)) {
-=======
-  public static boolean isLinkImages(Element ele) {
-    double _a = ele.indic(Indicator.A);
-    double _img = ele.indic(Indicator.IMG);
-
-    if (_img > 0 && _a > 0 && _a / _img >= 0.8 && _img / _a >= 0.8) {
->>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
       return true;
     }
 
@@ -426,7 +330,6 @@ public class BlockPattern implements Comparable<BlockPattern> {
     return true;
   }
 
-<<<<<<< HEAD
   /**
    * Notice : List likely block is not only "List" pattern!
    * 
@@ -462,8 +365,6 @@ public class BlockPattern implements Comparable<BlockPattern> {
     return false;
   }
 
-=======
->>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
   @Override
   public String toString() {
     return text;
@@ -475,14 +376,11 @@ public class BlockPattern implements Comparable<BlockPattern> {
   }
 
   @Override
-<<<<<<< HEAD
   public int hashCode() {
     return text.hashCode();
   }
 
   @Override
-=======
->>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
   public int compareTo(BlockPattern other) {
     return text.compareTo(other.text);
   }

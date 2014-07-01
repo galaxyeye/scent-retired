@@ -33,23 +33,14 @@ public class BlockPatternPrinter {
       for (DomSegment segment : doc.domSegments().getAll(pattern)) {
         String parentName = "";
         if (segment.parent() != null) {
-<<<<<<< HEAD
           parentName = segment.parent().block().prettyName();
-=======
-          parentName = segment.parent().root().prettyName();
->>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
         }
 
         ++counter;
         formatter.format("%-10s %-10s %-20s %-20s body:%-70s\n",
             StringUtils.substring(pattern.text(), 0, 10),
-<<<<<<< HEAD
             segment.block().attr("data-blocking-rule"),
             StringUtils.substring(segment.block().prettyName(), 0, 20),
-=======
-            segment.body().attr("data-blocking-rule"),
-            StringUtils.substring(segment.root().prettyName(), 0, 20),
->>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
             StringUtils.substring(parentName, 0, 20),
             StringUtils.substring(segment.text(), 0, 70));
       }

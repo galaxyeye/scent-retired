@@ -27,11 +27,8 @@ public class ClassifierMatrixFormatter extends DiagnosisFormatter {
   public void process() {
     ArrayList<String> lines = getLines();
 
-<<<<<<< HEAD
     setCaption(getClass().getName() + " - " + classifier.getClass().getSimpleName());
 
-=======
->>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
     int i = 0;
     for (String line : lines) {
       if (i++ == 0) {

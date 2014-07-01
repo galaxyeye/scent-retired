@@ -18,8 +18,6 @@ import com.google.common.collect.Lists;
 
 public final class DomSegments implements Set<DomSegment> {
 
-  private static final Logger logger = LogManager.getLogger(DomSegments.class);
-
   public static final FuzzyProbability DefaultProbability = FuzzyProbability.MAYBE;
 
   private Set<DomSegment> segments = new TreeSet<DomSegment>();
@@ -28,79 +26,11 @@ public final class DomSegments implements Set<DomSegment> {
     
   }
 
-  public void destroyTree() {
-    for (DomSegment segment : segments) {
-      segment.remove();
-    }
-  }
-
-  public void buildTree() {
-    for (DomSegment ancestor : segments) {
-      for (DomSegment child : segments) {
-        if (DOMUtil.isAncestor(child, ancestor)) {
-          if (child.parent() == null) {
-            ancestor.appendChild(child);
-          }
-          else if (child.parent().body().depth() < ancestor.body().depth()) {
-            // the new "parent" is closer than the older one, so replace the older one
-            child.parent().removeChild(child);
-            ancestor.appendChild(child);
-          }
-        }
-      }
-    }
-  }
-
-  public List<DomSegment> mergeTree(double likelihood) {
-    List<DomSegment> removal = Lists.newArrayList();
-
-    for (DomSegment parent : segments) {
-      for (DomSegment child : parent.children()) {
-        double like = child.likelihood(parent);
-
-        if (logger.isDebugEnabled() && like > 0.6) {
-          logger.debug("likelihood : {}, {}, {}", String.format("%.2f", like), parent.root().prettyName(), 
-              child.root().prettyName());
-        }
-
-        // it's the parent rather then the child should be removed
-        // because the child usually appears to be much more well formatted
-        if (like >= likelihood) {
-          removal.add(parent);
-        }
-      }
-    }
-
-    for (DomSegment segment : removal) {
-      segment.remove();
-    }
-
-    return removal;
-  }
-
-  public List<DomSegment> mergeSegments(double likelihood) {
-    List<DomSegment> removal = mergeTree(likelihood);
-    segments.removeAll(removal);
-
-    if (logger.isDebugEnabled()) {
-      List<String> names = Lists.newArrayList();
-      for (DomSegment segment : removal) {
-        names.add(segment.root().prettyName());
-      }
-      logger.debug("remove redundant segments : {}", names);
-    }
-
-    return removal;
-  }
-
-<<<<<<< HEAD
-=======
   // 寻找相似度最大的区块
   public DomSegment get(BlockLabel label) {
     return get(label, DefaultProbability);
   }
 
->>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
   // 寻找大于p的相似度最大的区块
   public DomSegment get(BlockLabel label, FuzzyProbability p) {
     DomSegment result = null;

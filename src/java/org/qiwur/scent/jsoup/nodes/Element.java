@@ -1011,7 +1011,6 @@ public class Element extends Node {
 
     // TODO : add text cache
 
-<<<<<<< HEAD
     return Entities.unescape(accum.toString()).replaceAll(StringUtil.NBSP, StringUtil.KeyboardWhitespace).trim();
   }
 
@@ -1026,15 +1025,13 @@ public class Element extends Node {
           Element element = (Element) node;
           if (accum.length() > 0 && (element.isBlock() || element.tag.getName().equals("br"))
               && !TextNode.lastCharIsWhitespace(accum))
-            accum.append("<br />");
+        	  accum.append("<br />");
         }
       }
     }).traverse(this);
 
     // TODO : add text cache
 
-=======
->>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
     return Entities.unescape(accum.toString()).replaceAll(StringUtil.NBSP, StringUtil.KeyboardWhitespace).trim();
   }
 
@@ -1387,18 +1384,12 @@ public class Element extends Node {
       id = "#" + id();
     }
 
-<<<<<<< HEAD
     String cls = "";
     if (id.isEmpty()) {
       cls = className().trim();
       if (!cls.isEmpty()) {
         cls = "." + cls.replaceAll("\\s+", ".");
       }
-=======
-    String cls = className();
-    if (id.isEmpty() && !cls.isEmpty()) {
-      cls = "." + cls.replaceAll("\\s+", ".");
->>>>>>> 5490cb6f167ceb113c47e20161e42d7d543e59bc
     }
 
     return String.format("%4d", sequence()) + "-" + nodeName() + id + cls;
