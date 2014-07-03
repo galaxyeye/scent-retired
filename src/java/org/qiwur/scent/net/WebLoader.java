@@ -1,4 +1,4 @@
-package org.qiwur.scent.data.extractor;
+package org.qiwur.scent.net;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,9 +10,6 @@ import org.apache.logging.log4j.Logger;
 import org.qiwur.scent.jsoup.Connection.Response;
 import org.qiwur.scent.jsoup.Jsoup;
 import org.qiwur.scent.jsoup.nodes.Document;
-import org.qiwur.scent.net.ProxyEntry;
-import org.qiwur.scent.net.ProxyPool;
-import org.qiwur.scent.net.ProxyPoolFactory;
 import org.qiwur.scent.utils.FileUtil;
 
 public class WebLoader {
@@ -54,14 +51,14 @@ public class WebLoader {
 
     try {
       doc = doLoad(url);
-    } catch (IOException | InterruptedException e) {
+    } catch (IOException | InterruptedException | NoProxyException e) {
       logger.info("can not fetch {}, {}", url, e);
     }
 
     return doc;
   }
 
-  protected Document doLoad(final String url) throws IOException, InterruptedException {
+  protected Document doLoad(final String url) throws IOException, InterruptedException, NoProxyException {
     String uri = url;
 
     // cache mechanism
@@ -79,32 +76,63 @@ public class WebLoader {
     }
   }
 
-  protected Response fetch(final String uri) throws IOException, InterruptedException {
+  protected Response fetch(final String uri) throws IOException, InterruptedException, NoProxyException {
     Response response = null;
+    ProxyEntry proxy = null;
+    boolean fetchSuccess = false;
 
-    if (useProxyPool) {
-      ProxyEntry proxy = proxyPool.poll();
-      proxyHost = proxy.host();
-      proxyPort = proxy.port();
-    }
+    try {
+      if (useProxyPool) {
+        proxy = proxyPool.poll();
+        if (proxy == null) {
+          throw new NoProxyException("proxy pool exhausted");
+        }
 
-    if (useProxy) {
-      response = Jsoup.connect(uri, proxyHost, proxyPort).execute();
-    }
-    else {
-      response = Jsoup.connect(uri).execute();
-    }
+        proxyHost = proxy.host();
+        proxyPort = proxy.port();
 
-    if (localFileCacheExpires > 0) {
-      cachePage(uri, response.body(), cacheDir);
-    }
+        String message = String.format("proxy : %s, available : %d, retired : %d, uri : %s", 
+            proxy.ipPort(), proxyPool.size(), proxyPool.retiredSize(), uri);
 
-    if (response != null) {
-      if (response.body().length() < minPageLength) {
-        logger.info("get just {} bytes from {}, ignore", response.body().length(), uri);
-        response = null;
-      } else {
-        logger.debug("received {} bytes from {}", response.body().length(), uri);
+        logger.debug(message);
+      }
+  
+      if (useProxy) {
+        response = Jsoup.connect(uri, proxyHost, proxyPort).execute();
+      }
+      else {
+        response = Jsoup.connect(uri).execute();
+      }
+
+      if (localFileCacheExpires > 0) {
+        cachePage(uri, response.body(), cacheDir);
+      }
+  
+      if (response != null) {
+        fetchSuccess = true;
+
+        if (response.body().length() < minPageLength) {
+          logger.info("get just {} bytes from {}, ignore", response.body().length(), uri);
+          response = null;
+        } else {
+          logger.debug("received {} bytes from {}", response.body().length(), uri);
+        }
+      }
+    }
+    finally {
+      if (useProxyPool && proxy != null) {
+        // put back the proxy resource, this is essential important!
+        if (fetchSuccess) {
+          logger.debug("put back proxy {}", proxy.ipPort());
+
+          proxyPool.put(proxy);
+        }
+        else {
+          logger.debug("retire proxy {}", proxy.ipPort());
+
+          // the proxy may be usable later
+          proxyPool.retire(proxy);
+        }
       }
     }
 
@@ -115,8 +143,7 @@ public class WebLoader {
     Document doc = null;
 
     try {
-      if (res != null)
-        doc = res.parse();
+      if (res != null) doc = res.parse();
     } catch (IOException e) {
       logger.error(e);
     }

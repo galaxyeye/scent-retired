@@ -15,15 +15,15 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.qiwur.scent.utils.FiledLines;
 import org.qiwur.scent.utils.NetUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 // manager all proxy servers, for every request, we choose a proxy server from a proxy server list
 public class ProxyPool {
 
-  protected static final Logger logger = LogManager.getLogger(ProxyPool.class);
+  protected static final Logger logger = LoggerFactory.getLogger(ProxyPool.class);
 
   public static final String ProxyListFile = "conf/proxy-servers.txt";
 
@@ -43,7 +43,7 @@ public class ProxyPool {
   
   private FiledLines proxyServerList = null;
 
-  // TODO : save connected connections rather than ProxyEntry
+  // TODO : save connected connections
   private BlockingQueue<ProxyEntry> proxyEntries = new LinkedBlockingQueue<ProxyEntry>();
   private BlockingQueue<ProxyEntry> retiredProxyEntries = new LinkedBlockingQueue<ProxyEntry>();
 

@@ -5,12 +5,12 @@ import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ProxyUpdateThread extends Thread {
 
-  protected static final Logger logger = LogManager.getLogger(ProxyUpdateThread.class);
+  protected static final Logger logger = LoggerFactory.getLogger(ProxyUpdateThread.class);
   protected long updatePeriod = 10 * 1000;
 
   /** The nutch configuration */

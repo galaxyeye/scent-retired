@@ -28,7 +28,6 @@ public class ProductHTMLBuilder extends ProductBuilder {
       "TitleContainer",
       "ProductSpec",
       "ProductDetail",
-      "PureImages",
       "SimilarEntity",
       "Links",
   };
@@ -95,8 +94,6 @@ public class ProductHTMLBuilder extends ProductBuilder {
       }
       else if (label.equals("ProductDetail")) {
         buildProductDetail(div, attributes);
-      }
-      else if (label.equals("PureImages")) {
         buildPureImages(div, attributes);
       }
       else if (label.equals("SimilarEntity")) {
@@ -111,7 +108,7 @@ public class ProductHTMLBuilder extends ProductBuilder {
       else {
         
       }
-
+      
       body.appendElement("hr");
     }
 

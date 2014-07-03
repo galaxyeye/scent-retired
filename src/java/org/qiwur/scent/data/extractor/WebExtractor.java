@@ -21,6 +21,7 @@ import org.qiwur.scent.entity.PageEntity;
 import org.qiwur.scent.feature.FeatureManager;
 import org.qiwur.scent.jsoup.block.DomSegment;
 import org.qiwur.scent.jsoup.nodes.Document;
+import org.qiwur.scent.net.WebLoader;
 import org.qiwur.scent.utils.ObjectCache;
 
 import ruc.irm.similarity.word.hownet2.concept.BaseConceptParser;

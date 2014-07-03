@@ -5,6 +5,15 @@
 
 <configuration>
 
+    <property>
+        <name>scent.net.proxy.use.proxy.pool</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>scent.net.proxy.max.pool.size</name>
+        <value>15</value>
+    </property>
+
     <!-- labels -->
     <property>
         <name>scent.classifier.block.labels</name>
