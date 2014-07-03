@@ -8,7 +8,6 @@ import java.util.List;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.mahout.math.Matrix;
 import org.qiwur.scent.classifier.semantic.BlockTextFeatureClassifier;
-import org.qiwur.scent.classifier.semantic.BlockTitleFeatureClassifier;
 import org.qiwur.scent.classifier.sgd.LogisticRegressionClassifier;
 import org.qiwur.scent.classifier.statistics.CodeStructureFeatureClassifier;
 import org.qiwur.scent.diagnosis.ClassifierMatrixFormatter;
@@ -23,7 +22,7 @@ public class DomSegmentsClassifier extends BlockClassifier {
     super(segments, labels, conf);
 
     classifiers.add(new CodeStructureFeatureClassifier(segments, labels, conf));
-    classifiers.add(new BlockTitleFeatureClassifier(segments, labels, conf));
+    // classifiers.add(new BlockTitleFeatureClassifier(segments, labels, conf));
     classifiers.add(new BlockTextFeatureClassifier(segments, labels, conf));
     classifiers.add(new LogisticRegressionClassifier(segments, labels, conf));
   }

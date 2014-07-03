@@ -88,5 +88,7 @@ public class Dummy {
   }
 
   public static void main(String[] args) throws Exception {
+    String text = "<br< d=\"\"></br<>".replaceAll("[<>/&]", "");
+    System.out.print(text);
   }
 }

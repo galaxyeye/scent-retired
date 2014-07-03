@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import org.apache.hadoop.util.StringUtils;
 import org.qiwur.scent.jsoup.parser.Parser;
 import org.qiwur.scent.jsoup.parser.Tag;
 import org.qiwur.scent.jsoup.select.Collector;
@@ -1016,23 +1017,27 @@ public class Element extends Node {
 
   public String richText() {
     final StringBuilder accum = new StringBuilder();
+
     new NodeTraversor(new InterruptiveNodeVisitor() {
       public void head(Node node, int depth) {
         if (node instanceof TextNode) {
           TextNode textNode = (TextNode) node;
-          appendNormalisedText(accum, textNode);
-        } else if (node instanceof Element) {
+
+          String text = textNode.text().replaceAll("[<>/&]", "");
+          accum.append(StringUtil.stripNonChar(text));
+        }
+        else if (node instanceof Element) {
           Element element = (Element) node;
-          if (accum.length() > 0 && (element.isBlock() || element.tag.getName().equals("br"))
-              && !TextNode.lastCharIsWhitespace(accum))
-        	  accum.append("<br />");
+          String text = StringUtil.stripNonChar(element.ownText());
+
+          if (!text.isEmpty() && element.isBlock()) {
+            accum.append("<br />");
+          }
         }
       }
     }).traverse(this);
 
-    // TODO : add text cache
-
-    return Entities.unescape(accum.toString()).replaceAll(StringUtil.NBSP, StringUtil.KeyboardWhitespace).trim();
+    return accum.toString();
   }
 
   /**
@@ -1392,6 +1397,6 @@ public class Element extends Node {
       }
     }
 
-    return String.format("%4d", sequence()) + "-" + nodeName() + id + cls;
+    return sequence() + "-" + nodeName() + id + cls;
   }
 }

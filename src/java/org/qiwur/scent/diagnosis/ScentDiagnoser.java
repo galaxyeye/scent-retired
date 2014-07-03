@@ -87,7 +87,7 @@ public class ScentDiagnoser {
   }
 
   private void write(String content) throws IOException {
-    File file = new File(FileUtil.getFileForPage(pageUri, baseDir, "diagnoser"));
+    File file = new File(FileUtil.getFileForPage(pageUri, baseDir, "diag"));
     FileUtils.write(file, content);
   }
 }

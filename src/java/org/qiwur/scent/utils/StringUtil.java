@@ -307,7 +307,7 @@ public final class StringUtil {
       }
     }
 
-    return builder.toString().replaceAll("&nbsp;", "");
+    return builder.toString();
   }
 
   public static String trimNonChar(String text) {
@@ -339,7 +339,7 @@ public final class StringUtil {
       }
     }
 
-    return text.substring(start, end).replaceAll("&nbsp;", "");
+    return text.substring(start, end);
   }
 
   public static String stripNonPrintableChar(String text) {

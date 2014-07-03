@@ -2,12 +2,10 @@ package org.qiwur.scent.data.extractor;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
@@ -22,22 +20,18 @@ import org.qiwur.scent.jsoup.block.BlockPattern;
 import org.qiwur.scent.jsoup.block.DomSegment;
 import org.qiwur.scent.jsoup.block.DomSegments;
 import org.qiwur.scent.jsoup.nodes.Document;
-import org.qiwur.scent.jsoup.nodes.Element;
 import org.qiwur.scent.jsoup.select.Elements;
 import org.qiwur.scent.learning.EntityAttributeLearner;
 import org.qiwur.scent.storage.WebPage.Field;
 import org.qiwur.scent.utils.NetUtil;
-import org.qiwur.scent.utils.StringUtil;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 public abstract class PageExtractor implements DataExtractor {
 
-  static final Logger logger = LogManager.getLogger(PageExtractor.class);
+  protected static final Logger logger = LogManager.getLogger(PageExtractor.class);
   static Map<BlockLabel, Class<? extends DomSegmentExtractor>> builtinExtractors = Maps.newHashMap();
-  static Map<BlockPattern, Class<? extends DomSegmentExtractor>> patternExtractors = Maps.newHashMap();
 
   static {
     // TODO : may make it configurable
@@ -45,11 +39,6 @@ public abstract class PageExtractor implements DataExtractor {
     builtinExtractors.put(BlockLabel.Title, TitleExtractor.class);
     builtinExtractors.put(BlockLabel.Gallery, GalleryExtractor.class);
     builtinExtractors.put(BlockLabel.SimilarEntity, SimilarEntityExtractor.class);
-
-    patternExtractors.put(BlockPattern.Links, LinksExtractor.class);
-    patternExtractors.put(BlockPattern.DenseLinks, LinksExtractor.class);
-    patternExtractors.put(BlockPattern.Images, ImagesExtractor.class);
-    patternExtractors.put(BlockPattern.LinkImages, LinkImagesExtractor.class);
   }
 
   private final PageEntity pageEntity = new PageEntity();
@@ -73,6 +62,12 @@ public abstract class PageExtractor implements DataExtractor {
 
     clearPreviousExtractors();
     installExtractors();
+
+    if (logger.isDebugEnabled()) {
+      for (DomSegmentExtractor extractor : extractors.values()) {
+        logger.debug("installed extractors : {}", extractor);
+      }
+    }
 
     extract();
     learn();
@@ -105,7 +100,7 @@ public abstract class PageExtractor implements DataExtractor {
 
   protected void installExtractor(BlockPattern pattern, Class<? extends DomSegmentExtractor> clazz) {
     for (DomSegment segment : doc.domSegments()) {
-      if (segment.veryLikely(pattern) && !extractors.containsKey(segment)) {
+      if (segment.veryLikely(pattern)) {
         addExtractor(getExtractor(segment, clazz, conf));
       }
     }
@@ -206,12 +201,7 @@ public abstract class PageExtractor implements DataExtractor {
       installExtractor(entry.getKey(), entry.getValue());
     }
 
-    // 3. if no extractors, try pattern based extractors
-    for (Entry<BlockPattern, Class<? extends DomSegmentExtractor>> entry : patternExtractors.entrySet()) {
-      installExtractor(entry.getKey(), entry.getValue());
-    }
-
-    // 4. if no extractors, use common extractor
+    // 3. if no extractors, use common extractor
     for (DomSegment segment : doc.domSegments()) {
       if (!extractors.containsKey(segment)) {
         BlockLabel label = segment.primaryLabel();

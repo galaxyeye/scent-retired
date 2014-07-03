@@ -185,7 +185,8 @@ public class DomSegmentsBuilder {
   private void rebuildSegmentTree() {
     DomSegments removal = new DomSegments();
     for (DomSegment segment : doc.domSegments()) {
-      if (segment.hasParent() && isNoDescendantSegment(segment.parent())) {
+      // keep segments has already labeled, because it's important
+      if (segment.labelTracker().empty() && segment.hasParent() && isNoDescendantSegment(segment.parent())) {
         if (logger.isDebugEnabled()) {
           logger.debug("remove illegal segment : {}, parent : {}", segment.name(), segment.parent().name());
         }

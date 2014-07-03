@@ -46,9 +46,4 @@ public final class ImagesExtractor extends DomSegmentExtractor {
 
     return gallery.toString();
   }
-
-  @Override
-  public String toString() {
-    return formatImages();
-  }
 }

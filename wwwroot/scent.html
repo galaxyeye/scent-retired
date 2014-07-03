@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>product</title>
+<title>商品详情抽取系统 - v0.8</title>
 <style type="text/css">
 body,input,button,select,textarea {
 	color: #090909; font-family: Arial; font-size: 12px;
@@ -50,16 +50,16 @@ fieldset { border:none; }
 
 <body class="scent">
 	<div class="extraction">
-        <h1>Scent网页抽取系统 version 0.8</h1>
+        <h1>商品详情抽取系统 - v0.8</h1>
 		<form target="_blank" action="/scent/extract" method="get">
 		  <fieldset>
             <input type="text" name="target" value="输入商品详情页URL" onfocus="this.value=''" onblur="if (this.value == '') this.value='输入商品详情页URL'" />
             <input type="submit" value="立即抽取" />
 		  </fieldset>
           <fieldset>
-            <input type="radio" name="format" value="" checked="checked" />显示简洁页面
-            <input type="radio" name="format" value="all" />显示详情
-            <input type="radio" name="format" value="diagnosis" />显示诊断信息
+            <input type="radio" name="format" value="html" checked="checked" />简洁结果
+            <input type="radio" name="format" value="all" />详细结果
+            <input type="radio" name="format" value="diagnosis" />诊断信息
           </fieldset>
 		</form>
         <div>由于需要模拟人类行为访问目标网页，因此加载过程会较慢，请耐心等待。</div>

@@ -50,9 +50,4 @@ public final class LinkImagesExtractor extends DomSegmentExtractor {
 
     return sb.toString();
   }
-
-  @Override
-  public String toString() {
-    return formatLinks();
-  }
 }

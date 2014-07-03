@@ -82,7 +82,7 @@ public class BlockRule implements Comparable<BlockRule> {
       score += s;
 
       if (s <= -100) {
-        ele.addAttr("data-break-rule", label + ":" + rule.name(), ",");
+        ele.addAttr("data-break-rule", label + ":" + rule.name(), ", ");
         break;
       }
     }

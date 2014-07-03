@@ -40,7 +40,7 @@ public class DiagnosisFormatter implements Configurable {
     table.append("<caption>" + caption + "</caption>");
 
     if (!headers.isEmpty()) {
-    String th = "<tr>";
+      String th = "<tr>";
       for (String header : headers) {
         th += String.format("<th>%s</th>", header);
       }

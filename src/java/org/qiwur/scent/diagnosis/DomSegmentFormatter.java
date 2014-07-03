@@ -16,33 +16,38 @@ public class DomSegmentFormatter extends DiagnosisFormatter {
     super(conf);
 
     this.doc = doc;
-    buildHeader("Segment", "Parent", "Patterns", "Labels", "Blocking", "Detail");
   }
 
   public void process() {
     for (DomSegment segment : doc.domSegments()) {
-      String indicators = "";
-      DecimalFormat df = new DecimalFormat("#.0");
-      for (Indicator indicator : segment.block().indicators()) {
-        if (indicators != "") indicators += ",";
-        indicators += String.format("%s:%s", indicator.getKey(), df.format(indicator.getValue()));
-      }
-
-      String detail = String.format(
-          "<div>Breaked Rules<p>%s</p></div>" + 
-          "<div>Indicators<p>%s</p></div>" + 
-          "<div>Text<p>%s</p></div>",
-          segment.block().attr("data-break-rule"),
-          indicators,
-          StringUtils.substring(segment.block().richText(), 0, 800)
-      );
-
-      buildRow(segment.name(), 
-          segment.hasParent() ? segment.parent().name() : "",
-          segment.patternTracker().toString(),
-          segment.labelTracker().toString(),
-          segment.block().attr("data-blocking-reason"),
-          detail);
+      buildRow(segment.name(), buildNestedTable(segment));
     }
+  }
+
+  private String buildNestedTable(DomSegment segment) {
+    String indicators = "";
+    DecimalFormat df = new DecimalFormat("#.0");
+    for (Indicator indicator : segment.block().indicators()) {
+      if (indicators != "") indicators += ", ";
+      indicators += String.format("%s:%s", indicator.getKey(), df.format(indicator.getValue()));
+    }
+
+    String row1 = "<tr><th>Parent Segment</th><th>Patterns</th><th>Labels</th><th class='last'>Blocking Reason</th></tr>";
+
+    String row2 = String.format(
+        "<tr><td>%s</td><td>%s</td><td>%s</td><td class='last'>%s</td></tr>",
+        segment.hasParent() ? segment.parent().name() : "",
+        segment.patternTracker().toString(),
+        segment.labelTracker().toString(),
+        segment.block().attr("data-blocking-reason")
+    );
+
+    String row3 = String.format("<tr><td colspan='4' class='last'>%s</td></tr>", indicators);
+
+    String row4 = String.format("<tr><td colspan='4' class='last'>%s</td></tr>", segment.block().attr("data-break-rule"));
+
+    String row5 = String.format("<tr><td colspan='4' class='last'>%s</td></tr>", StringUtils.substring(segment.block().richText(), 0, 800));
+
+    return "<table class='nested'>" + row1 + row2 + row3 + row4 + row5 + "</table>";
   }
 }

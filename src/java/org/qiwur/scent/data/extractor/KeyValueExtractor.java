@@ -54,8 +54,6 @@ public class KeyValueExtractor {
 	public void extractTable(Element table) {
 		if (root == null) return;
 
-		if (table.tagName() != "table") return;
-
 		Elements trs = table.getElementsByTag("tr");
 
 		for (Element tr : trs) {
@@ -68,8 +66,6 @@ public class KeyValueExtractor {
 
 	public void extractDl(Element dl) {
 		if (root == null) return;
-
-		if (!dl.tagName().equals("dl")) return;
 
 		Elements elemens = dl.children();
 

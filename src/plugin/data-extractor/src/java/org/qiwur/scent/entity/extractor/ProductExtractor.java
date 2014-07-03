@@ -11,6 +11,6 @@ public class ProductExtractor extends PageExtractor {
   @Override
   protected void installUserExtractors() {
     installExtractor(BlockLabel.fromString("ProductDetail"), ProductDetailExtractor.class);
-    installExtractor(BlockLabel.fromString("ProductShow"), ProductShowExtractor.class);
+    installExtractor(BlockLabel.TitleContainer, TitleContainerExtractor.class);
   }
 }

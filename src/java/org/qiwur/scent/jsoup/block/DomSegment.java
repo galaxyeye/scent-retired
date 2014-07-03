@@ -393,6 +393,11 @@ public class DomSegment implements Comparable<DomSegment> {
   }
 
   @Override
+  public int hashCode() {
+    return block.hashCode();
+  }
+  
+  @Override
   public boolean equals(Object o) {
     if (!(o instanceof DomSegment)) return false;
 
@@ -401,7 +406,6 @@ public class DomSegment implements Comparable<DomSegment> {
 
   @Override
   public int compareTo(DomSegment o) {
-    return root.compareTo(o.root);
+    return block.compareTo(o.block);
   }
-
 }

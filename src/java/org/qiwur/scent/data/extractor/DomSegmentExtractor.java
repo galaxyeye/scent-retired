@@ -1,6 +1,7 @@
 package org.qiwur.scent.data.extractor;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
@@ -13,6 +14,7 @@ import org.qiwur.scent.jsoup.block.DomSegment;
 import org.qiwur.scent.storage.WebPage.Field;
 import org.qiwur.scent.utils.StringUtil;
 
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
 public class DomSegmentExtractor extends KeyValueExtractor implements DataExtractor {
@@ -23,6 +25,15 @@ public class DomSegmentExtractor extends KeyValueExtractor implements DataExtrac
   private final DomSegment segment;
   private final PageEntity pageEntity;
   private final String displayLabel;
+
+  static Map<BlockPattern, Class<? extends DomSegmentExtractor>> patternExtractors = Maps.newHashMap();
+
+  static {
+    patternExtractors.put(BlockPattern.Links, LinksExtractor.class);
+    patternExtractors.put(BlockPattern.DenseLinks, LinksExtractor.class);
+    patternExtractors.put(BlockPattern.Images, ImagesExtractor.class);
+    patternExtractors.put(BlockPattern.LinkImages, LinkImagesExtractor.class);    
+  }
 
   public DomSegmentExtractor(DomSegment segment, PageEntity pageEntity, String displayLabel) {
     super(segment.block());
@@ -46,22 +57,28 @@ public class DomSegmentExtractor extends KeyValueExtractor implements DataExtrac
   @Override
   public void process() {
     if (segment.veryLikely(BlockPattern.II)) {
+      // logger.debug("extract II pattern");
       extractIIPattern(element(), I_I_PATTERN_SEPERATORS);
     }
 
     if (segment.veryLikely(BlockPattern.N2)) {
+      // logger.debug("extract N2 pattern");
       extractN2Pattern(element(), 4, "div", "p", "ol", "ul");
     }
 
     if (segment.veryLikely(BlockPattern.Table)) {
+      // logger.debug("extract Table");
       extractTable(element());
     }
 
     if (segment.veryLikely(BlockPattern.Dl)) {
+      // logger.debug("extract Dl");
       extractDl(element());
     }
 
     Multimap<String, String> attrs = getAttributes();
+    // logger.debug("there are {} attributes", attrs.size());
+
     for (Entry<String, String> entry : attrs.entries()) {
       pageEntity.put(entry.getKey(), entry.getValue(), displayLabel);
     }
@@ -111,7 +128,7 @@ public class DomSegmentExtractor extends KeyValueExtractor implements DataExtrac
 
   @Override
   public String toString() {
-    return "extractor_" + displayLabel + "_" + segment.block().prettyName();
+    return getClass().getSimpleName() + "[" + displayLabel + "][" + segment.name() + "]";
   }
 
 	@Override

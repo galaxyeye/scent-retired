@@ -48,9 +48,4 @@ public final class SimilarEntityExtractor extends DomSegmentExtractor {
 
     return sb.toString();
   }
-
-  @Override
-  public String toString() {
-    return formatLinks();
-  }
 }

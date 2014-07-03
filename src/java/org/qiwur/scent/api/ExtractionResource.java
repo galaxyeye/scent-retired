@@ -66,6 +66,7 @@ public class ExtractionResource extends ServerResource {
     }
 
     long time = System.currentTimeMillis();
+    // TODO : thread safe?
     PageExtractor extractorImpl = extractorFactory.create("product", doc);
     PageEntity pageEntity = extractor.extract(extractorImpl);
 
@@ -95,7 +96,7 @@ public class ExtractionResource extends ServerResource {
     }
     catch (IOException e) {
       return "404 not found";
-    }    
+    }
   }
 
   private String buildText(PageEntity pageEntity) {
