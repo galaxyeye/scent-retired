@@ -57,22 +57,22 @@ public class DomSegmentExtractor extends KeyValueExtractor implements DataExtrac
   @Override
   public void process() {
     if (segment.veryLikely(BlockPattern.II)) {
-      // logger.debug("extract II pattern");
+      logger.debug("extract II pattern for {}", segment.name());
       extractIIPattern(element(), I_I_PATTERN_SEPERATORS);
     }
 
     if (segment.veryLikely(BlockPattern.N2)) {
-      // logger.debug("extract N2 pattern");
+      logger.debug("extract N2 pattern for {}", segment.name());
       extractN2Pattern(element(), 4, "div", "p", "ol", "ul");
     }
 
     if (segment.veryLikely(BlockPattern.Table)) {
-      // logger.debug("extract Table");
+      logger.debug("extract Table for {}", segment.name());
       extractTable(element());
     }
 
     if (segment.veryLikely(BlockPattern.Dl)) {
-      // logger.debug("extract Dl");
+      logger.debug("extract Dl for {}", segment.name());
       extractDl(element());
     }
 

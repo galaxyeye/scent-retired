@@ -136,6 +136,7 @@ public class BlockPattern implements Comparable<BlockPattern> {
   }
 
   public static boolean isII(Element ele) {
+    double _a = ele.indic(Indicator.A);
     double _img = ele.indic(Indicator.IMG);
     double _sep = ele.indic(Indicator.SEP);
     double _char_ave = ele.indic(Indicator.CHA);
@@ -149,7 +150,11 @@ public class BlockPattern implements Comparable<BlockPattern> {
       _sep -= countTime * 2;
     }
 
-    if (_sep < 3 || _img > 2 || _char_ave > 10 || _char_max > 50 || _txt_blk < 6) {
+    if (_sep > 10 && _txt_blk > 10 && _img < 3 && _a < 3) {
+      return true;
+    }
+
+    if (_sep < 3 || _img > 2 || _char_ave > 15 || _char_max > 50 || _txt_blk < 6) {
       return false;
     }
 

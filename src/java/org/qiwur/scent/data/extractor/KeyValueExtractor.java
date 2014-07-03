@@ -3,6 +3,7 @@ package org.qiwur.scent.data.extractor;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -119,9 +120,13 @@ public class KeyValueExtractor {
 		if (root == null) return;
 
 		for (Element e : root.children()) {
+		  logger.debug("II : {}, {}", e.prettyName(), e.text());
+
 			if (e.indic(Indicator.SEP) > 0) {
 				String text = e.text();
-				String[] parts = text.split(sep);
+				String[] parts = StringUtils.split(text, sep);
+
+				logger.debug("parts : {}", Arrays.asList(parts));
 
 				if (parts.length == 2) {
 					tryCollectKeyValuePair(parts[0], parts[1]);
