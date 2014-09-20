@@ -4,37 +4,9 @@
 <!-- Put site-specific property overrides in this file. -->
 
 <configuration>
-
-    <property>
-        <name>scent.net.proxy.use.proxy.pool</name>
-        <value>true</value>
-    </property>
-    <property>
-        <name>scent.net.proxy.max.pool.size</name>
-        <value>15</value>
-    </property>
-
-    <!-- labels -->
-    <property>
-        <name>scent.classifier.block.labels</name>
-        <value>CategoryList,RelativeProduct,ShopIntro,ProductSpec,SimilarEntity,ProductDetail,Comment,DealHistory</value>
-        <description>Notice : do not split into lines</description>
-    </property>
-
-    <property>
-        <name>scent.classifier.block.inheritable.labels</name>
-        <value>Comment,DealHistory,CategoryList</value>
-        <description>Notice : do not split into lines</description>
-    </property>
-
-    <property>
-        <name>scent.extractor.bad.blocks</name>
-        <value>BadBlock,Areas,DenseLinks</value>
-    </property>
-
-    <property>
-        <name>scent.diagnose.classifier.block.labels</name>
-        <value>Gallery,CategoryList,Categories,TitleContainer,RelativeProduct,ProductSpec,SimilarEntity,ProductDetail,Comment,DealHistory,Areas,BadBlock</value>
-        <description>Notice : do not split into lines</description>
-    </property>
+  <property>
+    <name>scent.conf.import</name>
+    <value>scent-site-product.xml</value>
+    <description>import domain specified configurations</description>
+  </property>
 </configuration>

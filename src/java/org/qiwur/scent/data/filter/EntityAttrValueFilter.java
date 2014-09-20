@@ -17,23 +17,18 @@ public class EntityAttrValueFilter extends BadWordFilter {
 	private final PageEntity pageEntity;
 
 	public EntityAttrValueFilter(PageEntity pageEntity, Configuration conf) {
-	  super("conf/bad-attribute-value-words.txt", conf);
+	  super(conf.get("conf/bad-attribute-value-words.txt"), conf);
 		this.pageEntity = pageEntity;
 	}
 
 	public void process() {
 		List<String> DontFilterAttributeList = Arrays.asList(DontFilterAttributes);
 
-    String featureFile = getConf().get("scent.bad.attr.value.words.file");
-    AttrValueFeature valueFeature = FeatureManager.get(getConf(), AttrValueFeature.class, featureFile);
-
 		// 删除敏感词
 		for (EntityAttribute attribute : pageEntity.attributes()) {
 			if (DontFilterAttributeList.contains(attribute.name())) continue;
 
-			String value = valueFeature.preprocess(attribute.value());
-			value = StringUtil.trimNonChar(value);
-
+			String value = filter(attribute.value());
 			if (!value.isEmpty()) {
 				attribute.value(value);
 			}

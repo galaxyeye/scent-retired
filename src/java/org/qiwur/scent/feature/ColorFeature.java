@@ -13,7 +13,7 @@ public final class ColorFeature extends LinedFeature {
 
   static final Logger logger = LogManager.getLogger(ColorFeature.class);
 
-  public static final String KnownColorsFile = "conf/known-colors.txt";
+  public static final String KnownColorsFile = "conf/feature/known-colors.txt";
 
   public ColorFeature(Configuration conf, String[] featureFile) {
     super(conf, featureFile);

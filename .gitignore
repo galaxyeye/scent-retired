@@ -3,3 +3,5 @@
 /bin
 /build
 /runtime
+/.settings/
+/xsimilarity.log

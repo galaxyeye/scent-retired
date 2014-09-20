@@ -45,11 +45,15 @@ public class BadWordFilter implements DataFilter {
   @Override
   public String filter(String text) {
     for (String line : feature.lines()) {
-      if (text.contains(line)) {
-        return "";
-      }
+      text = text.replace(line, "");
     }
 
     return text;
+  }
+
+  @Override
+  public String filterToNull(String text) {
+    String result = filter(text);
+    return result.isEmpty() ? null : result;
   }
 }

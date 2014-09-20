@@ -1,131 +1,139 @@
 <?xml version="1.0"?>
 <known-attributes>
-    <!-- 属性正规化 -->
-    <category name="产品信息">
-        <category name="基本信息">
-	        <attribute name="产品名称">
-	           <aliases>
-                   <alias>品名</alias>
-	               <alias>商品名</alias>
-                   <alias>产品名</alias>
-	           </aliases>
-	        </attribute>
-            <attribute name="产品分类">
-               <aliases>
-                   <alias>品类</alias>
-                   <alias>产品的分类</alias>
-                   <alias>商品分类</alias>
-                   <alias>商品的分类</alias>
-                   <alias>产品的类别</alias>
-                   <alias>商品类别</alias>
-                   <alias>商品的类别</alias>
-               </aliases>
-            </attribute>
-	        <attribute name="生产商">
-               <aliases>
-                   <alias>生产企业</alias>
-                   <alias>制造商</alias>
-                   <alias>制造企业</alias>
-               </aliases>
-	        </attribute>
-            <attribute name="产品型号">
-               <aliases>
-                   <alias>型号</alias>
-               </aliases>
-            </attribute>
-	        <attribute name="品牌">
-               <aliases>
-                   <alias>商品品牌</alias>
-               </aliases>
-	        </attribute>
-            <attribute name="上市时间"></attribute>
-	        <attribute name="颜色">
-	            <aliases>
-	                <alias>颜色分类</alias>
-                    <alias>选择颜色</alias>
-	            </aliases>
-	        </attribute>
-            <attribute name="版本">
-                <aliases>
-                    <alias>可选版本</alias>
-                    <alias>选择版本</alias>
-                    <alias>规格</alias>
-                    <alias>可选规格</alias>
-                    <alias>选择规格</alias>
-                    <alias>款式</alias>
-                    <alias>可选款式</alias>
-                    <alias>选择款式</alias>
-                </aliases>
-            </attribute>
-	        <attribute name="款式" pattern="[\\u4E00-\\u9FBF]{1,3}款">
-                <aliases>
-                    <alias>商品款式</alias>
-                    <alias>男款</alias>
-                    <alias>女款</alias>
-                </aliases>
-	        </attribute>
-            <attribute name="样式"></attribute>
-	        <attribute name="图片"></attribute>
-            <attribute name="参考价"></attribute>
-        </category>
-        <category name="规格参数">
-            <attribute name="屏幕尺寸"></attribute>
-            <!-- and more ... -->
-        </category>
+  <!-- 属性正规化 -->
+  <category name="TitleContainer" class="gr:ProductOrService">
+    <attribute name="gr:name">
+      <aliases>
+        <alias>产品名称</alias>
+        <alias>品名</alias>
+        <alias>商品名</alias>
+        <alias>产品名</alias>
+      </aliases>
+    </attribute>
+    <attribute name="gr:category">
+      <aliases>
+        <alias>品类</alias>
+        <alias>产品分类</alias>
+        <alias>产品的分类</alias>
+        <alias>商品分类</alias>
+        <alias>商品的分类</alias>
+        <alias>产品的类别</alias>
+        <alias>商品类别</alias>
+        <alias>商品的类别</alias>
+      </aliases>
+    </attribute>
+    <attribute name="gr:hasManufacturer">
+      <aliases>
+        <alias>生产商</alias>
+        <alias>生产企业</alias>
+        <alias>制造商</alias>
+        <alias>制造企业</alias>
+      </aliases>
+    </attribute>
+    <attribute name="产品型号">
+      <aliases>
+        <alias>型号</alias>
+      </aliases>
+    </attribute>
+    <attribute name="gr:hasBrand">
+      <aliases>
+        <alias>品牌</alias>
+        <alias>商品品牌</alias>
+        <alias>产品品牌</alias>
+      </aliases>
+    </attribute>
+    <attribute name="上市时间">
+      <aliases>
+        <alias>品牌</alias></aliases>
+      </attribute>
+    <attribute name="颜色">
+      <aliases>
+        <alias>颜色分类</alias>
+        <alias>选择颜色</alias>
+      </aliases>
+    </attribute>
+    <attribute name="版本">
+      <aliases>
+        <alias>可选版本</alias>
+        <alias>选择版本</alias>
+        <alias>规格</alias>
+        <alias>可选规格</alias>
+        <alias>选择规格</alias>
+        <alias>款式</alias>
+        <alias>可选款式</alias>
+        <alias>选择款式</alias>
+      </aliases>
+    </attribute>
+    <attribute name="款式" pattern="[\\u4E00-\\u9FBF]{1,3}款">
+      <aliases>
+        <alias>商品款式</alias>
+        <alias>男款</alias>
+        <alias>女款</alias>
+      </aliases>
+    </attribute>
+    <attribute name="样式"></attribute>
+    <attribute name="图片"></attribute>
+    <attribute name="参考价"></attribute>
+  </category>
+  <category name="规格参数">
+    <attribute name="屏幕尺寸"></attribute>
+    <!-- and more ... -->
+  </category>
+  <category name="交易信息">
+    <category name="网页信息">
+      <attribute name="网页链接"></attribute>
+      <attribute name="网页标题"></attribute>
+      <attribute name="网页关键词"></attribute>
+      <attribute name="网页摘要"></attribute>
     </category>
-    <category name="交易信息">
-	    <category name="网页信息">
-	        <attribute name="网页链接"></attribute>
-            <attribute name="网页标题"></attribute>
-	        <attribute name="网页关键词"></attribute>
-	        <attribute name="网页摘要"></attribute>
-	    </category>
-        <attribute name="交易平台域名"></attribute>
-        <attribute name="交易平台名称"></attribute>
-        <attribute name="店铺名"></attribute>
-        <attribute name="商品标题"></attribute>
-        <attribute name="价格" type="Quantity" pattern="[1-9](,{0,1}\d+){0,8}(\.\d{1,2})|[1-9](,{0,1}\d+){0,8}">
-            <aliases>
-                <alias>price</alias>
-                <alias>原价</alias>
-                <alias>市场价</alias>
-                <alias>京东价</alias>
-                <alias>当当价</alias>
-                <alias>易迅价</alias>
-                <alias>淘宝价</alias>
-                <alias>天猫价</alias>
-            </aliases>
-        </attribute>
-        <attribute name="销售价" type="Quantity" pattern="[1-9](,{0,1}\d+){0,8}(\.\d{1,2})|[1-9](,{0,1}\d+){0,8}">
-            <aliases>
-                <alias>折扣价</alias>
-                <alias>打折价</alias>
-                <alias>促销价</alias>
-            </aliases>
-        </attribute>
-        <attribute name="促销信息">
-            <!-- 京东促销信息：直降 已优惠￥89.00 加价购 满199.0元另加69.0元即可购买热销商品 -->
-        </attribute>
-        <attribute name="售后服务">
-            <aliases>
-                <alias>服务</alias>
-            </aliases>
-            <!-- 京东服务说明：由 京东 提供售后服务 -->
-        </attribute>
-        <attribute name="物流信息">
-            <!-- 由京东发货。货到付款，自提，免运费 -->
-        </attribute>
-        <attribute name="支付说明">
-            <!-- 降低重要性，一般购物通道都有各种方式的付款方法 -->
-            <!-- 支付方式说明：网上支付，货到付款 -->
-        </attribute>
-        <attribute name="商品详细介绍" type="Page">
-            <aliases>
-                <alias>商品详情</alias>
-            </aliases>
-            <!-- 这里有大量的图片，一般是由卖家编辑上去 -->
-            <!-- 合作伙伴需要对这里的html进行重新编辑 -->
-            <!-- 注意这里可能会导致版权的问题 -->
-        </attribute>
-    </category>
+    <attribute name="交易平台域名"></attribute>
+    <attribute name="交易平台名称"></attribute>
+    <attribute name="店铺名"></attribute>
+    <attribute name="商品标题"></attribute>
+    <attribute name="价格" type="Quantity" 
+      pattern="[1-9](,{0,1}\d+){0,8}(\.\d{1,2})|[1-9](,{0,1}\d+){0,8}">
+      <aliases>
+        <alias>price</alias>
+        <alias>原价</alias>
+        <alias>市场价</alias>
+        <alias>京东价</alias>
+        <alias>当当价</alias>
+        <alias>易迅价</alias>
+        <alias>淘宝价</alias>
+        <alias>天猫价</alias>
+      </aliases>
+    </attribute>
+    <attribute name="销售价" type="Quantity"
+      pattern="[1-9](,{0,1}\d+){0,8}(\.\d{1,2})|[1-9](,{0,1}\d+){0,8}">
+      <aliases>
+        <alias>折扣价</alias>
+        <alias>打折价</alias>
+        <alias>促销价</alias>
+      </aliases>
+    </attribute>
+    <attribute name="促销信息">
+      <!-- 京东促销信息：直降 已优惠￥89.00 加价购 满199.0元另加69.0元即可购买热销商品 -->
+    </attribute>
+    <attribute name="售后服务">
+      <aliases>
+        <alias>服务</alias>
+      </aliases>
+      <!-- 京东服务说明：由 京东 提供售后服务 -->
+    </attribute>
+    <attribute name="物流信息">
+      <!-- 由京东发货。货到付款，自提，免运费 -->
+    </attribute>
+    <attribute name="支付说明">
+      <!-- 降低重要性，一般购物通道都有各种方式的付款方法 -->
+      <!-- 支付方式说明：网上支付，货到付款 -->
+    </attribute>
+    <attribute name="商品详细介绍" type="Page">
+      <aliases>
+        <alias>商品详情</alias>
+      </aliases>
+      <!-- 这里有大量的图片，一般是由卖家编辑上去 -->
+      <!-- 合作伙伴需要对这里的html进行重新编辑 -->
+      <!-- 注意这里可能会导致版权的问题 -->
+    </attribute>
+  </category>
 </known-attributes>

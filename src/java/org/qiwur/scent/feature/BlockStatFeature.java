@@ -32,7 +32,7 @@ public final class BlockStatFeature implements WebFeature {
 
   protected static final Logger logger = LogManager.getLogger(BlockStatFeature.class);
 
-  public static final String defaultConfigFile = "conf/block-stat-feature-default.xml";
+  public static final String defaultConfigFile = "conf/feature/default/block-stat-feature.xml";
 
   private Configuration conf;
 
@@ -166,6 +166,7 @@ public final class BlockStatFeature implements WebFeature {
     String domain = block.attr("domain");
     String allowedPatterns = block.attr("patterns");
     String disallowedPatterns = block.attr("-patterns");
+
     BlockRule blockRule = new BlockRule(id, label, leafOnly.equals("true"), domain,
         parsePatterns(allowedPatterns), parsePatterns(disallowedPatterns));
 

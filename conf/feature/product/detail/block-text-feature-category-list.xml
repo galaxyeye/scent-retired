@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <block-features>
-    <import file="block-text-feature-categories.xml" />
+	<import file="block-text-feature-categories.xml" />
 
 	<block label="CategoryList">
 		<phrase name="全部商品分类" score="8"></phrase>
-        <include-block label="ProductCategories" />
+		<include-block label="ProductCategories" />
 	</block>
 </block-features>

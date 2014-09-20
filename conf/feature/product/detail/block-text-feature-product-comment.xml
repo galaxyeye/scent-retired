@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<block-features>
+	<block label="Comment" leaf-only="true">
+		<phrase name="comment" score="2" />
+		<phrase name="comment list" score="4" />
+		<phrase name="comments list" score="4" />
+
+		<phrase name="商品评论" score="4" />
+		<phrase name="商品评价" score="4" />
+		<phrase name="全部评价" score="4" />
+		<phrase name="评分" score="2" />
+		<phrase name="好评" score="2" />
+		<phrase name="心得" score="2" />
+		<phrase name="晒单" score="2" />
+		<phrase name="购买日期" score="2" />
+		<phrase name="会员" score="2" />
+
+		<phrase name="踩" score="2" />
+		<phrase name="顶" score="2" />
+		<phrase name="赞" score="2" />
+		<phrase name="满意" score="2" />
+		<phrase name="有用" score="2" />
+		<phrase name="内容" score="2" />
+		<phrase name="回复" score="2" />
+
+		<phrase name="评价" score="-1" />
+		<phrase name="成交时间" score="-1" />
+	</block>
+</block-features>

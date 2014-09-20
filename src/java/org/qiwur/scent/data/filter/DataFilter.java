@@ -8,4 +8,6 @@ public interface DataFilter {
   static final Logger logger = LogManager.getLogger(DataFilter.class);
 
 	public String filter(String text);
+
+  public String filterToNull(String text);
 }

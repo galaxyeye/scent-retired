@@ -369,7 +369,6 @@
 		<phrase name="温控范围" score="1" />
 		<phrase name="温热功能" score="1" />
 		<phrase name="湿度显示" score="1" />
-		<phrase name="滋养" score="1" />
 		<phrase name="滚筒洗衣机" score="1" />
 		<phrase name="滚筒脱水转速" score="1" />
 		<phrase name="滤镜口径" score="1" />
@@ -380,7 +379,6 @@
 		<phrase name="灶具款式" score="1" />
 		<phrase name="灶具面板材质" score="1" />
 		<phrase name="灶眼数量" score="1" />
-		<phrase name="炊大皇七件套" score="1" />
 		<phrase name="点火方式" score="1" />
 
 		<phrase name="烙盘设计" score="1" />
@@ -415,13 +413,10 @@
 		<phrase name="熄保装置" score="1" />
 		<phrase name="熄火保护" score="1" />
 		<phrase name="熔断器" score="1" />
-		<phrase name="熟蛋" score="1" />
 		<phrase name="熨烫机照片" score="1" />
 		<phrase name="燃气灶气源" score="1" />
 		<phrase name="燃烧器数量" score="1" />
 		<phrase name="父母锁" score="1" />
-		<phrase name="牛奶" score="1" />
-		<phrase name="牛肉" score="1" />
 
 		<phrase name="物理状态" score="1" />
 		<phrase name="物联网" score="1" />

@@ -1,6 +1,5 @@
 package org.qiwur.scent.app;
 
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,9 +11,14 @@ import org.qiwur.scent.wiki.Page;
 
 public class WikiPropertyBuilder {
 
-  private static Set<Page> pages = new HashSet<Page>();
+  private Configuration conf;
+  private Set<Page> pages = new HashSet<Page>();
 
-  private static void buildPropertyPage(String name) {
+  public WikiPropertyBuilder(Configuration conf) {
+    this.conf = conf;
+  }
+
+  private void buildPropertyPage(String name) {
     String[] parts = StringUtils.split(name, '/');
 
     String type = "String";
@@ -23,17 +27,12 @@ public class WikiPropertyBuilder {
     String summery = "创建属性：" + property;
     String text = "这是类型为[[Has type::" + type + "]]的一个属性\n";
 
-    pages.add(new Page(title, text, summery));
+    Page page = new Page(title, text, summery);
+    page.setConf(conf);
+    pages.add(page);
   }
 
-  public static void main(String[] args) throws IOException {
-    Configuration conf = ScentConfiguration.create();
-    EntityAttributeLearner learner = EntityAttributeLearner.create(conf);
-
-    for (String fullName : learner.words()) {
-      buildPropertyPage(fullName);
-    }
-
+  public void uploadAll() {
     int counter = 0;
     for (Page page : pages) {
       System.out.println("upload the " + counter + "th page" + " : " + page.title());
@@ -41,5 +40,17 @@ public class WikiPropertyBuilder {
 
       page.upload();
     }
+  }
+
+  public static void main(String[] args) {
+    Configuration conf = ScentConfiguration.create();
+    EntityAttributeLearner learner = new EntityAttributeLearner(conf);
+    WikiPropertyBuilder builder = new WikiPropertyBuilder(conf);
+
+    for (String fullName : learner.words()) {
+      builder.buildPropertyPage(fullName);
+    }
+
+    builder.uploadAll();
   }
 }

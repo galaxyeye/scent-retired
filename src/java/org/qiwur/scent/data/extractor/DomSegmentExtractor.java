@@ -18,7 +18,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
 public class DomSegmentExtractor extends KeyValueExtractor implements DataExtractor {
- 
+
   public static final String DefaultLabel = BlockLabel.UnknownBlock.text();
 
   private Configuration conf;
@@ -32,7 +32,7 @@ public class DomSegmentExtractor extends KeyValueExtractor implements DataExtrac
     patternExtractors.put(BlockPattern.Links, LinksExtractor.class);
     patternExtractors.put(BlockPattern.DenseLinks, LinksExtractor.class);
     patternExtractors.put(BlockPattern.Images, ImagesExtractor.class);
-    patternExtractors.put(BlockPattern.LinkImages, LinkImagesExtractor.class);    
+    patternExtractors.put(BlockPattern.LinkImages, LinkImagesExtractor.class);
   }
 
   public DomSegmentExtractor(DomSegment segment, PageEntity pageEntity, String displayLabel) {

@@ -47,7 +47,10 @@ public class ProductWikiBuilder extends ProductBuilder {
 	public Page buildProductPage() {
 		Page page = new Page();
 
-		if (pageEntityTitle == null) return null;
+		if (pageEntityTitle == null) {
+		  // logger.debug("invalid page title");
+		  return null;
+		}
 
 		try {
 			MiniTemplator template = new MiniTemplator(ProductTemplateFileName);

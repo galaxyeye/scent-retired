@@ -128,6 +128,10 @@ public class ScentConfiguration {
     conf.addResource("scent-default.xml");
     conf.addResource("scent-site.xml");
 
+    for (String resource : conf.getStrings("scent.conf.import")) {
+      conf.addResource(resource);
+    }
+
     return conf;
   }
 

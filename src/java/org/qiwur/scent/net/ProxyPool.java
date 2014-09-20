@@ -139,7 +139,7 @@ public class ProxyPool {
   public synchronized void reviewRetired() throws InterruptedException {
     long time = System.currentTimeMillis();
     if (time - lastReviewRetiredTime < reviewRetiredPeriod) {
-      // logger.debug("review retired proxy entries later, skip...");
+      logger.debug("review retired proxy entries later, skip...");
 
       return;
     }

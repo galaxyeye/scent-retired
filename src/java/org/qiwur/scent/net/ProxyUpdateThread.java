@@ -21,7 +21,7 @@ public class ProxyUpdateThread extends Thread {
   public ProxyUpdateThread(Configuration conf) {
     this.conf = conf;
     this.proxyPool = new ProxyPoolFactory(this.conf).getProxyPool();
-    this.updatePeriod = conf.getInt("http.proxy.pool.update.period", 10 * 1000);
+    this.updatePeriod = conf.getInt("http.proxy.pool.update.period", 20 * 1000);
   }
 
   @Override

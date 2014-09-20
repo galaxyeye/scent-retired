@@ -113,7 +113,7 @@ public abstract class PageExtractor implements DataExtractor {
   }
 
   protected void learn() {
-    EntityAttributeLearner attrLearner = EntityAttributeLearner.create(conf);
+    EntityAttributeLearner attrLearner = new EntityAttributeLearner(conf);
     attrLearner.learn(pageEntity.attributes());
   }
 

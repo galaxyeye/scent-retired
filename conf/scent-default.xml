@@ -31,19 +31,19 @@
 		<name>scent.net.proxy.port</name>
 		<value>19080</value>
 	</property>
-    <property>
-        <name>scent.web.cache.file.dir</name>
-        <value>/tmp/web</value>
-    </property>
-    <property>
-        <name>scent.web.cache.file.expires</name>
-        <value>108000</value>
-        <description>
-        eg : 
-        0 = no cache
-        30min = 108000
-        </description>
-    </property>
+  <property>
+      <name>scent.web.cache.file.dir</name>
+      <value>/tmp/web</value>
+  </property>
+  <property>
+      <name>scent.web.cache.file.expires</name>
+      <value>108000</value>
+      <description>
+      eg : 
+      0 = no cache
+      30min = 108000
+      </description>
+  </property>
 	<property>
 		<name>scent.net.generate.fetch.list</name>
 		<value>true</value>
@@ -53,10 +53,10 @@
 		<name>scent.server.port</name>
 		<value>8282</value>
 	</property>
-    <property>
-        <name>scent.server.wwwroot</name>
-        <value>wwwroot</value>
-    </property>
+  <property>
+      <name>scent.server.wwwroot</name>
+      <value>wwwroot</value>
+  </property>
 
 	<property>
 		<name>scent.page.length.min</name>
@@ -68,11 +68,11 @@
 	</property>
 
 	<!-- code statistics analysis -->
-    <property>
-        <name>scent.stat.indicator.separators</name>
-        <value>:,：,></value>
-        <description>affect -sep indicator</description>
-    </property>
+  <property>
+      <name>scent.stat.indicator.separators</name>
+      <value>:,：,></value>
+      <description>affect -sep indicator</description>
+  </property>
 	<property>
 		<name>scent.stat.segment.item.min</name>
 		<value>3</value>
@@ -94,50 +94,61 @@
 		<value>3</value>
 	</property>
 
-    <!-- learning -->
-    <property>
-        <name>scent.sgd.train.base.dir</name>
-        <value>output/learning</value>
-    </property>
+  <!-- learning -->
+  <property>
+    <name>scent.sgd.train.base.dir</name>
+    <value>output/learning</value>
+  </property>
 
-	<!-- files -->
-	<property>
-		<name>scent.bad.attribute.name.file</name>
-		<value>conf/bad-attribute-names.txt</value>
-	</property>
-	<property>
-		<name>scent.bad.attr.value.words.file</name>
-		<value>conf/bad-attribute-value-words.txt</value>
-	</property>
-	<property>
-		<name>scent.bad.page.keywords.file</name>
-		<value>conf/bad-page-keywords.txt</value>
-	</property>
-	<property>
-		<name>scent.bad.category.words.file</name>
-		<value>conf/bad-category-words.txt</value>
-	</property>
-    <property>
-        <name>scent.bad.html.title.feature.file</name>
-        <value>conf/bad-html-title-words.txt</value>
-    </property>
-	<property>
-		<name>scent.bad.entity.name.words.file</name>
-		<value>conf/bad-product-name-words.txt</value>
-	</property>
+  <!-- bad word filters -->
+  <property>
+    <name>scent.bad.attr.name.file</name>
+    <value>conf/default/bad-attr-name.txt</value>
+    <description>bad attribute name</description>
+  </property>
+  <property>
+    <name>scent.bad.attr.value.words.file</name>
+    <value>conf/default/bad-attr-value.txt</value>
+    <description>bad words in attribute value</description>
+  </property>
+  <property>
+    <name>scent.bad.category.words.file</name>
+    <value>conf/default/bad-category-words.txt</value>
+    <description>bad words in category navigation</description>
+  </property>
+  <property>
+    <name>scent.bad.page.keywords.file</name>
+    <value></value>
+    <description>bad words in html meta keyword tag</description>
+  </property>
+  <property>
+    <name>scent.bad.html.title.words.file</name>
+    <value></value>
+    <description>bad words in html title</description>
+  </property>
+  <property>
+    <name>scent.bad.entity.name.words.file</name>
+    <value></value>
+    <description>bad words in entity name</description>
+  </property>
 
-	<property>
-		<name>scent.block.title.feature.file</name>
-		<value>conf/block-title-feature-site.xml</value>
-	</property>
-	<property>
-		<name>scent.block.text.feature.file</name>
-		<value>conf/block-text-feature-site.xml</value>
-	</property>
-	<property>
-		<name>scent.block.stat.feature.file</name>
-		<value>conf/block-stat-feature-site.xml</value>
-	</property>
+  <!-- block features -->
+  <property>
+    <name>scent.block.title.feature.file</name>
+    <value></value>
+    <description>feature file for block title</description>
+  </property>
+  <property>
+    <name>scent.block.text.feature.file</name>
+    <value></value>
+    <description>feature file for block text</description>
+  </property>
+  <property>
+    <name>scent.block.stat.feature.file</name>
+    <value></value>
+    <description>feature file for code statistics</description>
+  </property>
+
 
 	<!-- classifier result weight -->
 	<property>
@@ -201,6 +212,19 @@
 	</property>
 
 	<!-- wiki -->
+  <property>
+    <name>scent.wiki.domain</name>
+    <value>localhost</value>
+  </property>
+  <property>
+    <name>scent.wiki.username</name>
+    <value>galaxyeyebot</value>
+  </property>
+  <property>
+    <name>scent.wiki.password</name>
+    <value></value>
+  </property>
+
 	<property>
 		<name>scent.wiki.save</name>
 		<value>false</value>

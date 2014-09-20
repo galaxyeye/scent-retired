@@ -39,7 +39,7 @@ public final class TitleLocator extends BlockLocator {
     super(doc, BlockLabel.Title);
     this.conf = conf;
 
-    htmlTitleFeature = FeatureManager.get(conf, HtmlTitleFeature.class, conf.get("scent.bad.html.title.feature.file"));
+    htmlTitleFeature = FeatureManager.get(conf, HtmlTitleFeature.class, conf.get("scent.bad.html.title.words.file"));
 
     potentialTitles = htmlTitleFeature.getPotentialTitles(doc.title());
 
@@ -78,7 +78,7 @@ public final class TitleLocator extends BlockLocator {
     Element ele = doc.body().prependElement("h1 class='scent-created'");
     ele.sequence(doc.body().sequence() + 200); // TODO : use a machine learned sequence
 
-    String featureFile = conf.get("scent.bad.html.title.feature.file");
+    String featureFile = conf.get("scent.bad.html.title.words.file");
     HtmlTitleFeature titleFeature = FeatureManager.get(conf, HtmlTitleFeature.class, featureFile);
     ele.html(titleFeature.strip(doc.title()));
 

@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.apache.commons.collections.ComparatorUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.qiwur.scent.utils.StringUtil;
 
 import com.google.common.collect.Multimap;
@@ -94,6 +95,30 @@ public class PageEntity {
 
     for (EntityAttribute attr : attributes) {
       if (attr.name().equals(name) && attr.value().equals(value) && attr.hasCategory(category)) {
+        results.add(attr);
+      }
+    }
+
+    return results;
+  }
+
+  public Set<EntityAttribute> getByAnyName(String... names) {
+    Set<EntityAttribute> results = Sets.newHashSet();
+
+    for (EntityAttribute attr : attributes) {
+      if (ArrayUtils.contains(names, attr.name())) {
+        results.add(attr);
+      }
+    }
+
+    return results;
+  }
+
+  public Set<EntityAttribute> getByAnyName(String category, String... names) {
+    Set<EntityAttribute> results = Sets.newHashSet();
+
+    for (EntityAttribute attr : attributes) {
+      if (attr.hasCategory(category) && ArrayUtils.contains(names, attr.name())) {
         results.add(attr);
       }
     }
@@ -204,6 +229,10 @@ public class PageEntity {
 
   public boolean remove(EntityAttribute attribute) {
     return attributes.remove(attribute);
+  }
+
+  public boolean removeAll(Collection<EntityAttribute> attrs) {
+    return attributes.removeAll(attrs);
   }
 
   public boolean removeAll(String name) {

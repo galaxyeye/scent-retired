@@ -1,6 +1,6 @@
-<?xml version="1.0"?>
+<?xml version="1.0" ?>
 <block-features>
-    <block label="ProductCategories">
+	<block label="ProductCategories">
 		<phrase name="缤购美妆" score="1" />
 		<phrase name="玩具" score="1" />
 		<phrase name="母婴" score="1" />

@@ -56,7 +56,7 @@ public class EntityAttributeBuilder {
       category = new EntityCategory(categoryName);
     }
 
-    EntityAttribute attr = new EntityAttribute(alias, value);    
+    EntityAttribute attr = new EntityAttribute(alias, value);
     attr.categorize(category);
 
     return attr;

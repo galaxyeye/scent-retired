@@ -1,10 +1,12 @@
 package org.qiwur.scent.wiki;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.hadoop.conf.Configurable;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Page {
+public class Page implements Configurable {
 
 	public static final Logger logger = LogManager.getLogger(Page.class);
 
@@ -12,9 +14,10 @@ public class Page {
 	public static final String TradePage = "TradePage";
 	public static final String DetailPage = "DetailPage";
 
-	String title = null;
-	String text = null;
-	String summery = null;
+  private Configuration conf;
+  private String title = null;
+  private String text = null;
+  private String summery = null;
 
 	public Page() {
 	}
@@ -36,8 +39,7 @@ public class Page {
 				if (summery == null)
 					summery = title;
 
-				Qiwur q = Qiwur.create();
-				q.login();
+				Qiwur q = Qiwur.create(conf);
 				q.edit(normarizeTitle(title), text, summery);
 			} else {
 				logger.info("invalid page title or text");
@@ -86,6 +88,16 @@ public class Page {
 	}
 
 	private String normarizeTitle(String title) {
-		return title.replaceAll("-", "_");
+		return title;
 	}
+
+  @Override
+  public Configuration getConf() {
+    return conf;
+  }
+
+  @Override
+  public void setConf(Configuration conf) {
+    this.conf = conf;
+  }
 }

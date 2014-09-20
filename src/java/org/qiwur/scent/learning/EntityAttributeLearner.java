@@ -14,22 +14,9 @@ public class EntityAttributeLearner implements Learner {
   private final Configuration conf;
   private final WordsLearner wordsLearner;
 
-  private EntityAttributeLearner(Configuration conf) {
+  public EntityAttributeLearner(Configuration conf) {
     this.conf = conf;
     this.wordsLearner = new WordsLearnerFactory(this.conf).getWordsLearner();
-  }
-
-  public static EntityAttributeLearner create(Configuration conf) {
-    ObjectCache objectCache = ObjectCache.get(conf);
-    final String cacheId = EntityAttributeLearner.class.getName();
-
-    if (objectCache.getObject(cacheId) != null) {
-      return (EntityAttributeLearner) objectCache.getObject(cacheId);
-    } else {
-      EntityAttributeLearner learner = new EntityAttributeLearner(conf);
-      objectCache.setObject(cacheId, learner);
-      return learner;
-    }
   }
 
   @Override

@@ -109,7 +109,6 @@ public class KeyValueExtractor {
 	}
 
 	/*
-	 * 
 	 * 基于I:I特征模式的抽取算法。
 	 * I:I特征模式是指文本以:或者其他符号分隔
 	 * 
@@ -120,13 +119,13 @@ public class KeyValueExtractor {
 		if (root == null) return;
 
 		for (Element e : root.children()) {
-		  logger.debug("II : {}, {}", e.prettyName(), e.text());
+		  // logger.debug("II : {}, {}", e.prettyName(), e.text());
 
 			if (e.indic(Indicator.SEP) > 0) {
 				String text = e.text();
 				String[] parts = StringUtils.split(text, sep);
 
-				logger.debug("parts : {}", Arrays.asList(parts));
+				// logger.debug("parts : {}", Arrays.asList(parts));
 
 				if (parts.length == 2) {
 					tryCollectKeyValuePair(parts[0], parts[1]);

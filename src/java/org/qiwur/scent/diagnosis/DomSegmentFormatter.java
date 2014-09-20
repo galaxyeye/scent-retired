@@ -46,7 +46,7 @@ public class DomSegmentFormatter extends DiagnosisFormatter {
 
     String row4 = String.format("<tr><td colspan='4' class='last'>%s</td></tr>", segment.block().attr("data-break-rule"));
 
-    String row5 = String.format("<tr><td colspan='4' class='last'>%s</td></tr>", StringUtils.substring(segment.block().richText(), 0, 800));
+    String row5 = String.format("<tr><td colspan='4' class='last'>%s</td></tr>", StringUtils.substring(segment.block().text(), 0, 800));
 
     return "<table class='nested'>" + row1 + row2 + row3 + row4 + row5 + "</table>";
   }

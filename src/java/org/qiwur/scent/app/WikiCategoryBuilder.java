@@ -5,16 +5,25 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.qiwur.scent.configuration.ScentConfiguration;
 import org.qiwur.scent.learning.EntityCategoryLearner;
 import org.qiwur.scent.wiki.Page;
 
 public class WikiCategoryBuilder {
 
-  private static Set<String> createdCategories = new HashSet<String>();
-  private static Set<Page> pages = new HashSet<Page>();
+  private static final Logger logger = LogManager.getLogger(WikiCategoryBuilder.class);
 
-  private static void buildCategoryPage(String name) {
+  private Configuration conf;
+  private Set<String> createdCategories = new HashSet<String>();
+  private Set<Page> pages = new HashSet<Page>();
+
+  public WikiCategoryBuilder(Configuration conf) {
+    this.conf = conf;
+  }
+
+  private void buildCategoryPage(String name) {
     String[] parts = StringUtils.split(name, ">");
 
     for (int i = 0; i < parts.length; ++i) {
@@ -40,18 +49,13 @@ public class WikiCategoryBuilder {
       }
 
       createdCategories.add(title);
-      pages.add(new Page(title, text, summery));
+      Page page = new Page(title, text, summery);
+      page.setConf(conf);
+      pages.add(page);
     }
   }
 
-  public static void main(String[] args) {
-    Configuration conf = ScentConfiguration.create();
-    EntityCategoryLearner learner = new EntityCategoryLearner(conf);
-
-    for (String fullName : learner.words()) {
-      buildCategoryPage(fullName);
-    }
-
+  public void uploadAll() {
     int counter = 0;
     for (Page page : pages) {
       System.out.println("upload the " + counter + "th page" + " : " + page.title());
@@ -59,5 +63,17 @@ public class WikiCategoryBuilder {
 
       page.upload();
     }
+  }
+
+  public static void main(String[] args) {
+    Configuration conf = ScentConfiguration.create();
+    EntityCategoryLearner learner = new EntityCategoryLearner(conf);
+    WikiCategoryBuilder builder = new WikiCategoryBuilder(conf);
+
+    for (String fullName : learner.words()) {
+      builder.buildCategoryPage(fullName);
+    }
+
+    builder.uploadAll();
   }
 }

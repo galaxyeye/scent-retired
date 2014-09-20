@@ -2,11 +2,16 @@ package org.qiwur.scent.feature;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 
+import org.apache.commons.collections.SetUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -64,20 +69,41 @@ class PhraseFeatureParser {
         Document doc = Jsoup.parse(new FileInputStream(files.get(0)), "utf-8", files.get(0), Parser.xmlParser());
 
         parse(doc);
-      } catch (Exception e) {
+      } catch (FileNotFoundException e) {
         logger.error(e);
-      }
+      } catch (IOException e) {
+        logger.error(e);
+      } 
       finally {
         processedImports.add(importString);
       }
     }
 
-    // logger.debug("parsed phrase files : {}", processedImports);
-    for (Entry<String, BlockRule> rule : blockRules.entries()) {
-      logger.debug("block rule {} has total {} rules", rule.getKey(), rule.getValue().getRules().size());
+    return blockRules;
+  }
+
+  public String report() {
+    StringBuilder sb = new StringBuilder();
+
+    sb.append("imported files : \n");
+    for (String file : processedImports) {
+      sb.append("\t");
+      sb.append(parseImportString(file).get(0));
+      sb.append("\n");
     }
 
-    return blockRules;
+    sb.append("\n");
+    sb.append("rules report : \n");
+
+    for (Entry<String, BlockRule> rule : blockRules.entries()) {
+      sb.append("\t");
+      sb.append(rule.getKey());
+      sb.append(":");
+      sb.append(rule.getValue().getRules().size());
+      sb.append("\n");
+    }
+
+    return sb.toString();
   }
 
   private void parse(Document doc) {
@@ -105,23 +131,19 @@ class PhraseFeatureParser {
     return output;
   }
 
-  public static void main(String[] args) {
-    PhraseFeatureParser f = new PhraseFeatureParser();
-
-    String importString = f.getImportString("/tmp", "");
-    System.out.println(importString);
-
-    ArrayList<String> result = f.parseImportString(importString);
-  }
-
   private void parseImport(Element eleImport) {
+    // find file in the same dir
     String baseDir = StringUtils.substring(eleImport.baseUri(), 0, StringUtils.lastIndexOf(eleImport.baseUri(), File.separator));
-    File file = new File(baseDir + File.separator + eleImport.attr("file"));
+    String path = baseDir + File.separator + eleImport.attr("file");
+
+    File file = new File(path);
 
     if (!file.exists()) {
       logger.error("file not exsits : {}, {}", eleImport.attr("file"), file);
       return;
     }
+
+    // logger.debug("import feature file {}", file.getAbsoluteFile());
 
     if (!processedImports.contains(file)) {
       imports.add(getImportString(file.getAbsolutePath(), eleImport.baseUri()));

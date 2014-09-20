@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <block-features>
-    <import file="block-text-feature-product-attributes.xml" />
-    <import file="block-text-feature-product-comment.xml" />
+	<import file="block-text-feature-product-attributes.xml" />
+	<import file="block-text-feature-product-comment.xml" />
 
 	<block label="ProductSpec" leaf-only="true">
-        <include-block label="ProductAttributes" />
-        <exclude-block label="Comment" />
+		<include-block label="ProductAttributes" />
+		<exclude-block label="Comment" />
 
 		<phrase name="attributes list" score="4" />
 		<phrase name="attribute list" score="4" />
@@ -20,6 +20,6 @@
 		<phrase name="good spec" score="4" />
 
 		<phrase name="**" score="-1" />
-        <phrase name="成交" score="-1" />
-    </block>
+		<phrase name="成交" score="-1" />
+	</block>
 </block-features>

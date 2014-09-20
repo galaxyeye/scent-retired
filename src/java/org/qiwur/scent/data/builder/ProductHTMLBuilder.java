@@ -38,6 +38,7 @@ public class ProductHTMLBuilder extends ProductBuilder {
 
   private Document doc;
 
+  
   public ProductHTMLBuilder(PageEntity pageEntity, Configuration conf) {
     super(pageEntity, conf);
 
@@ -108,7 +109,7 @@ public class ProductHTMLBuilder extends ProductBuilder {
       else {
         
       }
-      
+
       body.appendElement("hr");
     }
 

@@ -55,6 +55,8 @@ public class ProductPageBuilder {
     try {
       for (String uri : fetchListManager.detailUrls()) {
         try {
+          logger.debug(uri);
+
           processPage(uri);
         } catch (IOException | DataExtractorNotFound e) {
           logger.error(e);
@@ -88,21 +90,26 @@ public class ProductPageBuilder {
 
     PageExtractor extractorImpl = new PageExtractorFactory(conf).create("product", doc);
     PageEntity pageEntity = extractor.extract(extractorImpl);
-    logger.info(pageEntity);
+    // logger.info(pageEntity);
 
     time = System.currentTimeMillis() - time;
     logger.info("网页转换耗时 : {}s\n\n", time / 1000.0);
 
-    Document page = generateHtml(pageEntity);
-    savePage(page.baseUri(), page.toString(), "generated");
+    // Document page = generateHtml(pageEntity);
+    // savePage(page.baseUri(), page.toString(), "generated");
 
-    // Page page = generateWiki(product, Page.ProductPage);
-    //
-    // if (saveWiki) saveWiki(page);
-    // if (uploadWiki) uploadWiki(page);
+    Page page = generateWiki(pageEntity, Page.ProductPage);
+
+    if (saveWiki) saveWiki(page);
+    if (uploadWiki) uploadWiki(page);
   }
 
   public void saveWiki(Page page) {
+    if (page == null) {
+      logger.debug("invalid page");
+      return;
+    }
+
     PrintWriter writer = null;
 
     try {
@@ -118,6 +125,11 @@ public class ProductPageBuilder {
   }
 
   public void uploadWiki(Page page) {
+    if (page == null) {
+      logger.debug("invalid page");
+      return;
+    }
+
     page.upload();
   }
 

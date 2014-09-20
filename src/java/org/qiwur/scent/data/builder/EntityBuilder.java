@@ -30,19 +30,6 @@ public class EntityBuilder implements Builder {
 
   public static final Map<String, String> ImageAttributeTransformer = new HashMap<String, String>();
 
-  /**
-   * all added vision relative properties for image from satellite : 
-   * data-offset-height
-   * data-offset-width
-   * data-offset-left
-   * data-offset-parent
-   * data-offset-top
-   * 
-   * data-scroll-height
-   * data-scroll-width
-   * data-scroll-left
-   * data-scroll-parent
-   * */
   static {
     ImageAttributeTransformer.put("data-offset-height", "height");
     ImageAttributeTransformer.put("data-offset-width", "width");
@@ -55,14 +42,15 @@ public class EntityBuilder implements Builder {
     "height", "width", "alt", "src", "" // permitted img attributes
   };
 
-  protected final PageEntity pageEntity;
+  protected final PageEntity originalPageEntity;
+  protected PageEntity pageEntity;
   protected final Configuration conf;
 
-	public EntityBuilder(PageEntity pageEntity, Configuration conf) {
-	  Validate.notNull(pageEntity);
+	public EntityBuilder(PageEntity originalPageEntity, Configuration conf) {
+	  Validate.notNull(originalPageEntity);
     Validate.notNull(conf);
 
-		this.pageEntity = pageEntity;
+		this.originalPageEntity = originalPageEntity;
 		this.conf = conf;
 	}
 
@@ -72,6 +60,10 @@ public class EntityBuilder implements Builder {
 
 	public PageEntity pageEntity() {
 		return pageEntity;
+	}
+
+	private PageEntity normalize(PageEntity pageEntity) {
+	  return originalPageEntity;
 	}
 
 	protected String buildEntityName(String text) {
