@@ -13,7 +13,7 @@
 
   <property>
       <name>scent.net.proxy.use.proxy.pool</name>
-      <value>false</value>
+      <value>true</value>
   </property>
   <property>
       <name>scent.net.proxy.max.pool.size</name>
