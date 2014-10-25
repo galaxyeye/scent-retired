@@ -20,12 +20,17 @@ import org.qiwur.scent.utils.NetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// manager all proxy servers, for every request, we choose a proxy server from a proxy server list
+/**
+ * Copy from qiwur-nutch source code
+ * */
+
+// manage all proxy servers, for every request, we choose a proxy server from a proxy server list
 public class ProxyPool {
 
   protected static final Logger logger = LoggerFactory.getLogger(ProxyPool.class);
 
-  public static final String ProxyListFile = "conf/proxy-servers.txt";
+  public static final String ProxyListFile = "/tmp/nutch-proxy-servers.txt";
+  // public static final String ProxyListFile = "conf/proxy-servers.txt";
 
   private final Configuration conf;
 
@@ -39,8 +44,6 @@ public class ProxyPool {
 
   private int pollingMaxRetry = 5;
 
-  private int maxPoolSize = 5;
-  
   private FiledLines proxyServerList = null;
 
   // TODO : save connected connections
@@ -54,7 +57,7 @@ public class ProxyPool {
   public ProxyPool(Configuration conf) {
     this.conf = conf;
 
-    this.maxPoolSize = conf.getInt("scent.net.proxy.max.pool.size", 5);
+    // TODO : use configured values
 
     update();
   }
@@ -139,7 +142,7 @@ public class ProxyPool {
   public synchronized void reviewRetired() throws InterruptedException {
     long time = System.currentTimeMillis();
     if (time - lastReviewRetiredTime < reviewRetiredPeriod) {
-      logger.debug("review retired proxy entries later, skip...");
+      // logger.debug("review retired proxy entries later, skip...");
 
       return;
     }
@@ -191,11 +194,19 @@ public class ProxyPool {
     final long ForceTouchPeriod = 60 * 60 * 1000; // an hour
     final long UpdateFromFilePeriod = 60 * 1000; // one minute
 
+    File file = new File(ProxyListFile);
+    if (!file.exists()) {
+      try {
+        file.createNewFile();
+      } catch (IOException e) {
+        logger.error(e.toString());
+      }
+    }
+
     if (System.currentTimeMillis() - fileLastModified > ForceTouchPeriod) {
       touchProxyConfigFile();
     }
 
-    File file = new File(ProxyListFile);
     long modified = file.lastModified();
     double elapsed = modified - fileLastModified;
     fileLastModified = modified;
@@ -227,9 +238,6 @@ public class ProxyPool {
     return new Date(file.lastModified()).toString();
   }
 
-  /**
-   * not used in scent, used by nutch-proxy
-   * */
   public static void testAndSave(List<String> proxyList) throws IOException {
     if (proxyList.isEmpty()) {
       return;
@@ -302,15 +310,13 @@ public class ProxyPool {
 
   private void parse() {
     try {
-      // for diagnostic
       List<String> proxyList = new ArrayList<String>();
 
       for (String line : proxyServerList.getLines(ProxyListFile)) {
         ProxyEntry proxy = ProxyEntry.parse(line);
 
         if (proxy != null && !proxyEntries.contains(proxy) && !retiredProxyEntries.contains(proxy)) {
-          // set a max pool size to avoid too much testing time
-          if (size() < maxPoolSize && testNetwork(proxy)) {
+          if (testNetwork(proxy)) {
             put(proxy);
             proxyList.add(proxy.ipPort());
           }

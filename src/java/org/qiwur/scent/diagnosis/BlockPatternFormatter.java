@@ -1,6 +1,5 @@
 package org.qiwur.scent.diagnosis;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.qiwur.scent.jsoup.block.BlockPattern;
 import org.qiwur.scent.jsoup.block.DomSegment;
@@ -36,6 +35,7 @@ public class BlockPatternFormatter extends DiagnosisFormatter {
 
     String desc = String.format("all block patterns : %s\n total %d tagged segments",
         BlockPattern.patterns.toString(), counter);
+
     setDescription(desc);
 	}
 }

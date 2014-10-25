@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<block-features>
+	<!-- 
+	  Phrases are compared to html text and css attribute
+	  Every phrase is humanized so ThisIsACssAttribute maps to "this is a css attribute"
+	-->
+
+  <block label="ToDoList">
+    <phrase name="MainPageFileListOnlyGrid1_dgdFile" score="8" />
+    <phrase name="电话记录" score="1" />
+  </block>
+  <block label="ToReadList">
+    <phrase name="MainPageFileListOnlyGrid2_dgdFile" score="8" />
+  </block>
+  <block label="FileStat" pattern="Table" leaf-only="true">
+    <phrase name="待办文件" score="2" />
+    <phrase name="已办文件" score="2" />
+    <phrase name="待阅文件" score="2" />
+    <phrase name="已阅文件" score="2" />
+    <phrase name="待办行政许可事项" score="2" />
+    <phrase name="已办行政许可事项" score="2" />
+    <phrase name="今年" score="1" />
+    <phrase name="总共" score="1" />
+  </block>
+  <block label="ToReadFile">
+    <phrase name="MainPageFileListOnlyGrid2_dgdFile" score="8" />
+  </block>
+  <block label="ToDoFile">
+    <phrase name="去话人" score="2" />
+    <phrase name="去话单位" score="2" />
+    <phrase name="去话内容" score="2" />
+    <phrase name="受话人" score="2" />
+  </block>
+  <block label="ToReadFile">
+    <phrase name="附件" score="1.5" />
+    <phrase name="主送" score="1.5" />
+    <phrase name="抄送" score="1.5" />
+    <phrase name="分送" score="1.5" />
+    <phrase name="拟稿处室" score="1.5" />
+    <phrase name="拟稿人" score="1.5" />
+  </block>
+</block-features>

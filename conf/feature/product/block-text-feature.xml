@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<block-features>
+  <!-- find files according to the relative path -->
+	<import file="../common/block-text-feature-areas.xml" />
+
+  <import file="detail/block-text-feature-categories.xml" />
+  <import file="detail/block-text-feature-category-list.xml" />
+  <import file="detail/block-text-feature-category-nav.xml" />
+
+  <import file="detail/block-text-feature-product-attributes.xml" />
+  <import file="detail/block-text-feature-product-comment.xml" />
+  <import file="detail/block-text-feature-product-spec.xml" />
+</block-features>

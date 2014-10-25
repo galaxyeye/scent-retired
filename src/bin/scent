@@ -125,7 +125,7 @@ fi
 
 # figure out which class to run
 if [ "$COMMAND" = "extract" ] ; then
-CLASS=org.qiwur.scent.app.ProductPageBuilder
+CLASS=org.qiwur.scent.app.PageEntityBuilder
 elif [ "$COMMAND" = "plugin" ] ; then
 CLASS=org.qiwur.scent.plugin.PluginRepository
 elif [ "$COMMAND" = "scentserver" ] ; then

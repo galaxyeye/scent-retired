@@ -23,7 +23,7 @@ public class WebsiteFactory {
   final static Logger logger = LogManager.getLogger(WebsiteFactory.class);
 
   public static final String configFile = "conf/known-websites.xml";
-  public static final String learningFile = "conf/websites.learning.txt";
+  public static final String learningFile = "output/learning/website.txt";
 
   // maintains all websites
   ArrayList<Website> websites = new ArrayList<Website>();

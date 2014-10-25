@@ -6,6 +6,12 @@
 <configuration>
 
   <property>
+      <name>scent.conf.domain.name</name>
+      <value>product</value>
+      <description></description>
+  </property>
+
+  <property>
       <name>scent.net.proxy.use.proxy.pool</name>
       <value>false</value>
   </property>
@@ -66,6 +72,7 @@
     <value>conf/feature/product/bad-entity-name-words.txt</value>
   </property>
 
+
   <!-- block features -->
   <property>
     <name>scent.block.title.feature.file</name>
@@ -78,6 +85,25 @@
   <property>
     <name>scent.block.stat.feature.file</name>
     <value>conf/feature/product/block-stat-feature.xml</value>
+  </property>
+
+
+  <!-- extractors -->
+  <property>
+      <name>scent.block.extractors.Gallery</name>
+      <value>org.qiwur.scent.data.extractor.GalleryExtractor</value>
+  </property>
+  <property>
+      <name>scent.block.extractors.Title</name>
+      <value>org.qiwur.scent.data.extractor.TitleExtractor</value>
+  </property>
+  <property>
+      <name>scent.block.extractors.Categories</name>
+      <value>org.qiwur.scent.data.extractor.CategoriesExtractor</value>
+  </property>
+  <property>
+      <name>scent.block.extractors.SimilarEntity</name>
+      <value>org.qiwur.scent.data.extractor.SimilarEntityExtractor</value>
   </property>
 
 
@@ -100,7 +126,7 @@
   </property>
   <property>
     <name>scent.wiki.upload</name>
-    <value>true</value>
+    <value>false</value>
   </property>
 
 </configuration>

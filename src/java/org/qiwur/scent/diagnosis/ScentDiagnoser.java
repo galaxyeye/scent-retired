@@ -23,7 +23,7 @@ public class ScentDiagnoser {
   private final Document doc;
   private final Configuration conf;
   private final String docTemplate = "wwwroot/template/diagnosis.template.html";
-  private final String baseDir;
+  private final String cacheDir;
   private final String pageUri;
   private final List<DiagnosisFormatter> formatters = Lists.newArrayList();
 
@@ -34,7 +34,7 @@ public class ScentDiagnoser {
     this.doc = doc;
     this.conf = conf;
 
-    this.baseDir = conf.get("scent.web.cache.file.dir", "/tmp/web");
+    this.cacheDir = conf.get("scent.web.cache.file.dir", "/tmp/web");
     this.pageUri = doc.baseUri();
   }
 
@@ -87,7 +87,7 @@ public class ScentDiagnoser {
   }
 
   private void write(String content) throws IOException {
-    File file = new File(FileUtil.getFileForPage(pageUri, baseDir, "diag"));
+    File file = new File(FileUtil.getFileForPage(pageUri, cacheDir, "diag"));
     FileUtils.write(file, content);
   }
 }

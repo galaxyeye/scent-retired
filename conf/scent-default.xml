@@ -5,24 +5,25 @@
 
 <configuration>
 
-    <!-- servers -->
-    <property>
-        <name>nutch.master</name>
-        <value>qiwur.com</value>
-    </property>
-    <property>
-        <name>nutch.server.port</name>
-        <value>8182</value>
-    </property>
+  <!-- servers -->
+  <property>
+      <name>nutch.master</name>
+      <value>qiwur.com</value>
+  </property>
+  <property>
+      <name>nutch.server.port</name>
+      <value>8182</value>
+  </property>
 
-    <property>
-        <name>scent.net.proxy.use.proxy.pool</name>
-        <value>false</value>
-    </property>
-    <property>
-        <name>scent.net.proxy.max.pool.size</name>
-        <value>5</value>
-    </property>
+  <!-- net -->
+  <property>
+      <name>scent.net.proxy.use.proxy.pool</name>
+      <value>false</value>
+  </property>
+  <property>
+      <name>scent.net.proxy.max.pool.size</name>
+      <value>5</value>
+  </property>
 	<property>
 		<name>scent.net.proxy.host</name>
 		<value>localhost</value>
@@ -31,6 +32,7 @@
 		<name>scent.net.proxy.port</name>
 		<value>19080</value>
 	</property>
+	
   <property>
       <name>scent.web.cache.file.dir</name>
       <value>/tmp/web</value>
@@ -46,7 +48,7 @@
   </property>
 	<property>
 		<name>scent.net.generate.fetch.list</name>
-		<value>true</value>
+		<value>false</value>
 	</property>
 
 	<property>
@@ -103,52 +105,51 @@
   <!-- bad word filters -->
   <property>
     <name>scent.bad.attr.name.file</name>
-    <value>conf/default/bad-attr-name.txt</value>
+    <value>conf/feature/default/bad-attr-name.txt</value>
     <description>bad attribute name</description>
   </property>
   <property>
     <name>scent.bad.attr.value.words.file</name>
-    <value>conf/default/bad-attr-value.txt</value>
+    <value>conf/feature/default/bad-attr-value.txt</value>
     <description>bad words in attribute value</description>
   </property>
   <property>
     <name>scent.bad.category.words.file</name>
-    <value>conf/default/bad-category-words.txt</value>
+    <value>conf/feature/default/bad-category-words.txt</value>
     <description>bad words in category navigation</description>
   </property>
   <property>
     <name>scent.bad.page.keywords.file</name>
-    <value></value>
+    <value>conf/feature/default/bad-page-keywords.txt</value>
     <description>bad words in html meta keyword tag</description>
   </property>
   <property>
     <name>scent.bad.html.title.words.file</name>
-    <value></value>
+    <value>conf/feature/default/bad-html-title-words.txt</value>
     <description>bad words in html title</description>
   </property>
   <property>
     <name>scent.bad.entity.name.words.file</name>
-    <value></value>
+    <value>conf/feature/default/bad-entity-name-words.txt</value>
     <description>bad words in entity name</description>
   </property>
 
   <!-- block features -->
   <property>
     <name>scent.block.title.feature.file</name>
-    <value></value>
+    <value>conf/feature/default/block-title-feature.xml</value>
     <description>feature file for block title</description>
   </property>
   <property>
     <name>scent.block.text.feature.file</name>
-    <value></value>
+    <value>conf/feature/default/block-text-feature.xml</value>
     <description>feature file for block text</description>
   </property>
   <property>
     <name>scent.block.stat.feature.file</name>
-    <value></value>
+    <value>conf/feature/default/block-stat-feature.xml</value>
     <description>feature file for code statistics</description>
   </property>
-
 
 	<!-- classifier result weight -->
 	<property>

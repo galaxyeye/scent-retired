@@ -68,6 +68,7 @@
 		<mkdir dir="${build.dir}" />
 		<mkdir dir="${build.classes}" />
 		<mkdir dir="${release.dir}" />
+    <mkdir dir="${build.classes}/domain" />
 
 		<mkdir dir="${test.build.dir}" />
 		<mkdir dir="${test.build.classes}" />
@@ -112,109 +113,15 @@
 	<target name="jar" depends="compile-core" description="--> make scent.jar">
 		<copy file="${conf.dir}/scent-default.xml" todir="${build.classes}" />
 		<copy file="${conf.dir}/scent-site.xml" todir="${build.classes}" />
+
+    <copy todir="${build.classes}/domain">
+       <fileset dir="${conf.dir}/domain" />
+    </copy>
+
 		<jar jarfile="${build.dir}/${final.name}.jar" basedir="${build.classes}">
 			<manifest>
 			</manifest>
 		</jar>
-	</target>
-
-	<!-- ================================================================== -->
-	<!-- Make Maven Central Release -->
-	<!-- ================================================================== -->
-	<!-- -->
-	<!-- ================================================================== -->
-	<target name="release" depends="compile-core" description="--> generate the release distribution">
-		<copy file="${conf.dir}/scent-default.xml" todir="${build.classes}" />
-		<copy file="${conf.dir}/scent-site.xml" todir="${build.classes}" />
-
-		<!-- build the main artifact -->
-		<jar jarfile="${maven-jar}" basedir="${build.classes}" />
-
-		<!-- build the javadoc artifact -->
-		<javadoc destdir="${release.dir}/javadoc" overview="${src.dir}/overview.html" author="true" version="true" use="true" windowtitle="${name} ${version} API" doctitle="${name} ${version} API" bottom="Copyright &amp;copy; ${year} The Apache Software Foundation">
-			<arg value="${javadoc.proxy.host}" />
-			<arg value="${javadoc.proxy.port}" />
-
-			<packageset dir="${src.dir}" />
-
-			<link href="${javadoc.link.java}" />
-			<link href="${javadoc.link.lucene}" />
-			<link href="${javadoc.link.hadoop}" />
-
-			<classpath refid="classpath" />
-			<classpath>
-				<fileset dir="${plugins.dir}">
-					<include name="**/*.jar" />
-				</fileset>
-			</classpath>
-
-			<group title="Core" packages="org.qiwur.scent.*" />
-			<group title="Plugins API" packages="${plugins.api}" />
-			<group title="Data Extractor" packages="${plugins.data-extractor}" />
-			<!--
-			<group title="Plugins API" packages="${plugins.api}" />
-			<group title="Protocol Plugins" packages="${plugins.protocol}" />
-			<group title="URL Filter Plugins" packages="${plugins.urlfilter}" />
-			<group title="Scoring Plugins" packages="${plugins.scoring}" />
-			<group title="Parse Plugins" packages="${plugins.parse}" />
-			<group title="Indexing Filter Plugins" packages="${plugins.index}" />
-			<group title="Misc. Plugins" packages="${plugins.misc}" />
-			-->
-		</javadoc>
-		<jar jarfile="${maven-javadoc-jar}">
-			<fileset dir="${release.dir}/javadoc" />
-		</jar>
-
-		<!-- build the sources artifact -->
-		<jar jarfile="${maven-sources-jar}">
-			<fileset dir="${src.dir}" />
-		</jar>
-	</target>
-
-	<!-- ================================================================== -->
-	<!-- Deploy to Apache Nexus -->
-	<!-- ================================================================== -->
-	<!-- -->
-	<!-- ================================================================== -->
-	<target name="deploy" depends="release" description="--> deploy to Apache Nexus">
-
-		<!-- generate a pom file -->
-		<ivy:makepom ivyfile="${ivy.file}" pomfile="${basedir}/pom.xml" templatefile="ivy/mvn.template">
-			<mapping conf="default" scope="compile" />
-			<mapping conf="runtime" scope="runtime" />
-		</ivy:makepom>
-
-		<!-- sign and deploy the main artifact -->
-		<artifact:mvn>
-			<arg value="org.apache.maven.plugins:maven-gpg-plugin:1.4:sign-and-deploy-file" />
-			<arg value="-Durl=${maven-repository-url}" />
-			<arg value="-DrepositoryId=${maven-repository-id}" />
-			<arg value="-DpomFile=pom.xml" />
-			<arg value="-Dfile=${maven-jar}" />
-			<arg value="-Papache-release" />
-		</artifact:mvn>
-
-		<!-- sign and deploy the sources artifact -->
-		<artifact:mvn>
-			<arg value="org.apache.maven.plugins:maven-gpg-plugin:1.4:sign-and-deploy-file" />
-			<arg value="-Durl=${maven-repository-url}" />
-			<arg value="-DrepositoryId=${maven-repository-id}" />
-			<arg value="-DpomFile=pom.xml" />
-			<arg value="-Dfile=${maven-sources-jar}" />
-			<arg value="-Dclassifier=sources" />
-			<arg value="-Papache-release" />
-		</artifact:mvn>
-
-		<!-- sign and deploy the javadoc artifact -->
-		<artifact:mvn>
-			<arg value="org.apache.maven.plugins:maven-gpg-plugin:1.4:sign-and-deploy-file" />
-			<arg value="-Durl=${maven-repository-url}" />
-			<arg value="-DrepositoryId=${maven-repository-id}" />
-			<arg value="-DpomFile=pom.xml" />
-			<arg value="-Dfile=${maven-javadoc-jar}" />
-			<arg value="-Dclassifier=javadoc" />
-			<arg value="-Papache-release" />
-		</artifact:mvn>
 	</target>
 
 	<!-- ================================================================== -->
@@ -225,16 +132,17 @@
 	<target name="job" depends="compile" description="--> make scent.job jar">
 		<jar jarfile="${build.dir}/${final.name}.job">
 			<!-- 
-               If the build.classes has the scent config files because the jar command 
-               command has run, exclude them. The conf directory has them. 
-               -->
+         If the build.classes has the scent config files because the jar command 
+         command has run, exclude them. The conf directory has them. 
+      -->
 			<zipfileset dir="${build.classes}" excludes="scent-default.xml,scent-site.xml" />
 			<zipfileset dir="${conf.dir}" excludes="*.template,hadoop*.*" />
 			<!-- 
-               need to exclude hsqldb.jar due to a conflicting version already present 
-               in Hadoop/lib. 
-               -->
-			<zipfileset dir="${build.lib.dir}" prefix="lib" includes="**/*.jar" excludes="jasper*.jar,jsp-*.jar,hadoop-*.jar,hbase*test*.jar,ant*jar,hsqldb*.jar" />
+         need to exclude hsqldb.jar due to a conflicting version already present 
+         in Hadoop/lib. 
+      -->
+			<zipfileset dir="${build.lib.dir}" prefix="lib" includes="**/*.jar" 
+				excludes="jasper*.jar,jsp-*.jar,hadoop-*.jar,hbase*test*.jar,ant*jar,hsqldb*.jar" />
 			<zipfileset dir="${build.plugins}" prefix="classes/plugins" />
 		</jar>
 	</target>
@@ -335,8 +243,8 @@
 		<delete dir="${test.build.data}" />
 		<mkdir dir="${test.build.data}" />
 		<!-- 
-          copy resources needed in junit tests 
-          -->
+      copy resources needed in junit tests 
+      -->
 		<copy todir="${test.build.data}">
 			<fileset dir="src/testresources" includes="**/*" />
 		</copy>
@@ -730,27 +638,19 @@
 		</pathconvert>
 
 		<taskdef name="eclipse" classname="prantl.ant.eclipse.EclipseTask" classpath="${build.dir}/lib/ant-eclipse-1.0-jvm1.2.jar" />
+
 		<eclipse updatealways="true">
 			<project name="${eclipse.project}" />
 			<classpath>
-
 				<library path="${conf.dir}" exported="false" />
 				<library path="${basedir}/src/bin" exported="false" />
 				<library pathref="eclipse.classpath" exported="false" />
-				<!-- 
-				<library path="${basedir}/build/plugins/urlfilter-automaton/automaton-1.11-8.jar" exported="false" />
-				<library path="${basedir}/src/plugin/parse-swf/lib/javaswf.jar" exported="false" />
-				<library path="${basedir}/build/plugins/lib-nekohtml/nekohtml-0.9.5.jar" exported="false" />
-				<library path="${basedir}/build/plugins/lib-nekohtml/nekohtml-0.9.5.jar" exported="false" />
-				<library path="${basedir}/build/plugins/parse-html/tagsoup-1.2.jar" exported="false" />
-				<library path="${basedir}/build/plugins/protocol-sftp/jsch-0.1.41.jar" exported="false" />
-				<library path="${basedir}/build/plugins/parse-html/tagsoup-1.2.jar" exported="false" />
-				-->
 
 				<source path="${basedir}/src/java/" />
 				<source path="${basedir}/src/test/" />
 				<source path="${basedir}/src/plugin/data-extractor/src/java/" />
 				<source path="${basedir}/src/plugin/data-extractor/src/test/" />
+
 				<output path="${basedir}/build/classes" />
 			</classpath>
 		</eclipse>

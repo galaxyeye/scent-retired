@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<block-features>
+
+<!-- 
+  Phrases are compared to html text and css attribute
+  Every phrase is humanized so ThisIsACssAttribute maps to "this is a css attribute"
+-->
+
+</block-features>

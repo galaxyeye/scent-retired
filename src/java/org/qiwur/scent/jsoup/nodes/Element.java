@@ -995,6 +995,15 @@ public class Element extends Node {
    * @see #textNodes()
    */
   public String text() {
+    // TODO : update text cache
+    if (textCache == null) {
+      textCache = accumulateText();
+    }
+
+    return textCache;
+  }
+
+  private String accumulateText() {
     final StringBuilder accum = new StringBuilder();
     new NodeTraversor(new InterruptiveNodeVisitor() {
       public void head(Node node, int depth) {
@@ -1010,9 +1019,16 @@ public class Element extends Node {
       }
     }).traverse(this);
 
-    // TODO : add text cache
-
     return Entities.unescape(accum.toString()).replaceAll(StringUtil.NBSP, StringUtil.KeyboardWhitespace).trim();
+  }
+
+  public String strippedText() {
+    // TODO : update text cache
+    if (strippedTextCache == null) {
+      strippedTextCache = StringUtil.stripNonChar(accumulateText());
+    }
+
+    return strippedTextCache;
   }
 
   public String richText() {

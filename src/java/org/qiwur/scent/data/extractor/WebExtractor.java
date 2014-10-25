@@ -78,7 +78,6 @@ public class WebExtractor {
     // Calculate all indicators, this step is essential for the extraction
     doc.calculateIndicators();
 
-
     ScentDiagnoser diagnoser = new ScentDiagnoser(doc, conf);
     diagnoser.addFormatter(new IndicatorsFormatter(doc, conf));
     diagnoser.addFormatter(new BlockPatternFormatter(doc, conf));

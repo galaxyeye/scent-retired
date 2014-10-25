@@ -26,8 +26,6 @@ public final class EntityNameFeature extends LinedFeature {
   // 移除括号中的内容，最小匹配
   public static final Pattern PAT_REMOVE_COMMENT_POTION = Pattern.compile("((（.+?）)|(【.+?】))");
 
-  // public static final String BadNameWordsFile = "conf/bad-product-name-words.txt";
-
   // visible inside the package
   public EntityNameFeature(Configuration conf, String[] featureFile) {
     super(conf, featureFile);

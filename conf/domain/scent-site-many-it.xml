@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<!-- Put site-specific property overrides in this file. -->
+
+<configuration>
+
+  <property>
+      <name>scent.conf.domain.name</name>
+      <value>many-it</value>
+      <description></description>
+  </property>
+
+  <!-- labels -->
+  <property>
+      <name>scent.classifier.block.labels</name>
+      <value>ToDoList,ToReadList,FileStat,ToDoFile,ToReadFile</value>
+      <description>Notice : do not split into lines</description>
+  </property>
+
+  <property>
+      <name>scent.diagnose.classifier.block.labels</name>
+      <value>ToDoList,ToReadList,FileStat,ToDoFile,ToReadFile</value>
+      <description>Notice : do not split into lines</description>
+  </property>
+
+  <!-- block manual definition -->
+  <property>
+    <name>scent.block.manual.defined</name>
+    <value>#MainPageFileListOnlyGrid1_dgdFile,#MainPageFileListOnlyGrid2_dgdFile</value>
+  </property>
+
+  <!-- block features -->
+  <property>
+    <name>scent.block.text.feature.file</name>
+    <value>conf/feature/many-it/block-text-feature.xml</value>
+  </property>
+  <property>
+    <name>scent.block.stat.feature.file</name>
+    <value>conf/feature/many-it/block-stat-feature.xml</value>
+  </property>
+
+  <!-- extractors -->
+  <property>
+      <name>scent.block.extractors.ToDoList</name>
+      <value>org.qiwur.scent.data.extractor.LinksExtractor</value>
+  </property>
+  <property>
+      <name>scent.block.extractors.ToReadList</name>
+      <value>org.qiwur.scent.data.extractor.LinksExtractor</value>
+  </property>
+  <property>
+      <name>scent.block.extractors.FileStat</name>
+      <value></value>
+  </property>
+
+</configuration>

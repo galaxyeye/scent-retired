@@ -28,28 +28,20 @@ import org.qiwur.scent.utils.NetUtil;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-public abstract class PageExtractor implements DataExtractor {
+public class PageExtractor implements DataExtractor {
 
   protected static final Logger logger = LogManager.getLogger(PageExtractor.class);
-  static Map<BlockLabel, Class<? extends DomSegmentExtractor>> builtinExtractors = Maps.newHashMap();
-
-  static {
-    // TODO : may make it configurable
-    builtinExtractors.put(BlockLabel.Categories, CategoriesExtractor.class);
-    builtinExtractors.put(BlockLabel.Title, TitleExtractor.class);
-    builtinExtractors.put(BlockLabel.Gallery, GalleryExtractor.class);
-    builtinExtractors.put(BlockLabel.SimilarEntity, SimilarEntityExtractor.class);
-  }
 
   private final PageEntity pageEntity = new PageEntity();
+  private final Document doc;
   private Configuration conf;
-  private Document doc;
 
+  // TODO : chained extractors
   private Map<DomSegment, DomSegmentExtractor> extractors = Maps.newHashMap();
 
-  // NOTICE : conf and doc are initialized by PageExtractorFactory
-  public PageExtractor() {
-    
+  public PageExtractor(Document doc, Configuration conf) {
+    this.doc = doc;
+    this.conf = conf;
   }
 
   @Override
@@ -73,10 +65,6 @@ public abstract class PageExtractor implements DataExtractor {
     learn();
   }
 
-  public void doc(Document doc) {
-    this.doc = doc;
-  }
-
   public Document doc() {
     return doc;
   }
@@ -85,8 +73,31 @@ public abstract class PageExtractor implements DataExtractor {
     return pageEntity;
   }
 
-  abstract protected void installUserExtractors();
+  @SuppressWarnings("unchecked")
+  protected void installConfiguredExtractors() {
+    String[] blockLabels = conf.getStrings("scent.classifier.block.labels");
+    for (String label : blockLabels) {
+      BlockLabel blockLabel = BlockLabel.fromString(label);
+      String extractorKey = "scent.block.extractors." + label;
+      String extractorName = conf.get(extractorKey);
 
+      if (StringUtils.isNotEmpty(extractorName)) {
+        Class<? extends DomSegmentExtractor> extractor = null;
+        try {
+          // TODO : chained extractors, external extractor implementation
+          extractor = (Class<? extends DomSegmentExtractor>) Class.forName(extractorName);
+        } catch (ClassNotFoundException e) {
+          logger.warn("Bad configured block extractor {}", extractorKey);
+        }
+
+        if (extractor != null) {
+          installExtractor(blockLabel, extractor);
+        }
+      }
+    }
+  }
+
+  // TODO : optimize install process, especially class initialization process
   protected void installExtractor(BlockLabel label, Class<? extends DomSegmentExtractor> clazz) {
     for (DomSegment segment : doc.domSegments()) {
       if (segment.veryLikely(label)) {
@@ -122,11 +133,13 @@ public abstract class PageExtractor implements DataExtractor {
   }
 
   protected DomSegments getSegments(String... labels) {
-    List<BlockLabel> bl = Lists.newArrayList();
+    Validate.notNull(labels);
+
+    List<BlockLabel> blockLabels = Lists.newArrayList();
     for (String label : labels) {
-      bl.add(BlockLabel.fromString(label));
+      blockLabels.add(BlockLabel.fromString(label));
     }
-    return doc.domSegments().get(bl);
+    return doc.domSegments().get(blockLabels);
   }
 
   protected DomSegments getSegments(BlockPattern label) {
@@ -173,19 +186,25 @@ public abstract class PageExtractor implements DataExtractor {
 
   private void cleanDocument() {
     String[] labels = conf.getStrings("scent.extractor.bad.blocks");
-    DomSegments segments = getSegments(labels);
-    for (DomSegment segment : segments) {
-      doc.evict(segment.block());
+
+    if (labels != null) {
+      DomSegments segments = getSegments(labels);
+      for (DomSegment segment : segments) {
+        doc.evict(segment.block());
+      }
     }
   }
 
   private void cleanSegments() {
     String[] labels = conf.getStrings("scent.extractor.bad.blocks");
-    DomSegments segments = getSegments(labels);
-    for (DomSegment segment : segments) {
-      segment.remove();
+
+    if (labels != null) {
+      DomSegments segments = getSegments(labels);
+      for (DomSegment segment : segments) {
+        segment.remove();
+      }
+      doc.domSegments().removeAll(segments);
     }
-    doc.domSegments().removeAll(segments);
   }
 
   private void clearPreviousExtractors() {
@@ -193,15 +212,10 @@ public abstract class PageExtractor implements DataExtractor {
   }
 
   private void installExtractors() {
-    // 1. install user defined extractors in the child classes
-    installUserExtractors();
+    // 1. install configured extractors
+    installConfiguredExtractors();
 
-    // 2. if no user defined extractors, install built-in extractors
-    for (Entry<BlockLabel, Class<? extends DomSegmentExtractor>> entry : builtinExtractors.entrySet()) {
-      installExtractor(entry.getKey(), entry.getValue());
-    }
-
-    // 3. if no extractors, use common extractor
+    // 2. if no extractors, use common extractor
     for (DomSegment segment : doc.domSegments()) {
       if (!extractors.containsKey(segment)) {
         BlockLabel label = segment.primaryLabel();

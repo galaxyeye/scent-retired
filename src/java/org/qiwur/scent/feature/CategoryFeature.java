@@ -11,10 +11,12 @@ public final class CategoryFeature extends LinedFeature {
 
   public static final int MaxCategoryWordSize = 10;
 
-  public static final String BadCategoryWordsFile = "conf/bad-category-words.txt";
+  private String BadCategoryWordsFile = "conf/feature/default/bad-category-words.txt";
 
   public CategoryFeature(Configuration conf, String[] featureFile) {
     super(conf, featureFile);
+
+    this.BadCategoryWordsFile = conf.get("scent.bad.category.words.file", "conf/feature/default/bad-category-words.txt");
   }
 
   public String strip(String name) {

@@ -30,9 +30,29 @@ public class CodeCleaner extends InterruptiveElementVisitor {
       ele.html("");
     }
 
+//    if (ele.tagName().equals("table")) {
+//      Element thead = ele.getElementsByTag("thead").first();
+//      Element tbody = ele.getElementsByTag("tbody").first();
+//      Element tfoot = ele.getElementsByTag("tfoot").first();
+//
+//      if (tbody != null && thead == null && tfoot == null) {
+//        ele.addClass(tbody.className());
+//        tbody.replaceWith(ele);
+//      }
+//    }
+
+    // inherit code information from table tag
+    if (ele.tagName().equals("tbody")) {
+      ele.classNames(ele.parent().classNames());
+
+      if (!ele.parent().id().isEmpty()) {
+        ele.addClass(ele.parent().id());
+      }
+    }
+
     if (_own_txt_blk >= 3 && _grand_child == 0) {
-      ele.html(ele.ownText());
-      ele.addClass("mrg own txt");
+      ele.html(ele.text());
+      ele.addClass("merge own text");
     }
 
     if (depth > 3 && ele.classNames().isEmpty() && ele.isBlock()) {
@@ -44,7 +64,7 @@ public class CodeCleaner extends InterruptiveElementVisitor {
 
     for (Attribute attr : ele.attributes()) {
       if (attr.getKey().startsWith("on")) {
-        ele.addClass("rm ev");
+        ele.addClass("remove event");
         attr.setValue("");
       }
     }

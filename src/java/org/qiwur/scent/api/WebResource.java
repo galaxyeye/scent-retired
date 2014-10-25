@@ -18,6 +18,7 @@ package org.qiwur.scent.api;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 import org.apache.commons.io.FileUtils;
 import org.restlet.resource.Get;
@@ -25,13 +26,12 @@ import org.restlet.resource.ServerResource;
 
 public class WebResource extends ServerResource {
 
-  public static final String PATH = "s";
   public static final String DESCR = "Service admin actions";
   public static String wwwroot = "wwwroot";
 
   @Get("html")
   public String retrieve() throws IOException {
-    String home = wwwroot + File.separator + "scent.html";
-    return FileUtils.readFileToString(new File(home));
+    String homePage = wwwroot + File.separator + "scent.html";
+    return FileUtils.readFileToString(new File(homePage), Charset.forName("UTF-8"));
   }
 }

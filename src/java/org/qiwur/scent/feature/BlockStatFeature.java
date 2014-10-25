@@ -32,7 +32,7 @@ public final class BlockStatFeature implements WebFeature {
 
   protected static final Logger logger = LogManager.getLogger(BlockStatFeature.class);
 
-  public static final String defaultConfigFile = "conf/feature/default/block-stat-feature.xml";
+  public static final String defaultConfigFile = "conf/feature/common/block-stat-feature.xml";
 
   private Configuration conf;
 

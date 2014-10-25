@@ -147,6 +147,7 @@ public class DomSegmentsUtils {
       for (DomSegment segment : removal) {
         names.add(segment.block().prettyName());
       }
+
       DomSegment.logger.debug("remove redundant segments : {}", names);
     }
 

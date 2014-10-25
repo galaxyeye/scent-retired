@@ -36,6 +36,7 @@ div.extraction form input[type=text] {
     outline: 0 none;
     width: 405px;
 }
+
 div.extraction form input[type=submit] {
     background-color: #DDDDDD;
     background-position: 0 -48px;
@@ -50,21 +51,28 @@ fieldset { border:none; }
 
 <body class="scent">
 	<div class="extraction">
-        <h1>商品详情抽取系统 - v0.8</h1>
+    <h1>商品详情抽取系统 - v0.8</h1>
 		<form target="_blank" action="/scent/extract" method="get">
 		  <fieldset>
-            <input type="text" name="target" value="输入商品详情页URL" onfocus="this.value=''" onblur="if (this.value == '') this.value='输入商品详情页URL'" />
-            <input type="submit" value="立即抽取" />
+        <input type="text" name="target" value="输入商品详情页URL" onfocus="this.value=''" onblur="if (this.value == '') this.value='输入商品详情页URL'" />
+        <input type="submit" value="立即抽取" />
 		  </fieldset>
-          <fieldset>
-            <input type="radio" name="format" value="html" checked="checked" />简洁结果
-            <input type="radio" name="format" value="all" />详细结果
-            <input type="radio" name="format" value="diagnosis" />诊断信息
-          </fieldset>
+      <fieldset>
+        <input type="radio" name="format" value="html" checked="checked" />简洁结果
+        <input type="radio" name="format" value="all" />详细结果
+        <input type="radio" name="format" value="diagnosis" />诊断信息
+      </fieldset>
 		</form>
-        <div>由于需要模拟人类行为访问目标网页，因此加载过程会较慢，请耐心等待。</div>
-        <div><a href="http://gouwu.hao123.com/" target="_blank">电商网站导航</a></div>
-        <div>系统由机器学习驱动，抽取准确度将不断提高。目前暂时仅支持商品详细页抽取，如需抽取其他类型网站，可定制服务。</div>
+    <div>由于需要模拟人类行为访问目标网页，因此加载过程会较慢，请耐心等待。</div>
+    <div><a href="http://gouwu.hao123.com/" target="_blank">电商网站导航</a></div>
+    <div>
+      <a href="/scent/extract?target=http%3A%2F%2Fitem.jd.com%2F1146336.html&format=all" target="_blank" onclick="">例1</a>
+      <a href="/scent/extract?target=http%3A%2F%2Fitem.jd.com%2F1192330.html&format=all" target="_blank">例2</a>
+      <a href="/scent/extract?target=http%3A%2F%2Fitem.jd.com%2F1073757.html&format=all" target="_blank">例3</a>
+      <a href="/scent/extract?target=http%3A%2F%2Fitem.yixun.com%2Fitem-1950220.html&format=all" target="_blank">例4</a>
+      <a href="/scent/extract?target=http%3A%2F%2Fdetail.tmall.com%2Fitem.htm%3Fspm%3Da220m.1000858.1000725.1.O8YAwA%26id%3D24284004492%26skuId%3D27711038613%26areaId%3D310100%26cat_id%3D50024403%26abbucket%3D2%26rn%3D0af9b457da1864917a04a16ba17b3b57%26standard%3D1%26user_id%3D702410433%26is_b%3D1%23detail&format=all" target="_blank">例5</a>
+    </div>
+    <div>系统由机器学习驱动，抽取准确度将不断提高。目前暂时仅支持商品详细页抽取，如需抽取其他类型网站，可定制服务。</div>
 	</div>
 </body>
 </html>

@@ -77,13 +77,13 @@ public class ProxyUpdateThread extends Thread {
   private void updateProxyConfigFileFromMaster() {
     String host = conf.get("nutch.master");
     int port = conf.getInt("nutch.server.port", 8182);
-    String url = "http://" + host + ":" + port + "/nutch/proxy/file";
+    String url = "http://" + host + ":" + port + "/proxy/download";
 
     try {
       String hostname = FileUtils.readFileToString(new File("/etc/hostname")).trim();
 
+      // update only if this is not the master
       if (!hostname.equals(host)) {
-        // update only if this is not the master
         String cmd = "wget " + url + " -O " + ProxyPool.ProxyListFile + " > /dev/null";
         Process p = Runtime.getRuntime().exec(cmd);
       }

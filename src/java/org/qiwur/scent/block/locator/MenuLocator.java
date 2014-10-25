@@ -28,6 +28,8 @@ public final class MenuLocator extends BlockLocator {
   // TODO : use feature file
   public static Set<String> badWords = Sets.newHashSet();
 
+  public static final double MenuMinScore = 4;
+
   static {
     badWords.add("商品分类");
   }
@@ -38,7 +40,7 @@ public final class MenuLocator extends BlockLocator {
 
   @Override
   protected DomSegment quickLocate() {
-    double maxScore = 3;
+    double maxScore = MenuMinScore;
     DomSegment menu = null;
 
     for (DomSegment segment : doc.domSegments()) {
@@ -46,7 +48,7 @@ public final class MenuLocator extends BlockLocator {
 
       // logger.debug("menu score : {} : {}", segment.body().prettyName(), score);
 
-      if (score > maxScore) {
+      if (score >= maxScore) {
         maxScore = score;
         menu = segment;
       }
@@ -66,15 +68,19 @@ public final class MenuLocator extends BlockLocator {
 
     DomSegment segment = null;
     if (!founder.getMenuItems().isEmpty()) {
-      segment = new DomSegment(null, null, founder.getMenuItems().values().iterator().next());
-      segment.tag(targetLabel, FuzzyProbability.MUST_BE);
+      Entry<Double, Element> bestEntry = founder.getMenuItems().entries().iterator().next();
+
+      if (bestEntry.getKey() >= MenuMinScore) {
+        segment = new DomSegment(null, null, bestEntry.getValue());
+        segment.tag(targetLabel, FuzzyProbability.MUST_BE);
+      }
     }
 
     return segment;
   }
 
   public static DomSegment createMenu(Document doc, Configuration conf) {
-    Element ele = doc.body().prependElement("ul class='created'");
+    Element ele = doc.body().prependElement("ul class='scent-created'");
     ele.append("<li><a href='/'>首页</a></li>");
     ele.sequence(doc.body().sequence() + 100); // TODO : use a machine learned sequence
 

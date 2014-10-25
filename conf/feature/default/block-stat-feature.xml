@@ -1,0 +1,51 @@
+<!--
+build-in global indicators : 
+    -result     : result for complex indicators
+    -menu-seq   : menu's tag sequence in HTML code
+    -title-seq  : title's tag sequence in HTML code if any, the title text is similar with <title> tag
+    -last-seq   : the last tag sequence in HTML code
+
+build-in simple indicators : 
+     build-in simple indicators are each element specified
+     -char      : character number
+     -char-ave  : ave character number
+     -char-max  : max character number
+     -own-char  : character number of direct data nodes
+     -txt-blk   : non-empty text block number
+     -own-txt-blk : non-empty text block number of direct data nodes
+     -img       : image number
+     -a         : link number
+     -child     : direct children number
+     -grant-child : grant children number
+     -descend   : all descendant number
+     -sep       : separator number, separators are defined in configuration
+     -sibling   : sibling number
+     -dep       : depth in DOM
+     -seq       : tag sequence in HTML code
+     
+     -a-max-w   : max link width
+     -a-ave-w   : 
+     -a-max-h   : 
+     -a-ave-h   : 
+
+     -img-max-w : max img width
+     -img-ave-w : 
+     -img-max-h : 
+     -img-ave-h : 
+ -->
+<?xml version="1.0"?>
+<block-features>
+    <!-- 区域类型计算 - 区块html特征 -->
+    <!-- DomSegment的root节点和body节点中，标签的id/class属性 -->
+    <block label="DefaultFeature">
+        <rule indicator="-char"           range="0,1000" score="0"  -score="0" />
+        <rule indicator="-own-char"       range="0,1000" score="0"  -score="0" />
+        <rule indicator="-txt-blk"        range="0,1000" score="0"  -score="0" />
+        <rule indicator="-own-txt-blk"    range="0,1000" score="0"  -score="0" />
+        <rule indicator="-img"            range="0,1000" score="0"  -score="0" />
+        <rule indicator="-a"              range="0,1000" score="0"  -score="0" />
+        <rule indicator="-child"          range="0,1000" score="0"  -score="0" />
+        <rule indicator="-grant-child"    range="0,1000" score="0"  -score="0" />
+        <rule indicator="-descend"        range="0,1000" score="0"  -score="0" />
+    </block>
+</block-features>

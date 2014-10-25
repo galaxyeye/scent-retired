@@ -3,6 +3,7 @@ package org.qiwur.scent.classifier;
 import java.util.Map;
 
 import org.qiwur.scent.jsoup.nodes.Element;
+import org.qiwur.scent.jsoup.nodes.Indicator;
 import org.qiwur.scent.jsoup.select.ElementTraversor;
 import org.qiwur.scent.jsoup.select.InterruptiveElementVisitor;
 import org.qiwur.scent.utils.StringUtil;
@@ -25,9 +26,11 @@ public class PhraseRule extends ScentRule {
           startDepth = depth;
         }
 
+        // TODO : better fuzzy textual compare support
+        // and improve textual compare performance
         if (StringUtil.humanize(ele.id()).contains(name())) ++count;
         else if (StringUtil.humanize(ele.className()).contains(name())) ++count;
-        else if (ele.ownText().contains(name())) ++count;
+        else if (ele.strippedText().contains(name())) ++count;
       }
 
       @Override

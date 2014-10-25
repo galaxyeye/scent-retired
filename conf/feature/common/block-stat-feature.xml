@@ -1,0 +1,100 @@
+<!--
+build-in global indicators : 
+    -result     : result for complex indicators
+    -menu-seq   : menu's tag sequence in HTML code
+    -title-seq  : title's tag sequence in HTML code if any, the title text is similar with <title> tag
+    -last-seq   : the last tag sequence in HTML code
+
+build-in simple indicators : 
+     build-in simple indicators are each element specified
+     -char      : character number
+     -char-ave  : ave character number
+     -char-max  : max character number
+     -own-char  : character number of direct data nodes
+     -txt-blk   : non-empty text block number
+     -own-txt-blk : non-empty text block number of direct data nodes
+     -img       : image number
+     -a         : link number
+     -child     : direct children number
+     -grant-child : grant children number
+     -descend   : all descendant number
+     -sep       : separator number, separators are defined in configuration
+     -sibling   : sibling number
+     -dep       : depth in DOM
+     -seq       : tag sequence in HTML code
+     
+     -a-max-w   : max link width
+     -a-ave-w   : 
+     -a-max-h   : 
+     -a-ave-h   : 
+
+     -img-max-w : max img width
+     -img-ave-w : 
+     -img-max-h : 
+     -img-ave-h : 
+ -->
+<?xml version="1.0"?>
+<block-features>
+    <indicators>
+        <!-- build-in global indicators -->
+        <indicator name="-result"     type="global" />
+        <indicator name="-menu-seq"   type="global" />
+        <indicator name="-title-seq"  type="global" />
+        <indicator name="-last-seq"   type="global" />
+
+        <!-- build-in simple indicators, each element specified -->
+        <indicator name="-char"         type="simple" />
+        <indicator name="-char-ave"     type="simple" />
+        <indicator name="-char-max"     type="simple" />
+        <indicator name="-own-char"     type="simple" />
+        <indicator name="-txt-blk"      type="simple" />
+        <indicator name="-own-txt-blk"  type="simple" />
+        <indicator name="-img"          type="simple" />
+        <indicator name="-a"            type="simple" />
+        <indicator name="-child"        type="simple" />
+        <indicator name="-grant-child"  type="simple" />
+        <indicator name="-descend"      type="simple" />
+        <indicator name="-sep"          type="simple" />
+        <indicator name="-sibling"      type="simple" />
+        <indicator name="-dep"          type="simple" />
+        <indicator name="-seq"          type="simple" />
+
+        <!-- vision feature -->
+        <indicator name="-a-max-w"      type="simple" />
+        <indicator name="-a-ave-w"      type="simple" />
+        <indicator name="-a-max-h"      type="simple" />
+        <indicator name="-a-ave-h"      type="simple" />
+
+        <indicator name="-img-max-w"    type="simple" />
+        <indicator name="-img-ave-w"    type="simple" />
+        <indicator name="-img-max-h"    type="simple" />
+        <indicator name="-img-ave-h"    type="simple" />
+
+        <!-- 
+            complex indicators calculated using javascript,
+            the user can define his own complex indicators.
+            global indicators and simple indicators listed above are available in the calculating,
+            every built-in variable starts with "$_", 
+            for example, you can use "$_char" to access indicator "-char".
+            $_1, $_2, ..., $_9 are references to other variables.
+        -->
+        <indicator name="delta" type="script">
+            $_result = $_2 - $_1;
+        </indicator>
+        <indicator name="rate" type="script">
+            $_result = $_2 / $_1;
+        </indicator>
+        <indicator name="growth" type="script">
+            $_result = ($_2 - $_1) / $_1;
+        </indicator>
+        <indicator name="menu-distance" type="script">
+            $_result = $_seq - $_menu_seq;
+        </indicator>
+        <indicator name="title-distance" type="script">
+            $_result = $_seq - $_title_seq;
+        </indicator>
+        <indicator name="bottom-distance" type="script">
+            $_result = $_last_seq - $_seq;
+        </indicator>
+    </indicators>
+</block-features>

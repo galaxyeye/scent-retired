@@ -47,7 +47,7 @@ public class DomSegmentsBuilder {
   public static final int MinLinkNumberInDenseLinkArea = 50;
 
   // TODO : we should calculate out a threshold value
-  public static final double BlockLikihoodThreshold = 0.8;
+  public static final double BlockLikelihoodThreshold = 0.8;
 
   private final Document doc;
 
@@ -93,6 +93,11 @@ public class DomSegmentsBuilder {
       DomSegmentsUtils.addIfNotExist(segments, block, "variance");
     }
 
+    // manual defined blocks, they are defined using CSS path in configuration file
+    for (Element manualBlock : findManualDefinedBlocks()) {
+      DomSegmentsUtils.addIfNotExist(segments, manualBlock, "manual");
+    }
+
     DomSegment segMenu = findMenu();
     DomSegment segTitle = findTitle();
 
@@ -104,26 +109,26 @@ public class DomSegmentsBuilder {
       tagPattern(segment);
     }
 
-    // no body
+    // body should not be a segment
     DomSegmentsUtils.removeByBlock(segments, doc.body());
 
+    // link all segments as a tree like structure
     // TODO : make DomSegment be a tree just like jsoup.nodes.Document
     DomSegmentsUtils.buildTree(segments);
 
-    DomSegmentsUtils.mergeSegments(segments, BlockLikihoodThreshold);
+    DomSegmentsUtils.mergeSegments(segments, BlockLikelihoodThreshold);
 
     rebuildSegmentTree();
 
+//    Element test = doc.select("tbody").first();
+//    logger.debug(test.strippedText());
+
     // set global variables
-    // TODO : do not modify conf?
+    // TODO : in such case, conf is used as a global variables manager, 
+    // is it a correct behavior? should we do not modify conf?
     doc.attr("data-title", segTitle.text());
-    doc.attr("data-title-seq", String.valueOf(segTitle.block().sequence()));
     conf.setInt("scent.page.title.sequence", segTitle.block().sequence());
-
-    doc.attr("data-menu-seq", String.valueOf(segMenu.block().sequence()));
     conf.setInt("scent.page.menu.sequence", segMenu.block().sequence());
-
-    doc.attr("data-node-count", String.valueOf(doc.indic(Indicator.D)));
     conf.setInt("scent.page.all.node.count", doc.indic(Indicator.D).intValue());
 
     logger.debug("there are {} segments", doc.domSegments().size());
@@ -181,11 +186,14 @@ public class DomSegmentsBuilder {
     }
   }
 
-  // dense link area should be a unabridged block
+  /**
+   * Some areas such as dense link areas should be unabridged blocks,
+   * so they should not has children segments
+   * */
   private void rebuildSegmentTree() {
     DomSegments removal = new DomSegments();
     for (DomSegment segment : doc.domSegments()) {
-      // keep segments has already labeled, because it's important
+      // keep segments who is already labeled, because it must be very important
       if (segment.labelTracker().empty() && segment.hasParent() && isNoDescendantSegment(segment.parent())) {
         if (logger.isDebugEnabled()) {
           logger.debug("remove illegal segment : {}, parent : {}", segment.name(), segment.parent().name());
@@ -199,6 +207,9 @@ public class DomSegmentsBuilder {
     doc.domSegments().removeAll(removal);
   }
 
+  /**
+   * The segments that has no descendants
+   * */
   private boolean isNoDescendantSegment(DomSegment segment) {
     Validate.notNull(segment);
 
@@ -211,8 +222,9 @@ public class DomSegmentsBuilder {
     return false;
   }
 
-  /*
+  /**
    * 标注区块模式
+   * Tag segment patterns
    */
   private void tagPattern(DomSegment segment) {
     Element ele = segment.block();
@@ -224,7 +236,10 @@ public class DomSegmentsBuilder {
     }
   }
 
-  // 寻找链接数远小于图片数的区域
+  /**
+   * Found out areas where are many images but few links
+   * 寻找链接数远小于图片数的区域
+   * */
   private Elements findPureImageAreas() {
     Elements candidates = new Elements();
     Multimap<Double, Element> indicatorIndex = doc.indicatorIndex(Indicator.IMG);
@@ -245,6 +260,9 @@ public class DomSegmentsBuilder {
     return candidates;
   }
 
+  /**
+   * Find out restricted tables, which are not layout tables, and contains valuable information
+   * */
   private Elements findTables() {
     Elements candidates = new Elements();
     Multimap<Double, Element> indicatorIndex = doc.indicatorIndex(Indicator.C);
@@ -265,6 +283,9 @@ public class DomSegmentsBuilder {
     return candidates;
   }
 
+  /**
+   * 
+   * */
   private Elements findDls() {
     Elements candidates = new Elements();
     Multimap<Double, Element> indicatorIndex = doc.indicatorIndex(Indicator.C);
@@ -290,6 +311,9 @@ public class DomSegmentsBuilder {
     return candidates;
   }
 
+  /**
+   * 
+   * */
   private Elements findLists() {
     Elements candidates = new Elements();
     Multimap<Double, Element> indicatorIndex = doc.indicatorIndex(Indicator.C);
@@ -338,6 +362,20 @@ public class DomSegmentsBuilder {
       if (BlockPattern.isDenseLinks(ele)) {
         candidates.add(ele);
       }
+    }
+
+    return candidates;
+  }
+
+  private Elements findManualDefinedBlocks() {
+    Elements candidates = new Elements();
+
+    for (String selector : conf.getStrings("scent.block.manual.defined", ArrayUtils.EMPTY_STRING_ARRAY)) {
+      candidates.addAll(doc.select(selector));
+    }
+
+    for (Element ele : candidates) {
+      ele.addClass("scent-manual-defined");
     }
 
     return candidates;

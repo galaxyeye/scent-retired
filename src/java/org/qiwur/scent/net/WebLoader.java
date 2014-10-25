@@ -58,22 +58,21 @@ public class WebLoader {
     return doc;
   }
 
-  protected Document doLoad(final String url) throws IOException, InterruptedException, NoProxyException {
-    String uri = url;
-
+  protected Document doLoad(String uri) throws IOException, InterruptedException, NoProxyException {
+    // remote uri
     // cache mechanism
-    File file = new File(FileUtil.getFileForPage(uri, cacheDir, "html"));
+    File file = new File(FileUtil.getFileForPage(uri, cacheDir, "original.html"));
     if (checkLocalCacheAvailable(file, localFileCacheExpires)) {
       uri = "file://" + file.getAbsolutePath();
       logger.debug("load from local file cache : {}", uri);
     }
 
+    // load from local cache
     if (uri.startsWith("file://")) {
-      return Jsoup.parse(file, "utf-8", url);
+      return Jsoup.parse(new File(uri.substring("file://".length())), "utf-8", uri);
     }
-    else {
-      return parse(fetch(uri));
-    }
+
+    return parse(fetch(uri));
   }
 
   protected Response fetch(final String uri) throws IOException, InterruptedException, NoProxyException {

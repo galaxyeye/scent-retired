@@ -17,7 +17,7 @@ public class EntityAttrValueFilter extends BadWordFilter {
 	private final PageEntity pageEntity;
 
 	public EntityAttrValueFilter(PageEntity pageEntity, Configuration conf) {
-	  super(conf.get("conf/bad-attribute-value-words.txt"), conf);
+	  super(conf.get("scent.bad.attr.value.words.file"), conf);
 		this.pageEntity = pageEntity;
 	}
 

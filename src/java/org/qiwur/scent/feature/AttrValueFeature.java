@@ -10,10 +10,12 @@ public final class AttrValueFeature extends LinedFeature {
 	public static final int MinAttributeValueSize = 1;
 	public static final int MaxAttributeValueSize = 200;
 
-	public static final String BadAttributeValueWordsFile = "conf/bad-attribute-value-words.txt";
+	public static String BadAttributeValueWordsFile = "conf/feature/default/bad-attr-value-words.txt";
 
 	public AttrValueFeature(Configuration conf, String[] featureFile) {
     super(conf, featureFile);
+
+    BadAttributeValueWordsFile = conf.get("scent.bad.attr.value.words.file", "conf/feature/default/bad-attr-value-words.txt");
 	}
 
 	public Multiset<String> badWords() {

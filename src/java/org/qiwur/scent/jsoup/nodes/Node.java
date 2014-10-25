@@ -28,6 +28,9 @@ public abstract class Node implements Cloneable, Comparable<Node> {
   Indicators indicators = new Indicators();
 
   String baseUri;
+  String textCache = null;
+  String strippedTextCache = null;
+
   int sequence;
   int siblingIndex;
   int siblingSize = 0;

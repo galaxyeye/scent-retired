@@ -1,0 +1,57 @@
+<!--
+build-in global indicators : 
+    -result     : result for complex indicators
+    -menu-seq   : menu's tag sequence in HTML code
+    -title-seq  : title's tag sequence in HTML code if any, the title text is similar with <title> tag
+    -last-seq   : the last tag sequence in HTML code
+
+build-in simple indicators : 
+     build-in simple indicators are each element specified
+     -char      : character number
+     -char-ave  : ave character number
+     -char-max  : max character number
+     -own-char  : character number of direct data nodes
+     -txt-blk   : non-empty text block number
+     -own-txt-blk : non-empty text block number of direct data nodes
+     -img       : image number
+     -a         : link number
+     -child     : direct children number
+     -grant-child : grant children number
+     -descend   : all descendant number
+     -sep       : separator number, separators are defined in configuration
+     -sibling   : sibling number
+     -dep       : depth in DOM
+     -seq       : tag sequence in HTML code
+
+all patterns    : DenseLinks, DenseText, LinkImages, Dl, Links, Table, Images, List, II, N2
+use patterns attribute in block tag to claim the allowed patterns and disallowed patterns, for example :
+<block label="AwesomeLabel" patterns="LinkImages,II" -patterns="Table,DenseLinks">...</block>
+
+if there are several block with the same type, we calculate the max score, see, it obeys logic OR rule
+-->
+<!-- 
+    for more information, see block-stat-features-default.xml
+-->
+<?xml version="1.0"?>
+<block-features>
+    <block label="ProductDetail" -patterns="Table,Dl,N2">
+        <rule indicator="title-distance"  range="50,"     score="0" -score="-100" />
+        <rule indicator="-char-ave"       range="150,"    score="2" -score="0" />
+        <rule indicator="-char-ave"       range="300,"    score="4" -score="0" />
+        <rule indicator="-img"            range="1,"      score="0" -score="-100" />
+        <rule indicator="-img"            range="2,"      score="2" -score="0" />
+        <rule indicator="-img"            range="4,"      score="2" -score="0" />
+        <rule indicator="-img-ave-w"      range=",10"     score="0" -score="-100" />
+        <rule indicator="-img-ave-w"      range="300,"    score="2" -score="0" />
+        <rule indicator="-img-ave-w"      range="400,"    score="2" -score="0" />
+        <rule indicator="-img-ave-w"      range="500,"    score="2" -score="0" />
+        <rule indicator="-img-ave-w"      range=",10"     score="0" -score="-100" />
+        <rule indicator="-img-ave-h"      range="10,100"  score="-100" -score="0" />
+        <rule indicator="-img-ave-h"      range="300,"    score="2" -score="0" />
+        <rule indicator="-img-ave-h"      range="400,"    score="2" -score="0" />
+        <rule indicator="-img-ave-h"      range="500,"    score="2" -score="0" />
+        <rule indicator="delta"           range="2,"      score="0" -score="-100" _1="-a" _2="-img" />
+        <rule indicator="delta"           range="4,"      score="4" -score="0"    _1="-a" _2="-img" />
+        <rule indicator="delta"           range="8,"      score="4" -score="0"    _1="-a" _2="-img" />
+    </block>
+</block-features>

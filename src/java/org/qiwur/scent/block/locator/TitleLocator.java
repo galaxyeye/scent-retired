@@ -43,7 +43,7 @@ public final class TitleLocator extends BlockLocator {
 
     potentialTitles = htmlTitleFeature.getPotentialTitles(doc.title());
 
-    logger.debug("potential titles : {}", potentialTitles);    
+    // logger.debug("potential titles : {}", potentialTitles);
   }
 
   @Override

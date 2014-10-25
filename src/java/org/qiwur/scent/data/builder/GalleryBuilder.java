@@ -106,7 +106,7 @@ public class GalleryBuilder extends EntityBuilder {
     return root;
   }
 
-  private Element buildLinks(Element root, Collection<EntityAttribute> attributes) {
+  protected Element buildLinks(Element root, Collection<EntityAttribute> attributes) {
     for (EntityAttribute attr : attributes) {
       root.append(attr.value());
     }
@@ -114,7 +114,7 @@ public class GalleryBuilder extends EntityBuilder {
     return root;
   }
 
-  private Element buildTable(Element root, Collection<EntityAttribute> attributes) {
+  protected Element buildTable(Element root, Collection<EntityAttribute> attributes) {
     Element table = root.appendElement("table");
     for (EntityAttribute attr : attributes) {
       if (attr.value().length() > 50) {

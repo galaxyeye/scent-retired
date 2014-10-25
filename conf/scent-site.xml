@@ -6,7 +6,7 @@
 <configuration>
   <property>
     <name>scent.conf.import</name>
-    <value>scent-site-product.xml</value>
+    <value>domain/scent-site-product.xml</value>
     <description>import domain specified configurations</description>
   </property>
 </configuration>

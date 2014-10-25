@@ -98,19 +98,20 @@ public class BlockPattern implements Comparable<BlockPattern> {
   }
 
   public static boolean isTable(Element ele) {
+    // TODO : why tr should be a table?
     if (!StringUtil.in(ele.tagName(), "table", "tbody", "tr")) {
       return false;
     }
 
     if (ele.tagName().equals("table")) {
       Element tbody = ele.getElementsByTag("tbody").first();
-      if (tbody != null)
-        ele = tbody;
+      if (tbody != null) ele = tbody;
     }
 
     double _child = ele.indic(Indicator.C);
     double _grant_child = ele.indic(Indicator.G);
 
+    // TODO : why need a minimal child number?
     // tooo few children, or tooo many grand children
     if (_child < 3 || _grant_child / _child > 5) {
       return false;

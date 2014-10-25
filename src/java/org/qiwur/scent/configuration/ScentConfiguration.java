@@ -17,6 +17,10 @@
 
 package org.qiwur.scent.configuration;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.net.MalformedURLException;
 import java.util.Collection;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -25,17 +29,20 @@ import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.qiwur.scent.jsoup.block.BlockLabel;
 import org.qiwur.scent.jsoup.nodes.Indicator;
-
-import com.google.common.collect.Sets;
 
 /**
  * Utility to create Hadoop {@link Configuration}s that include Scent-specific
  * resources.
  */
 public class ScentConfiguration {
+
   public static final String UUID_KEY = "scent.conf.uuid";
+
+  protected static final Logger logger = LogManager.getLogger(Configuration.class);
 
   private ScentConfiguration() {
   } // singleton
@@ -125,11 +132,30 @@ public class ScentConfiguration {
    *          Configuration object to which configuration is to be added.
    */
   private static Configuration addScentResources(Configuration conf) {
-    conf.addResource("scent-default.xml");
-    conf.addResource("scent-site.xml");
+    String defaultResource = "scent-default.xml";
+    String specifiedResource = "scent-site.xml";
 
-    for (String resource : conf.getStrings("scent.conf.import")) {
-      conf.addResource(resource);
+    conf.addResource(defaultResource);
+    conf.addResource(specifiedResource);
+
+    File file = new File(conf.getResource(defaultResource).getPath());
+    if (!file.exists()) {
+      logger.fatal("{} does not exists", defaultResource);
+    }
+
+    file = new File(conf.getResource(specifiedResource).getPath());
+    if (!file.exists()) {
+      logger.fatal("{} does not exists", specifiedResource);
+    }
+
+    try {
+      for (String resource : conf.getStrings("scent.conf.import")) {
+        file = new File(file.getParent() + File.separatorChar + resource);
+
+        conf.addResource(new FileInputStream(file));
+      }
+    } catch (FileNotFoundException e) {
+      logger.error(e);
     }
 
     return conf;
