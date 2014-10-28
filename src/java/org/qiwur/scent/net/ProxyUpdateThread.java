@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.hadoop.conf.Configuration;
+import org.qiwur.scent.configuration.ScentConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,13 +32,9 @@ public class ProxyUpdateThread extends Thread {
       return;
     }
 
-    updateProxyConfigFileFromMaster();
-
     try {
       int tick = 0;
       while (true) {
-        ++tick;
-
         if (tick % 20 == 0) {
           logger.debug("updating proxy pool...");
         }
@@ -58,13 +55,15 @@ public class ProxyUpdateThread extends Thread {
 
         proxyPool.tryUpdateFromFile();
         Thread.sleep(updatePeriod);
+
+        ++tick;
       }
     } catch (InterruptedException e) {
       logger.error(e.toString());
     }
   }
 
-  public void runAsDaemon() throws InterruptedException {
+  public void runAsDaemon() {
     proxyPool.tryUpdateFromFile();
 
     this.setDaemon(true);
@@ -87,6 +86,28 @@ public class ProxyUpdateThread extends Thread {
       }
     } catch (IOException e) {
       logger.error(e.toString());
+    }
+  }
+
+  public static void main(String[] args) throws Exception {
+    Configuration conf = ScentConfiguration.create();
+
+    ProxyUpdateThread updateThread = new ProxyUpdateThread(conf);
+    updateThread.runAsDaemon();
+
+    ProxyPool proxyPool = new ProxyPoolFactory(conf).getProxyPool();
+
+    while (true) {
+      ProxyEntry proxy = proxyPool.poll();
+
+      if (ProxyPool.testNetwork(proxy)) {
+        logger.debug("proxy : {} is available", proxy);
+      }
+      else {
+        logger.debug("proxy : {} is not available", proxy);
+      }
+
+      Thread.sleep(3000);
     }
   }
 }

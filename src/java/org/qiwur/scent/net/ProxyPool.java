@@ -15,32 +15,17 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.nutch.util.FiledLines;
-import org.apache.nutch.util.NetUtil;
+import org.qiwur.scent.utils.FiledLines;
+import org.qiwur.scent.utils.NetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * 
- * Proxy Resource Manager module
- * 
- * Manage proxy server pool, for every url in fetch queue, we choose a proxy server to fetch the target
- * from the proxy server pool
- * 
- * Proxy pool is used only for Proxy Mode, we will develop the other mode : Task Mode
- * In task mode, the nutch server will mainly do the schedule:
- * 
- * 1. satellites will ask the server for tasks
- * 2. once satellites finished the tasks, they will send the result back to the server
- * 3. the server will then save the result page into the backend storage
- * 
- * */
+// manager all proxy servers, for every request, we choose a proxy server from a proxy server list
 public class ProxyPool {
 
   protected static final Logger logger = LoggerFactory.getLogger(ProxyPool.class);
 
   public static final String ProxyListFile = "/tmp/nutch-proxy-servers.txt";
-  // public static final String ProxyListFile = "conf/proxy-servers.txt";
 
   private final Configuration conf;
 
@@ -54,22 +39,23 @@ public class ProxyPool {
 
   private int pollingMaxRetry = 5;
 
+  private int maxPoolSize = 5;
+  
   private FiledLines proxyServerList = null;
 
-  // TODO : we will save connected connections, rather than just save the ip-port pairs
-  private BlockingQueue<ProxyEntry> proxyEntries = new ProxyEntryBlockingQueue();
-  private BlockingQueue<ProxyEntry> retiredProxyEntries = new ProxyEntryBlockingQueue();
+  // TODO : save connected connections
+  private BlockingQueue<ProxyEntry> proxyEntries = new LinkedBlockingQueue<ProxyEntry>();
+  private BlockingQueue<ProxyEntry> retiredProxyEntries = new LinkedBlockingQueue<ProxyEntry>();
 
   public ProxyPool() {
     this.conf = null;
-
-    touchProxyConfigFile();
   }
 
   public ProxyPool(Configuration conf) {
     this.conf = conf;
 
-    touchProxyConfigFile();
+    this.maxPoolSize = conf.getInt("scent.net.proxy.max.pool.size", 5);
+
     update();
   }
 
@@ -80,7 +66,7 @@ public class ProxyPool {
   public boolean exhausted() {
     return size() == 0;
   }
-
+  
   public int retiredSize() {
     return retiredProxyEntries.size();
   }
@@ -89,8 +75,6 @@ public class ProxyPool {
   // thread safe
   public ProxyEntry poll() throws InterruptedException {
     ProxyEntry proxy = null;
-
-    logger.debug("pool size : {}, {}", proxyEntries.size(), retiredProxyEntries.size());
 
     int retry = 0;
     while (proxy == null && retry < pollingMaxRetry) {
@@ -102,7 +86,7 @@ public class ProxyPool {
         logger.debug("polling for proxy, retry : {}", retry);
       }
 
-      // Retrieves and removes the head of this queue, waiting if necessary until an element becomes available
+      // Retrieves and removes the head of this queue, waiting if necessary until an element becomes available.
       proxy = proxyEntries.poll(pollingWait, TimeUnit.SECONDS);
       if (proxy == null) {
         ++retry;
@@ -110,9 +94,14 @@ public class ProxyPool {
       }
 
       if (proxy.expired()) {
-        // proxy server is not available
-        retire(proxy);
-        proxy = null;
+        if (testNetwork(proxy)) {
+          // proxy server is available
+          proxy.refresh();
+        } else {
+          // proxy server is not available
+          retire(proxy);
+          proxy = null;
+        }
       }
     }
 
@@ -126,16 +115,28 @@ public class ProxyPool {
 
   // thread safe
   public void put(ProxyEntry proxy) throws InterruptedException {
+    if (contains(proxy)) {
+      logger.warn("{} is already in pool", proxy);
+      return;
+    }
+
+    proxy.refresh(true);
     proxyEntries.put(proxy);
   }
 
   // thread safe
   public void retire(ProxyEntry proxy) throws InterruptedException {
+    if (contains(proxy)) {
+      logger.warn("{} is already retired", proxy);
+      return;
+    }
+
+    proxy.refresh(false);
     retiredProxyEntries.put(proxy);
   }
 
   // thread safe
-  public void reviewRetired() throws InterruptedException {
+  public synchronized void reviewRetired() throws InterruptedException {
     long time = System.currentTimeMillis();
     if (time - lastReviewRetiredTime < reviewRetiredPeriod) {
       // logger.debug("review retired proxy entries later, skip...");
@@ -184,17 +185,17 @@ public class ProxyPool {
   }
 
   public void tryUpdateFromFile() {
-    // logger.trace("update proxy servers from file");
+    // logger.debug("update proxy servers from file");
 
     // touch the file to force update from the file
     final long ForceTouchPeriod = 60 * 60 * 1000; // an hour
     final long UpdateFromFilePeriod = 60 * 1000; // one minute
 
-    File file = new File(ProxyListFile);
-    if (!file.exists() || System.currentTimeMillis() - fileLastModified > ForceTouchPeriod) {
+    if (System.currentTimeMillis() - fileLastModified > ForceTouchPeriod) {
       touchProxyConfigFile();
     }
 
+    File file = new File(ProxyListFile);
     long modified = file.lastModified();
     double elapsed = modified - fileLastModified;
     fileLastModified = modified;
@@ -209,24 +210,13 @@ public class ProxyPool {
   public static List<String> getConfiguredProxyList() {
     List<String> result = new ArrayList<String>();
 
-    try {
-      result.addAll(new FiledLines(ProxyListFile).getLines(ProxyListFile));
-    } catch (IOException e) {
-      logger.error(e.toString());
-    }
+    result.addAll(new FiledLines(ProxyListFile).getLines(ProxyListFile));
 
     return result;
   }
 
   public static String touchProxyConfigFile() {
     File file = new File(ProxyListFile);
-    if (!file.exists()) {
-      try {
-        file.createNewFile();
-      } catch (IOException e) {
-        logger.error(e.toString());
-      }
-    }
 
     try {
       FileUtils.touch(file);
@@ -237,12 +227,13 @@ public class ProxyPool {
     return new Date(file.lastModified()).toString();
   }
 
+  /**
+   * not used in scent, used by nutch-proxy
+   * */
   public static void testAndSave(List<String> proxyList) throws IOException {
     if (proxyList.isEmpty()) {
       return;
     }
-
-    touchProxyConfigFile();
 
     List<Collection<String>> proxylists = new ArrayList<Collection<String>>();
     proxylists.add(proxyList);
@@ -311,13 +302,15 @@ public class ProxyPool {
 
   private void parse() {
     try {
+      // for diagnostic
       List<String> proxyList = new ArrayList<String>();
 
       for (String line : proxyServerList.getLines(ProxyListFile)) {
         ProxyEntry proxy = ProxyEntry.parse(line);
 
         if (proxy != null && !proxyEntries.contains(proxy) && !retiredProxyEntries.contains(proxy)) {
-          if (testNetwork(proxy)) {
+          // set a max pool size to avoid too much testing time
+          if (size() < maxPoolSize && testNetwork(proxy)) {
             put(proxy);
             proxyList.add(proxy.ipPort());
           }
@@ -343,29 +336,4 @@ public class ProxyPool {
     }
   }
 
-  private class ProxyEntryBlockingQueue extends LinkedBlockingQueue<ProxyEntry> {
-
-    // thread safe
-    @Override
-    public synchronized void put(ProxyEntry proxy) throws InterruptedException {
-      if (contains(proxy)) {
-        logger.warn("{} is already in pool", proxy);
-        return;
-      }
-
-      proxy.refresh(true);
-      proxyEntries.put(proxy);
-    }
-
-    // thread safe
-    public synchronized void retire(ProxyEntry proxy) throws InterruptedException {
-      if (contains(proxy)) {
-        logger.warn("{} is already retired", proxy);
-        return;
-      }
-
-      proxy.refresh(false);
-      retiredProxyEntries.put(proxy);
-    }
-  };
 }

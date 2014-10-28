@@ -18,6 +18,12 @@ package org.qiwur.scent.api;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -31,32 +37,39 @@ import org.qiwur.scent.data.extractor.WebExtractor;
 import org.qiwur.scent.entity.PageEntity;
 import org.qiwur.scent.jsoup.nodes.Document;
 import org.qiwur.scent.utils.FileUtil;
-import org.restlet.resource.Get;
+import org.restlet.Context;
 import org.restlet.resource.ServerResource;
 
-public class ExtractionResource extends ServerResource {
-  private static final Logger logger = LogManager.getLogger(ExtractionResource.class);
+@Path("/scent")
+public class ScentResource extends ServerResource {
+  private static final Logger logger = LogManager.getLogger(ScentResource.class);
 
-  public static final String PATH = "extract";
-  public static final String DESCR = "Service extraction actions";
+  public static final String WWWROOT = "wwwroot";
 
   private final Configuration conf;
   private final String baseDir;
   private final WebExtractor extractor;
 
-  public ExtractionResource() {
-    this.conf = ScentApp.server.conf;
+  public ScentResource() {
+    this.conf = (Configuration) Context.getCurrent().getAttributes().get(ScentServer.SCENT_CONFIGURATION);
 
     this.baseDir = conf.get("scent.web.cache.file.dir", "/tmp/web");
     this.extractor = WebExtractor.create(conf);
   }
 
-  @Get("json|xml|html|txt")
-  public Object execute() throws DataExtractorNotFound {
-    String url = getQuery().getValues("target");
-    String format = getQuery().getFirstValue("format", "html");
+  @GET
+  @Path("/")
+  @Produces(javax.ws.rs.core.MediaType.TEXT_HTML)
+  public String home() throws IOException {
+    String homePage = WWWROOT + File.separator + "scent.html";
+    return FileUtils.readFileToString(new File(homePage), Charset.forName("UTF-8"));
+  }
 
-    Document doc = extractor.getWebLoader().load(url);
+  @GET
+  @Path("/extract")
+  @Produces(javax.ws.rs.core.MediaType.TEXT_HTML)
+  public Object execute(@QueryParam("target") String target, @QueryParam("format") String format) {
+    Document doc = extractor.getWebLoader().load(target);
 
     if (doc == null) {
       return "invalid doc";
@@ -80,7 +93,7 @@ public class ExtractionResource extends ServerResource {
       return buildAllHtml(pageEntity);
     }
     else if (format.equals("diagnosis")) {
-      return getDiagnosis(url);
+      return getDiagnosis(target);
     }
 
     return buildHtml(pageEntity);

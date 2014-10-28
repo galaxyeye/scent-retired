@@ -50,12 +50,16 @@
     <dependency org="net.sourceforge.nekohtml" name="nekohtml" rev="1.9.20"/>
     <dependency org="xerces" name="xerces" rev="2.4.0"/>
     <dependency org="com.google.code.gson" name="gson" rev="2.2.4"/>
-    <dependency org="org.restlet.jse" name="org.restlet" rev="2.0.5" />
     <dependency org="net.sf.trove4j" name="trove4j" rev="3.0.3"/>
     <dependency org="jtidy" name="jtidy" rev="4aug2000r7-dev"/>
 
     <dependency org="junit" name="junit" rev="4.11" conf="*->default" />
     <dependency org="com.hp.hpl.jena" name="jena" rev="2.6.4" conf="*->default,sources" />
+
+    <dependency org="org.restlet.jse" name="org.restlet" rev="2.2.1" conf="*->default" />
+    <dependency org="org.restlet.jse" name="org.restlet.ext.jackson" rev="2.2.1" conf="*->default" />
+    <dependency org="org.restlet.jse" name="org.restlet.ext.jaxrs" rev="2.2.1" conf="*->default" />
+    <dependency org="com.sun.jersey" name="jersey-server" rev="1.18.1"/>
 
 <!-- 
     <dependency org="org.apache.hadoop" name="hadoop-common" rev="2.4.0">

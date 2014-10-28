@@ -2,6 +2,7 @@ package org.qiwur.scent.diagnosis;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -88,6 +89,6 @@ public class ScentDiagnoser {
 
   private void write(String content) throws IOException {
     File file = new File(FileUtil.getFileForPage(pageUri, cacheDir, "diag"));
-    FileUtils.write(file, content);
+    FileUtils.write(file, content, "utf-8");
   }
 }

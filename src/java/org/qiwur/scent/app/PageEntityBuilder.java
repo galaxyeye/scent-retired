@@ -140,7 +140,7 @@ public class PageEntityBuilder {
   private void cache(String pageUri, String content, String suffix) {
     try {
       File file = new File(FileUtil.getFileForPage(pageUri, cacheDir, suffix));
-      FileUtils.write(file, content);
+      FileUtils.write(file, content, "utf-8");
 
       logger.debug("saved in {}", file.getAbsoluteFile());
     } catch (IOException e) {

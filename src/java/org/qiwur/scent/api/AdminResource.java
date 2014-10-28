@@ -16,62 +16,55 @@
  ******************************************************************************/
 package org.qiwur.scent.api;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.text.MessageFormat;
+import java.util.concurrent.TimeUnit;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.restlet.resource.Get;
-import org.restlet.resource.ServerResource;
+import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
 
-public class AdminResource extends ServerResource {
-  private static final Logger logger = LogManager.getLogger(AdminResource.class);
+import org.restlet.Context;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-  public static final String PATH = "admin";
-  public static final String DESCR = "Service admin actions";
+@Path(value = "/admin")
+public class AdminResource {
+  private static final int DELAY_SEC = 10;
+  private static final long DELAY_MILLIS = TimeUnit.SECONDS.toMillis(DELAY_SEC);
 
-  @Get("json")
-  public Object execute() throws Exception {
-    String cmd = (String)getRequestAttributes().get(Params.CMD);
-    if ("status".equalsIgnoreCase(cmd)) {
-      // status
-      Map<String,Object> res = new HashMap<String,Object>();
-      res.put("started", ScentApp.started);
+  private static final Logger LOG = LoggerFactory.getLogger(AdminResource.class);
 
-//      Map<String,Object> jobs = new HashMap<String,Object>();
-//      jobs.put("all", ScentApp.jobMgr.list(null, State.ANY));
-//      jobs.put("running", ScentApp.jobMgr.list(null, State.RUNNING));
-//
-//      res.put("jobs", jobs);
-//      res.put("confs", ScentApp.confMgr.list());
+  @GET
+  @Path("/stop")
+  public String stop(@QueryParam("force") boolean force) {
+    scheduleServerStop();
+    return MessageFormat.format("Stopping in {0} seconds.", DELAY_SEC);
+  }
 
-      return res;
-    } else if ("stop".equalsIgnoreCase(cmd)) {
-      // stop
-      if (ScentApp.server.canStop()) {
-        Thread t = new Thread() {
-          public void run() {
-            try {
-              Thread.sleep(1000);
-              ScentApp.server.stop(false);
-              logger.info("Service stopped.");
-            } catch (Exception e) {
-              logger.error("Error stopping", e);
-            };
-          }
-        };
+  @PUT
+  @Path("/run")
+  public String run(@QueryParam("force") boolean force) {
+    scheduleServerStop();
+    return MessageFormat.format("Stopping in {0} seconds.", DELAY_SEC);
+  }
 
-        t.setDaemon(true);
-        t.start();
-
-        logger.info("Service shutting down...");
-        return "stopping";
-      } else {
-        logger.info("Command 'stop' denied due to unfinished jobs");
-        return "can't stop now";
+  private void scheduleServerStop() {
+    LOG.info("Server shutdown scheduled in {} seconds", DELAY_SEC);
+    Thread thread = new Thread() {
+      public void run() {
+        try {
+          Thread.sleep(DELAY_MILLIS);
+        } catch (InterruptedException e) {
+          Thread.currentThread().interrupt();
+        }
+        ScentServer server = (ScentServer) Context.getCurrent().getAttributes().get(ScentServer.SCENT_SERVER);
+        server.stop();
+        LOG.info("Service stopped.");
       }
-    } else {
-      return "Unknown command " + cmd;
-    }
+    };
+    thread.setDaemon(true);
+    thread.start();
+    LOG.info("Service shutting down...");
   }
 }
