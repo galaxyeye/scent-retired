@@ -242,7 +242,7 @@ public abstract class Node implements Cloneable, Comparable<Node> {
 
     value = StringUtils.removeEnd(value, "px");
 
-    return StringUtil.parseDouble(value, defaultValue);
+    return StringUtil.tryParseDouble(value, defaultValue);
   }
 
   /**

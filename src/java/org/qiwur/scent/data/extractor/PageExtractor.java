@@ -12,6 +12,7 @@ import org.apache.commons.lang.Validate;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.nutch.storage.WebPage.Field;
 import org.qiwur.scent.data.builder.WebsiteFactory;
 import org.qiwur.scent.entity.EntityAttribute;
 import org.qiwur.scent.entity.PageEntity;
@@ -22,7 +23,6 @@ import org.qiwur.scent.jsoup.block.DomSegments;
 import org.qiwur.scent.jsoup.nodes.Document;
 import org.qiwur.scent.jsoup.select.Elements;
 import org.qiwur.scent.learning.EntityAttributeLearner;
-import org.qiwur.scent.storage.WebPage.Field;
 import org.qiwur.scent.utils.NetUtil;
 
 import com.google.common.collect.Lists;

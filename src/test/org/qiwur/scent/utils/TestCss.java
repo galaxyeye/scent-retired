@@ -47,7 +47,7 @@ public class TestCss {
 
     value = StringUtils.removeEnd(value, "px");
 
-    return StringUtil.parseDouble(value, defaultValue);
+    return StringUtil.tryParseDouble(value, defaultValue);
   }
 
   public static void main(String[] args) throws Exception {

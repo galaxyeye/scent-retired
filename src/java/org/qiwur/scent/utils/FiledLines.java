@@ -66,6 +66,8 @@ public class FiledLines {
   }
 
   public Multiset<String> getLines(String file) {
+    if (filedLines.isEmpty()) return TreeMultiset.create();
+
     return filedLines.get(file);
   }
 

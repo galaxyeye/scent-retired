@@ -4,9 +4,140 @@
 <!-- Put site-specific property overrides in this file. -->
 
 <configuration>
+
   <property>
-    <name>scent.conf.import</name>
-    <value>domain/scent-site-product.xml</value>
-    <description>import domain specified configurations</description>
+      <name>scent.conf.domain.name</name>
+      <value>product</value>
+      <description></description>
   </property>
+
+  <property>
+      <name>scent.net.proxy.use.proxy.pool</name>
+      <value>true</value>
+  </property>
+  <property>
+      <name>scent.net.proxy.max.pool.size</name>
+      <value>15</value>
+  </property>
+
+  <!-- labels -->
+  <property>
+      <name>scent.classifier.block.labels</name>
+      <value>CategoryList,RelativeProduct,ShopIntro,ProductSpec,SimilarEntity,ProductDetail,Comment,DealHistory</value>
+      <description>Notice : do not split into lines</description>
+  </property>
+
+  <property>
+      <name>scent.classifier.block.inheritable.labels</name>
+      <value>Comment,DealHistory,CategoryList</value>
+      <description>Notice : do not split into lines</description>
+  </property>
+
+  <property>
+      <name>scent.extractor.bad.blocks</name>
+      <value>BadBlock,Areas,DenseLinks</value>
+  </property>
+
+  <property>
+      <name>scent.diagnose.classifier.block.labels</name>
+      <value>Gallery,CategoryList,Categories,TitleContainer,RelativeProduct,ProductSpec,SimilarEntity,ProductDetail,Comment,DealHistory,Areas,BadBlock</value>
+      <description>Notice : do not split into lines</description>
+  </property>
+
+
+  <!-- bad word filters -->
+  <property>
+    <name>scent.bad.attr.name.file</name>
+    <value>conf/feature/product/bad-attr-name.txt</value>
+  </property>
+  <property>
+    <name>scent.bad.attr.value.words.file</name>
+    <value>conf/feature/product/bad-attr-value-words.txt</value>
+  </property>
+  <property>
+    <name>scent.bad.page.keywords.file</name>
+    <value>conf/feature/product/bad-page-keywords.txt</value>
+  </property>
+  <property>
+    <name>scent.bad.category.words.file</name>
+    <value>conf/feature/product/bad-category-words.txt</value>
+  </property>
+  <property>
+    <name>scent.bad.html.title.words.file</name>
+    <value>conf/feature/product/bad-html-title-words.txt</value>
+  </property>
+  <property>
+    <name>scent.bad.entity.name.words.file</name>
+    <value>conf/feature/product/bad-entity-name-words.txt</value>
+  </property>
+
+
+  <!-- block features -->
+  <property>
+    <name>scent.block.title.feature.file</name>
+    <value>conf/feature/product/block-title-feature.xml</value>
+  </property>
+  <property>
+    <name>scent.block.text.feature.file</name>
+    <value>conf/feature/product/block-text-feature.xml</value>
+  </property>
+  <property>
+    <name>scent.block.stat.feature.file</name>
+    <value>conf/feature/product/block-stat-feature.xml</value>
+  </property>
+
+
+  <!-- extractors -->
+  <property>
+      <name>scent.block.extractors.Gallery</name>
+      <value>org.qiwur.scent.data.extractor.GalleryExtractor</value>
+  </property>
+  <property>
+      <name>scent.block.extractors.Title</name>
+      <value>org.qiwur.scent.data.extractor.TitleExtractor</value>
+  </property>
+  <property>
+      <name>scent.block.extractors.Categories</name>
+      <value>org.qiwur.scent.data.extractor.CategoriesExtractor</value>
+  </property>
+  <property>
+      <name>scent.block.extractors.SimilarEntity</name>
+      <value>org.qiwur.scent.data.extractor.SimilarEntityExtractor</value>
+  </property>
+
+
+  <!-- wiki -->
+  <property>
+    <name>scent.wiki.domain</name>
+    <value>localhost</value>
+  </property>
+  <property>
+    <name>scent.wiki.username</name>
+    <value>galaxyeyebot</value>
+  </property>
+  <property>
+    <name>scent.wiki.password</name>
+    <value>ABC!@#</value>
+  </property>
+  <property>
+    <name>scent.wiki.save</name>
+    <value>false</value>
+  </property>
+  <property>
+    <name>scent.wiki.upload</name>
+    <value>false</value>
+  </property>
+
+  <!-- storage -->
+  <property>
+    <name>storage.data.store.class</name>
+    <value>org.apache.gora.hbase.store.HBaseStore</value>
+  </property>
+
+  <property>
+    <name>storage.crawl.id</name>
+    <value>ccc</value>
+    <description>crawl 3C pages</description>
+  </property>
+
 </configuration>

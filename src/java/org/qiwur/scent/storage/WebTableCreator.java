@@ -14,12 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.qiwur.scent.plugin;
+package org.qiwur.scent.storage;
 
-import java.util.Collection;
-
+import org.apache.gora.store.DataStore;
+import org.apache.nutch.storage.StorageUtils;
 import org.apache.nutch.storage.WebPage;
+import org.qiwur.scent.configuration.ScentConfiguration;
 
-public interface FieldPluggable extends Pluggable {
-  public Collection<WebPage.Field> getFields();
+public class WebTableCreator {
+  public static void main(String[] args) throws Exception {
+    DataStore<String, WebPage> store = 
+        StorageUtils.createWebStore(ScentConfiguration.create(), String.class, WebPage.class);
+
+    System.out.println(store);
+
+//    DataStore<String, PageBlock> store2 = 
+//        StorageUtils.createWebStore(ScentConfiguration.create(), String.class, PageBlock.class);
+//
+//    System.out.println(store2);
+  }
 }

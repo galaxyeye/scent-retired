@@ -1,0 +1,17 @@
+{"name": "PageBlock",
+ "type": "record",
+ "namespace": "org.qiwur.scent.storage",
+ "fields": [
+        {"name": "baseUrl", "type": ["null","string"], "default":null},
+        {"name": "xpath", "type": ["null","string"], "default":null},
+        {"name": "baseSequence", "type": "int", "default":0},
+        {"name": "status", "type": "int", "default":0},
+        {"name": "buildTime", "type": "long", "default":0},
+        {"name": "content", "type": ["null","bytes"], "default":null},
+        {"name": "label", "type": ["null","string"], "default":null},
+        {"name": "labelScore", "type": "float", "default":0},
+        {"name": "kvpairs", "type": {"type":"map", "values": ["null","string"]}, "default":{}},
+        {"name": "markers", "type": {"type": "map", "values": ["null","string"]}, "default":{}},
+        {"name": "batchId", "type": ["null","string"], "default":null}
+   ]
+}

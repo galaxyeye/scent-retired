@@ -87,6 +87,7 @@ public class LogisticRegressionTrainer {
         files.addAll(Arrays.asList(categorizedDir.listFiles()));
       }
     }
+
     Collections.shuffle(files);
   }
 

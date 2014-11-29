@@ -138,25 +138,25 @@ public class ScentConfiguration {
     conf.addResource(defaultResource);
     conf.addResource(specifiedResource);
 
-    File file = new File(conf.getResource(defaultResource).getPath());
-    if (!file.exists()) {
-      logger.fatal("{} does not exists", defaultResource);
-    }
-
-    file = new File(conf.getResource(specifiedResource).getPath());
-    if (!file.exists()) {
-      logger.fatal("{} does not exists", specifiedResource);
-    }
-
-    try {
-      for (String resource : conf.getStrings("scent.conf.import")) {
-        file = new File(file.getParent() + File.separatorChar + resource);
-
-        conf.addResource(new FileInputStream(file));
-      }
-    } catch (FileNotFoundException e) {
-      logger.error(e);
-    }
+//    File file = new File(conf.getResource(defaultResource).getPath());
+//    if (!file.exists()) {
+//      logger.fatal("{} does not exists", defaultResource);
+//    }
+//
+//    file = new File(conf.getResource(specifiedResource).getPath());
+//    if (!file.exists()) {
+//      logger.fatal("{} does not exists", specifiedResource);
+//    }
+//
+//    try {
+//      for (String resource : conf.getStrings("scent.conf.import")) {
+//        file = new File(file.getParent() + File.separatorChar + resource);
+//
+//        conf.addResource(new FileInputStream(file));
+//      }
+//    } catch (FileNotFoundException e) {
+//      logger.error(e);
+//    }
 
     return conf;
   }

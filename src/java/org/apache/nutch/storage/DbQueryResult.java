@@ -14,12 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.qiwur.scent.plugin;
+package org.apache.nutch.storage;
 
-import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
-import org.apache.nutch.storage.WebPage;
+import com.google.common.collect.Lists;
 
-public interface FieldPluggable extends Pluggable {
-  public Collection<WebPage.Field> getFields();
+public class DbQueryResult {
+  private List<Map<String, Object>> values = Lists.newLinkedList();
+
+  public List<Map<String, Object>> getValues() {
+    return Collections.unmodifiableList(values);
+  }
+
+  public void addValue(Map<String, Object> next) {
+    values.add(next);
+  }
 }

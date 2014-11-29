@@ -8,13 +8,19 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.Validate;
+import org.apache.gora.query.Query;
+import org.apache.gora.query.Result;
+import org.apache.gora.store.DataStore;
+import org.apache.gora.util.GoraException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.nutch.storage.Bytes;
+import org.apache.nutch.storage.StorageUtils;
+import org.apache.nutch.storage.WebPage;
 import org.qiwur.scent.configuration.ScentConfiguration;
 import org.qiwur.scent.data.builder.EntityBuilder;
 import org.qiwur.scent.data.builder.ProductWikiBuilder;
@@ -22,6 +28,7 @@ import org.qiwur.scent.data.extractor.DataExtractorNotFound;
 import org.qiwur.scent.data.extractor.PageExtractor;
 import org.qiwur.scent.data.extractor.WebExtractor;
 import org.qiwur.scent.entity.PageEntity;
+import org.qiwur.scent.jsoup.Jsoup;
 import org.qiwur.scent.jsoup.nodes.Document;
 import org.qiwur.scent.learning.WordsLearnerFactory;
 import org.qiwur.scent.utils.FetchListManager;
@@ -30,18 +37,20 @@ import org.qiwur.scent.wiki.Page;
 
 public class PageEntityBuilder {
 
-  private static final Logger logger = LogManager.getLogger(PageEntityBuilder.class);
+  private static final Logger LOG = LogManager.getLogger(PageEntityBuilder.class);
 
   private final Configuration conf;
   private final String targetUri;
   private final boolean generateFetchList;
+  private final String targetMode;
   private final WebExtractor extractor;
   private final boolean cachePage;
   private final boolean cacheWiki;
   private final boolean uploadWiki;
   private final String cacheDir;
 
-  private FetchListManager fetchListManager = new FetchListManager();
+  private DataStore<String, WebPage> goraStore = null;
+  private FetchListManager fetchListManager = null;
 
   PageEntityBuilder(String targetUri, Configuration conf) {
     this.conf = ScentConfiguration.create();
@@ -53,56 +62,98 @@ public class PageEntityBuilder {
     this.uploadWiki = conf.getBoolean("scent.wiki.upload", false);
     this.cacheWiki = conf.getBoolean("scent.wiki.cache", false);
     this.cacheDir = conf.get("scent.web.cache.file.dir", "/tmp/web");
-
     this.extractor = WebExtractor.create(conf);
+
+    if (targetUri.startsWith("gora")) {
+      targetMode = "gora";
+    }
+    else if (targetUri.startsWith("http")) {
+      targetMode = "http";
+    }
+    else if (targetUri.startsWith("file")) {
+      targetMode = "file";
+    }
+    else {
+      targetMode = "fetch-list";
+    }
+
+    if (targetMode.equals("fetch-list")) {
+      fetchListManager = new FetchListManager();
+    }
+
+    if (targetMode.equals("gora")) {
+      try {
+        goraStore = StorageUtils.createWebStore(conf, String.class, WebPage.class);
+
+        System.out.println("Read records from table " + goraStore.getSchemaName());
+      } catch (ClassNotFoundException | GoraException e) {
+        LOG.error(e.toString());
+      }
+    }
   }
 
-  public void process() {
-    if (targetUri != null) {
-      try {
-        logger.debug(targetUri);
-
-        processPage(targetUri);
-      } catch (IOException | DataExtractorNotFound e) {
-        logger.error(e);
-      }
+  public void process() throws Exception {
+    // process the given uri
+    if (targetMode.equals("http") || targetMode.equals("file")) {
+      processDocument(readInternet(targetUri));
+    }
+    else if (targetMode.equals("gora")) {
+      processGoraSource();
 
       return;
     }
-
-    for (String uri : fetchListManager.detailUrls()) {
-      try {
-        logger.debug(uri);
-
-        processPage(uri);
-      } catch (IOException | DataExtractorNotFound e) {
-        logger.error(e);
-      }
+    else {
+      
     }
 
-    if (generateFetchList) {
-      fetchListManager.saveUrls();
+    // process uris from configuration
+    for (String uri : fetchListManager.detailUrls()) {
+      LOG.debug(uri);
+
+      processDocument(readInternet(uri));
+
+      if (generateFetchList) {
+        fetchListManager.saveUrls();
+      }
     }
 
     new WordsLearnerFactory(conf).getWordsLearner().save();
   }
 
-  // 支持远程URL和本地文件
-  public void processPage(String uri) throws IOException, DataExtractorNotFound {
-    // 配置选项：忽略已处理过的链接
-    if (generateFetchList && fetchListManager.checkProcessed(uri)) {
-      return;
-    }
+  private void processGoraSource() throws IOException {
+    long limit = 10;
 
-    Document doc = extractor.getWebLoader().load(uri);
-    if (doc == null) {
-      logger.info("bad uri {}", uri);
-      return;
-    }
+    Query<String, WebPage> query = goraStore.newQuery();
+    query.setLimit(limit);
 
-    if (generateFetchList) {
-      fetchListManager.addProcessed(uri);
+    Result<String, WebPage> result = goraStore.execute(query);
+    long count = 0;
+    try {
+      while (result.next() && ++count <= limit) {
+        WebPage page = result.get();
+        String contentType = page.getContentType().toString();
+        if (contentType.contains("html")) {
+          Document doc = Jsoup.parse(Bytes.toString(page.getContent()), page.getBaseUrl().toString());
+          processDocument(doc);
+        }
+
+        if (page.getText() != null) {
+          System.out.println(count + ".\t" + contentType
+              + "\t" + page.getText().subSequence(0, 100));
+        }
+      }
+    } catch (Exception e) {
+      LOG.error(e.toString());
     }
+    finally {
+      if (result != null) {
+        result.close();
+      }
+    }
+  }
+
+  private void processDocument(Document doc) throws IOException, DataExtractorNotFound {
+    Validate.notNull(doc);
 
     long time = System.currentTimeMillis();
 
@@ -110,7 +161,7 @@ public class PageEntityBuilder {
     cache(doc.baseUri(), pageEntity.toString(), "log");
 
     time = System.currentTimeMillis() - time;
-    logger.info("网页转换耗时 : {}s\n\n", time / 1000.0);
+    LOG.info("网页转换耗时 : {}s\n\n", time / 1000.0);
 
     Document html = generateHtml(pageEntity);
 
@@ -120,6 +171,25 @@ public class PageEntityBuilder {
 //    cache(doc.baseUri(), wiki.text(), "wiki");
 
     // if (uploadWiki) wiki.upload();
+  }
+
+  private Document readInternet(String uri) {
+    // 配置选项：忽略已处理过的链接
+    if (generateFetchList && fetchListManager.checkProcessed(uri)) {
+      return null;
+    }
+
+    Document doc = extractor.getWebLoader().load(uri);
+    if (doc == null) {
+      LOG.info("bad uri {}", uri);
+      return null;
+    }
+
+    if (generateFetchList) {
+      fetchListManager.addProcessed(uri);
+    }
+
+    return doc;
   }
 
   private Page generateWiki(PageEntity pageEntity, String pageType) {
@@ -142,9 +212,9 @@ public class PageEntityBuilder {
       File file = new File(FileUtil.getFileForPage(pageUri, cacheDir, suffix));
       FileUtils.write(file, content, "utf-8");
 
-      logger.debug("saved in {}", file.getAbsoluteFile());
+      LOG.debug("saved in {}", file.getAbsoluteFile());
     } catch (IOException e) {
-      logger.error(e);
+      LOG.error(e);
     }
   }
 
@@ -156,10 +226,15 @@ public class PageEntityBuilder {
     OptionBuilder.withArgName("page url");
     options.addOption(OptionBuilder.create("url"));
 
+    OptionBuilder.withDescription("Read from hbase.");
+    OptionBuilder.hasOptionalArg();
+    OptionBuilder.withArgName("hbase");
+    options.addOption(OptionBuilder.create("hbase"));
+
     return options;
   }
 
-  public static void main(String[] args) throws IOException, DataExtractorNotFound, ParseException {
+  public static void main(String[] args) throws Exception {
     Configuration conf = ScentConfiguration.create();
 
     CommandLineParser parser = new PosixParser();

@@ -184,13 +184,13 @@ public final class BlockStatFeature implements WebFeature {
         continue;
       }
 
-      Double min = StringUtil.parseDouble(range[0]);
-      Double max = StringUtil.parseDouble(range[1]);
+      Double min = StringUtil.tryParseDouble(range[0]);
+      Double max = StringUtil.tryParseDouble(range[1]);
       if (range[0].trim().isEmpty()) min = StatRule.MIN_SCORE;
       if (range[1].trim().isEmpty()) max = StatRule.MAX_SCORE;
 
-      double score = StringUtil.parseDouble(eleRule.attr("score"));
-      double nag_score = StringUtil.parseDouble(eleRule.attr("-score"));
+      double score = StringUtil.tryParseDouble(eleRule.attr("score"));
+      double nag_score = StringUtil.tryParseDouble(eleRule.attr("-score"));
 
       StatRule rule = new StatRule(indicator, min, max, score, nag_score);
 

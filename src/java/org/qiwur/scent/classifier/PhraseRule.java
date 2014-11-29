@@ -42,7 +42,7 @@ public class PhraseRule extends ScentRule {
 
     }).traverse(ele);
 
-    double count = StringUtil.parseDouble(ele.attr("data-tmp-count"));
+    double count = StringUtil.tryParseDouble(ele.attr("data-tmp-count"));
     ele.removeAttr("data-tmp-count");
 
     return count * score();

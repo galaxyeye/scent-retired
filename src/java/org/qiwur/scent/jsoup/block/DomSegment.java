@@ -113,6 +113,10 @@ public class DomSegment implements Comparable<DomSegment> {
     return title.text();
   }
 
+  public int baseSequence() {
+    return root.sequence();
+  }
+
   public boolean hasTitle() {
     return titleText() != "";
   }

@@ -183,7 +183,7 @@ class PhraseFeatureParser {
       for (Element elePhrase : eleBlock.getElementsByTag("phrase")) {
         // since the name can be an css id or class, we humanize it
         String name = StringUtil.humanize(elePhrase.attr("name"));
-        double score = StringUtil.parseDouble(elePhrase.attr("score"));
+        double score = StringUtil.tryParseDouble(elePhrase.attr("score"));
 
         if (!name.isEmpty() && score != 0) {
           blockRule.addRule(new PhraseRule(name, score));

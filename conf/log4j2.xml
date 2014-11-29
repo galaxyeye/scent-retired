@@ -20,7 +20,24 @@
       <AppenderRef ref="File"/>
     </Root>
 
-    <Logger name="org.qiwur.scent.application.WikiProductBuilder" level="info" additivity="true">
+    <Logger name="org.apache.hadoop" level="debug" additivity="false">
+      <AppenderRef ref="File"/>
+    </Logger>
+    <Logger name="org.apache.zookeeper" level="warn" additivity="false">
+      <AppenderRef ref="File"/>
+    </Logger>
+    <Logger name="org.apache.hbase" level="debug" additivity="false">
+      <AppenderRef ref="File"/>
+    </Logger>
+    <Logger name="org.apache.gora" level="debug" additivity="false">
+      <AppenderRef ref="File"/>
+    </Logger>
+
+    <Logger name="org.qiwur.scent.segment.SegmentJob" level="debug" additivity="false">
+      <AppenderRef ref="File"/>
+    </Logger>
+
+    <Logger name="org.qiwur.scent.application.WikiProductBuilder" level="info" additivity="false">
       <AppenderRef ref="Console"/>
     </Logger>
 

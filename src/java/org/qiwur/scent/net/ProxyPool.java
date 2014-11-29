@@ -3,6 +3,7 @@ package org.qiwur.scent.net;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -296,7 +297,7 @@ public class ProxyPool {
     return result;
   }
 
-  private void load() throws IOException {
+  private void load() {
     proxyServerList = new FiledLines(ProxyListFile);
   }
 
@@ -328,12 +329,8 @@ public class ProxyPool {
   }
 
   private void update() {
-    try {
-      load();
-      parse();
-    } catch (IOException e) {
-      logger.error(e.toString());
-    }
+    load();
+    parse();
   }
 
 }
