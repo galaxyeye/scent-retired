@@ -4,8 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
-import org.qiwur.scent.entity.Link;
-import org.qiwur.scent.entity.PageEntity;
+import org.qiwur.scent.data.entity.Link;
+import org.qiwur.scent.data.entity.PageEntity;
 import org.qiwur.scent.jsoup.block.BlockLabel;
 import org.qiwur.scent.jsoup.block.DomSegment;
 import org.qiwur.scent.jsoup.nodes.Element;

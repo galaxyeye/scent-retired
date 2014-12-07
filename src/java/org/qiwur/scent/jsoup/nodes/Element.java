@@ -11,10 +11,12 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import org.apache.hadoop.util.StringUtils;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.qiwur.scent.jsoup.parser.MessageDigestCalculator;
 import org.qiwur.scent.jsoup.parser.Parser;
 import org.qiwur.scent.jsoup.parser.Tag;
 import org.qiwur.scent.jsoup.select.Collector;
+import org.qiwur.scent.jsoup.select.ElementTraversor;
 import org.qiwur.scent.jsoup.select.Elements;
 import org.qiwur.scent.jsoup.select.Evaluator;
 import org.qiwur.scent.jsoup.select.InterruptiveNodeVisitor;
@@ -22,6 +24,8 @@ import org.qiwur.scent.jsoup.select.NodeTraversor;
 import org.qiwur.scent.jsoup.select.Selector;
 import org.qiwur.scent.utils.StringUtil;
 import org.qiwur.scent.utils.Validate;
+
+import com.google.common.collect.Lists;
 
 /**
  * A HTML element consists of a tag name, attributes, and child nodes (including
@@ -1337,6 +1341,34 @@ public class Element extends Node {
         indent(accum, depth, out);
       accum.append("</").append(tagName()).append(">");
     }
+  }
+
+  /**
+   * Get full xpath
+   * */
+  public String xpath() {
+    StringBuilder accum = new StringBuilder();
+
+    for (Element ele : Lists.reverse(parents())) {
+      accum.append('/');
+      accum.append(ele.tagName());
+      if (ele.siblingSize() > 0) {
+        accum.append('[');
+        accum.append(ele.siblingIndex());
+        accum.append(']');
+      }
+    }
+
+    return accum.toString();
+  }
+
+  /**
+   * Get html message digest
+   * */
+  public String md5hex() {
+    StringBuilder accum = new StringBuilder();
+    new ElementTraversor(new MessageDigestCalculator(accum)).traverse(this);
+    return DigestUtils.md5Hex(accum.toString());
   }
 
   /**

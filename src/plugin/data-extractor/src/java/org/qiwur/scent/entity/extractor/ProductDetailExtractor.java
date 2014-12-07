@@ -1,8 +1,8 @@
 package org.qiwur.scent.entity.extractor;
 
 import org.apache.hadoop.conf.Configuration;
+import org.qiwur.scent.data.entity.PageEntity;
 import org.qiwur.scent.data.extractor.DomSegmentExtractor;
-import org.qiwur.scent.entity.PageEntity;
 import org.qiwur.scent.jsoup.block.DomSegment;
 
 public class ProductDetailExtractor extends DomSegmentExtractor {

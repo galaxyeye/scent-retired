@@ -16,7 +16,7 @@ public class DOMUtil {
   // 判断两个元素是否相邻
   // 相邻的定义是具有某代以内的相同祖先
   // 返回代数
-  static public Element getRecentAncestor(Element e, Element e2, int generation) {
+  public static Element getRecentAncestor(Element e, Element e2, int generation) {
     if (e == null || e2 == null)
       return null;
 
@@ -38,17 +38,17 @@ public class DOMUtil {
     return null;
   }
 
-  static public boolean isAncestor(DomSegment child, DomSegment ancestor) {
+  public static boolean isAncestor(DomSegment child, DomSegment ancestor) {
     if (child == null || ancestor == null) return false;
     return isAncestor(child.block(), ancestor.block(), 1000000);
   }
 
-  static public boolean isAncestor(Element child, Element ancestor) {
+  public static boolean isAncestor(Element child, Element ancestor) {
     return isAncestor(child, ancestor, 1000000);
   }
 
   // 是否generation代以内的先祖
-  static public boolean isAncestor(Element child, Element ancestor, int generation) {
+  public static boolean isAncestor(Element child, Element ancestor, int generation) {
     if (ancestor == null || child == null) return false;
 
     while (child != null && generation-- > 0) {
@@ -64,7 +64,7 @@ public class DOMUtil {
     return false;
   }
 
-  static public Element getAncestor(Element e, int generation) {
+  public static Element getAncestor(Element e, int generation) {
     while (e != null && generation-- > 0) {
       e = e.parent();
     }

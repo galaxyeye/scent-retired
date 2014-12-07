@@ -4,10 +4,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;
-import org.qiwur.scent.entity.EntityAttribute;
-import org.qiwur.scent.entity.PageEntity;
-import org.qiwur.scent.feature.AttrValueFeature;
-import org.qiwur.scent.feature.FeatureManager;
+import org.qiwur.scent.data.entity.EntityAttribute;
+import org.qiwur.scent.data.entity.PageEntity;
+import org.qiwur.scent.data.feature.AttrValueFeature;
+import org.qiwur.scent.data.feature.FeatureManager;
 import org.qiwur.scent.utils.StringUtil;
 
 public class EntityAttrValueFilter extends BadWordFilter {

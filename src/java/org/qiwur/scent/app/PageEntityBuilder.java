@@ -21,19 +21,19 @@ import org.apache.logging.log4j.Logger;
 import org.apache.nutch.storage.Bytes;
 import org.apache.nutch.storage.StorageUtils;
 import org.apache.nutch.storage.WebPage;
-import org.qiwur.scent.configuration.ScentConfiguration;
 import org.qiwur.scent.data.builder.EntityBuilder;
 import org.qiwur.scent.data.builder.ProductWikiBuilder;
+import org.qiwur.scent.data.entity.PageEntity;
 import org.qiwur.scent.data.extractor.DataExtractorNotFound;
 import org.qiwur.scent.data.extractor.PageExtractor;
 import org.qiwur.scent.data.extractor.WebExtractor;
-import org.qiwur.scent.entity.PageEntity;
+import org.qiwur.scent.data.wiki.Page;
 import org.qiwur.scent.jsoup.Jsoup;
 import org.qiwur.scent.jsoup.nodes.Document;
 import org.qiwur.scent.learning.WordsLearnerFactory;
 import org.qiwur.scent.utils.FetchListManager;
 import org.qiwur.scent.utils.FileUtil;
-import org.qiwur.scent.wiki.Page;
+import org.qiwur.scent.utils.ScentConfiguration;
 
 public class PageEntityBuilder {
 

@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.qiwur.scent.configuration.ScentConfiguration;
+import org.qiwur.scent.utils.ScentConfiguration;
 
 /**
  * The plugin repositority is a registry of all plugins.

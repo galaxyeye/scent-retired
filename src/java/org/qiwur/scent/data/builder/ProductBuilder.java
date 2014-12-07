@@ -2,8 +2,8 @@ package org.qiwur.scent.data.builder;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
-import org.qiwur.scent.entity.EntityAttribute;
-import org.qiwur.scent.entity.PageEntity;
+import org.qiwur.scent.data.entity.EntityAttribute;
+import org.qiwur.scent.data.entity.PageEntity;
 import org.qiwur.scent.utils.StringUtil;
 
 public class ProductBuilder extends EntityBuilder {

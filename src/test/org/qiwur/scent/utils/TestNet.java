@@ -11,13 +11,21 @@ import java.util.Properties;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.qiwur.scent.jsoup.block.BlockPattern;
 
 public class TestNet {
 
 	private static final Logger logger = LogManager.getLogger(TestNet.class);
 
-	private static void testSystemProxy() throws URISyntaxException {
+  @Test
+  @Ignore("GORA-326 Removal of _g_dirty field from _ALL_FIELDS array and Field Enum in Persistent classes")
+  public void testSinglethreaded() throws Exception {
+  }
+
+  @Test
+  public void testSystemProxy() throws URISyntaxException {
 		try {
 			Properties systemSettings = System.getProperties();
 
@@ -25,7 +33,7 @@ public class TestNet {
 			systemSettings.put("http.proxyHost", "proxy.mycompany1.local");
 			systemSettings.put("http.proxyPort", "80");
 
-			URL u = new URL("http://www.google.com");
+			URL u = new URL("http://www.baidu.com");
 			HttpURLConnection con = (HttpURLConnection) u.openConnection();
 
 			System.out.println(con.getResponseCode() + " : " + con.getResponseMessage());

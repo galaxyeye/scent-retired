@@ -16,97 +16,209 @@
  ******************************************************************************/
 package org.qiwur.scent.segment;
 
+import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.regex.Pattern;
 
-import org.apache.avro.util.Utf8;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.Validate;
 import org.apache.gora.mapreduce.GoraMapper;
 import org.apache.gora.mapreduce.GoraReducer;
 import org.apache.gora.store.DataStore;
 import org.apache.gora.store.DataStoreFactory;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.nutch.storage.Bytes;
+import org.apache.nutch.storage.Mark;
+import org.apache.nutch.storage.Nutch;
 import org.apache.nutch.storage.TableUtil;
 import org.apache.nutch.storage.WebPage;
-import org.qiwur.scent.configuration.ScentConfiguration;
+import org.qiwur.scent.classifier.DomSegmentsClassifier;
+import org.qiwur.scent.jsoup.Jsoup;
+import org.qiwur.scent.jsoup.block.DomSegment;
+import org.qiwur.scent.jsoup.nodes.Document;
 import org.qiwur.scent.storage.PageBlock;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.qiwur.scent.storage.ScentMark;
+import org.qiwur.scent.utils.FileUtil;
+import org.qiwur.scent.utils.ScentConfiguration;
+import org.qiwur.scent.utils.SegmentUtil;
+import org.qiwur.scent.utils.StringUtil;
 
 import com.google.common.collect.Maps;
 
 /**
  * Scans the web table and create host entries for each unique host.
  * 
- * 
  **/
 public class SegmentJob implements Tool {
 
-  public static final Logger LOG = LoggerFactory.getLogger(SegmentJob3.class);
-  
+  protected static final Logger LOG = LogManager.getLogger(SegmentJob.class);
+
   private static final Collection<WebPage.Field> FIELDS = new HashSet<WebPage.Field>();
 
   private Configuration conf;
 
   static {
-    FIELDS.add(WebPage.Field.STATUS);
+    FIELDS.add(WebPage.Field.CONTENT);
+    FIELDS.add(WebPage.Field.CONTENT_TYPE);
+    FIELDS.add(WebPage.Field.MARKERS);
+  }
+
+  static final String RegexParamName = "scent.segment.webpage.url.regex";
+  static final String LimitParamName = "scent.segment.webpage.read.limit";
+  static final String WriteDbParamName = "scent.segment.write.db";
+
+  /** Filters the entries from the table based on a regex **/
+  public static class Mapper extends GoraMapper<String, WebPage, Text, PageBlock> {
+    private Configuration conf;
+    private Pattern pattern = null;
+    private boolean writeDb = false;
+    private int limit = -1;
+    private int count = 0;
+
+    @Override
+    protected void map(String key, WebPage page, Context context) throws IOException, InterruptedException {
+      // filtering
+      if (org.apache.nutch.storage.Mark.FETCH_MARK.checkMark(page) == null) {
+        return;
+      }
+
+      if (page.getContentType() != null && !page.getContentType().toString().contains("html")) {
+        return;
+      }
+
+      // content type must be html/xhtml
+
+      // checks whether the Key passes the regex
+      String url = TableUtil.unreverseUrl(key.toString());
+
+      if (pattern == null || pattern.matcher(url).matches()) {
+        if (limit > 0 && count++ > limit) {
+          return;
+        }
+
+        long now = System.currentTimeMillis();
+        for (DomSegment segment : SegmentUtil.segment(Bytes.toString(page.getContent()), url, conf)) {
+          if (writeDb) {
+            PageBlock block = SegmentUtil.buildBlock(segment, now);
+            context.write(new Text(block.getContentMD5().toString()), block);
+          }
+          else {
+            System.out.println(getBlockRepresentation(url, segment));
+          }
+        }
+      }
+    }
+
+    @Override
+    protected void setup(Context context) throws IOException, InterruptedException {
+      conf = context.getConfiguration();
+
+      pattern = Pattern.compile(conf.get(RegexParamName, ".+"));
+      limit = conf.getInt(LimitParamName, -1);
+      writeDb = conf.getBoolean(WriteDbParamName, false);
+    }
+  }
+
+  public static class Combiner extends GoraReducer<Text, PageBlock, Text, PageBlock> {
+    @Override
+    protected void reduce(Text key, Iterable<PageBlock> blocks, Context context)
+      throws IOException, InterruptedException {
+
+      int counter = 0;
+      for (PageBlock block : blocks) {
+        if (counter == 0) {
+          // write the first record only and ignore the rest because they are the same
+          // this is the meaning of "combine"!
+          context.write(key, block);
+        }
+      }
+
+      boolean debug = false;
+      if (debug) {
+        counter = 0;
+        String pageUrl = null;
+        StringBuilder debugContent = new StringBuilder();
+        for (PageBlock block : blocks) {
+          if (counter == 0) {
+            pageUrl = block.getBaseUrl().toString();
+          }
+  
+          ++counter;
+  
+          if (counter > 10) {
+            debugContent.append("\n:content_begin:\n");
+            debugContent.append(Bytes.toString(block.getContent()));
+            debugContent.append("\n:content_end:\n");
+          }
+        }
+  
+        if (counter > 10) {
+          LOG.debug("Combiner : page block {} count {}", key, counter);
+          cache(pageUrl, debugContent.toString(), "block.html");
+        }
+      } // debug
+    } // reduce
   }
 
   /**
-   * Maps each WebPage to a host key.
-   */
-  public static class Mapper extends GoraMapper<String, WebPage, Text, PageBlock> {
+   * Map [0, maxSequence] to [0, numPartitions]
+   * */
+  public static class Partitioner extends org.apache.hadoop.mapreduce.Partitioner<Text, PageBlock> {
+    private int maxSequence = 1;
 
     @Override
-    protected void map(String key, WebPage value, Context context) throws IOException, InterruptedException {
-      LOG.debug("map");
+    public int getPartition(Text key, PageBlock block, int numPartitions) {
+      int sequence = block.getBaseSequence();
+      if (sequence > maxSequence) {
+        maxSequence = sequence;
+      }
 
-      String reversedUrl = TableUtil.getReversedHost(key);
+      float tmp = (1.0f * sequence / maxSequence) * numPartitions;
+      int r = (int)tmp;
+      if (r > numPartitions - 1) {
+        r = numPartitions - 1;
+      }
 
-      PageBlock block = new PageBlock();
-
-      long now = System.currentTimeMillis();
-      block.setBaseUrl("http://123.com");
-      // block.setXpath(value);
-      block.setBaseSequence(1);
-      block.setBuildTime(now);
-      block.setContent(ByteBuffer.wrap(Bytes.toBytes("<html></html>")));
-      block.setBatchId(new Utf8("111111111"));
-      java.util.Map<java.lang.CharSequence,java.lang.CharSequence> kvs = Maps.newHashMap();
-      block.setKvpairs(kvs);
-      block.setMarkers(kvs);
-
-      context.write(new Text(reversedUrl), block);
+      return r;
     }
   }
 
   public static class Reducer extends GoraReducer<Text, PageBlock, String, PageBlock> {
     @Override
-    protected void reduce(Text key, Iterable<PageBlock> values, Context context)
+    protected void reduce(Text key, Iterable<PageBlock> blocks, Context context)
       throws IOException, InterruptedException {
 
-      LOG.debug("reduce");
+      int counter = 0;
+      for (PageBlock block : blocks) {
+        if (counter == 0) {
+          ScentMark.BUILD_MARK.putMark(block, ScentMark.BUILD_MARK.checkMark(block));
 
-      int i = 0;
-      for (PageBlock value : values) {
-        ++i;
-        context.write(key.toString() + i, value);
+          // TODO : write features
+
+          // write the first record only and ignore the rest because they are the same
+          context.write(block.getBaseUrl().toString(), block);
+        }
+
+        ++counter;
+      }
+
+      if (counter > 1) {
+        LOG.debug("Reducer : page block {} count {}", key, counter);
       }
     }
   }
 
   public SegmentJob() {
-  }
-
-  public SegmentJob(Configuration conf) {
-    setConf(conf);
   }
 
   @Override
@@ -119,49 +231,99 @@ public class SegmentJob implements Tool {
     this.conf = conf;
   }
 
-  /**
-   * Creates and returns the {@link Job} for submitting to Hadoop mapreduce.
-   * @param inStore
-   * @param outStore
-   * @param numReducer
-   * @return
-   * @throws IOException
-   */
-  public Job createJob(DataStore<String, WebPage> inStore, DataStore<String, PageBlock> outStore, int numReducer) 
-      throws IOException {
+  public int segment(String regex, int limit, boolean writeDb)
+      throws IOException, ClassNotFoundException, InterruptedException {
+    Validate.notNull(conf);
+
+    conf.set(RegexParamName, regex);
+    conf.setInt(LimitParamName, limit);
+    conf.setBoolean(WriteDbParamName, writeDb);
+
     Job job = new Job(getConf());
-    job.setJobName("Segment Job");
+    job.setJobName("SegmentJob");
+
+    DataStore<String, WebPage> pageStore = DataStoreFactory.getDataStore(String.class, WebPage.class, conf);
+    DataStore<String, PageBlock> blockStore = DataStoreFactory.getDataStore(String.class, PageBlock.class, conf);
 
     LOG.info("\nCreating Hadoop Job: " + job.getJobName());
-    job.setNumReduceTasks(numReducer);
+    // job.setNumReduceTasks(getConf().getInt("scent.reduce.task.number", 50));
     job.setJarByClass(getClass());
 
-    /* Mappers are initialized with GoraMapper.initMapper() or 
-     * GoraInputFormat.setInput()*/
-    GoraMapper.initMapperJob(job, inStore, Text.class, PageBlock.class, SegmentJob.Mapper.class, true);
+    job.setPartitionerClass(SegmentJob.Partitioner.class);
+    job.setCombinerClass(SegmentJob.Combiner.class);
 
-    /* Reducers are initialized with GoraReducer#initReducer().
-     * If the output is not to be persisted via Gora, any reducer
-     * can be used instead. */
-    GoraReducer.initReducerJob(job, outStore, SegmentJob.Reducer.class);
+    GoraMapper.initMapperJob(job, pageStore, Text.class, PageBlock.class, SegmentJob.Mapper.class, true);
+    GoraReducer.initReducerJob(job, blockStore, SegmentJob.Reducer.class);
 
-    return job;
+    boolean success = job.waitForCompletion(true);
+
+    pageStore.close();
+    blockStore.close();
+
+    LOG.info("SegmentJob completed with " + (success ? "success" : "failure"));
+
+    return success ? 0 : 1;
+  }
+
+  private static String getBlockRepresentation(String key, DomSegment segment) {
+    StringBuffer sb = new StringBuffer();
+    sb.append("key:\t" + key).append("\n");
+    sb.append("baseUrl:\t" + segment.getBaseUrl()).append("\n");
+
+    sb.append("content:start:\n");
+    sb.append(segment.html());
+    sb.append("\ncontent:end:\n");
+
+    return sb.toString();
   }
 
   @Override
   public int run(String[] args) throws Exception {
-    DataStore<String, WebPage> inStore = DataStoreFactory.getDataStore(String.class, WebPage.class, conf);
-    DataStore<String, PageBlock> outStore = DataStoreFactory.getDataStore(String.class, PageBlock.class, conf);
+    Validate.notNull(conf);
 
-    Job job = createJob(inStore, outStore, 3);
-    boolean success = job.waitForCompletion(true);
+    if (args.length < 1) {
+      System.err.println("Usage: SegmentJob -regex <regex> \n \t \t      [-crawlId <id>] [-limit <limit>] [-writeDb]");
+      System.err.println("    -regex <regex> - filter on the URL of the webtable entry");
+      System.err.println("    -crawlId <id>  - the id to prefix the schemas to operate on, \n \t \t     (default: storage.crawl.id)");
+      System.err.println("    -limit <limit> - the limit reading webpage table");
+      System.err.println("    -writeDb       - write segment result into pageblock table");
+      return -1;
+    }
 
-    inStore.close();
-    outStore.close();
+    String regex = ".+";
+    int limit = -1;
+    boolean writeDb = false;
+    try {
+      for (int i = 0; i < args.length; i++) {
+        if (args[i].equals("-regex")) {
+          regex = args[++i];
+        } if (args[i].equals("-limit")) {
+          limit = StringUtil.tryParseInt(args[++i], -1);
+        } else if (args[i].equals("-crawlId")) {
+          getConf().set(Nutch.CRAWL_ID_KEY, args[++i]);
+        } else if (args[i].equals("-writeDb")) {
+          writeDb = true;
+        }
+      }
 
-    LOG.info("Segment completed with " + (success ? "success" : "failure"));
+      segment(regex, limit, writeDb);
+    }catch (Exception e) {
+      LOG.error("SegmentJob: {}", e.toString());
+      return -1;
+    }
 
-    return success ? 0 : 1;
+    return 0;
+  }
+
+  private static void cache(String pageUri, String content, String suffix) {
+    try {
+      File file = new File(FileUtil.getFileForPage(pageUri, "/tmp/segment", suffix));
+      FileUtils.write(file, content, "utf-8");
+
+      LOG.debug("saved in {}", file.getAbsoluteFile());
+    } catch (IOException e) {
+      LOG.error(e);
+    }
   }
 
   public static void main(String[] args) throws Exception {

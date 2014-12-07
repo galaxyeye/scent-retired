@@ -27,7 +27,7 @@
 	<property name="release.dir" value="${build.dir}/release" />
 
 	<!-- define Maven coordinates, repository url and artifacts name etc -->
-	<property name="groupId" value="org.apache.scent" />
+	<property name="groupId" value="org.qiwur.scent" />
 	<property name="artifactId" value="scent" />
 	<property name="maven-repository-url" value="https://repository.apache.org/service/local/staging/deploy/maven2" />
 	<property name="maven-repository-id" value="apache.releases.https" />
@@ -147,7 +147,7 @@
 		</jar>
 	</target>
 
-	<target name="local" depends="compile, jar" description="--> default target for running Nutch">
+	<target name="local" depends="compile, jar, compile-core-test" description="--> default target for running Nutch">
 		<mkdir dir="${runtime.dir}" />
 		<mkdir dir="${runtime.local}" />
 		<!-- local area -->
@@ -228,7 +228,7 @@
 	<!-- Compile test code -->
 	<!-- ================================================================== -->
 	<target name="compile-core-test" depends="compile-core, resolve-test" description="--> compile test code">
-		<javac encoding="${build.encoding}" srcdir="${test.src.dir}" includes="org/apache/scent*/**/*.java" destdir="${test.build.classes}" debug="${javac.debug}" optimize="${javac.optimize}" target="${javac.version}" source="${javac.version}" deprecation="${javac.deprecation}">
+		<javac encoding="${build.encoding}" srcdir="${test.src.dir}" includes="org/qiwur/scent*/**/*.java" destdir="${test.build.classes}" debug="${javac.debug}" optimize="${javac.optimize}" target="${javac.version}" source="${javac.version}" deprecation="${javac.deprecation}">
 			<compilerarg value="-Xlint:-path" />
 			<classpath refid="test.classpath" />
 		</javac>
@@ -249,18 +249,11 @@
 			<fileset dir="src/testresources" includes="**/*" />
 		</copy>
 		<copy file="${test.src.dir}/scent-site.xml" todir="${test.build.classes}" />
-
-		<copy file="${test.src.dir}/log4j.properties" todir="${test.build.classes}" />
-
+		<copy file="${test.src.dir}/log4j2.xml" todir="${test.build.classes}" />
 		<copy file="${test.src.dir}/gora.properties" todir="${test.build.classes}" />
 
-		<copy file="${test.src.dir}/crawl-tests.xml" todir="${test.build.classes}" />
-
-		<copy file="${test.src.dir}/domain-urlfilter.txt" todir="${test.build.classes}" />
-
-		<copy file="${test.src.dir}/filter-all.txt" todir="${test.build.classes}" />
-
-		<junit printsummary="yes" haltonfailure="no" fork="yes" dir="${basedir}" errorProperty="tests.failed" failureProperty="tests.failed" maxmemory="1000m">
+		<junit printsummary="yes" haltonfailure="no" fork="yes" dir="${basedir}" errorProperty="tests.failed" 
+			failureProperty="tests.failed" maxmemory="1000m">
 			<sysproperty key="test.build.data" value="${test.build.data}" />
 			<sysproperty key="test.src.dir" value="${test.src.dir}" />
 			<sysproperty key="javax.xml.parsers.DocumentBuilderFactory" value="com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl" />
@@ -355,9 +348,9 @@
 					<typefound uri="antlib:org.apache.ivy.ant" name="cleancache" />
 				</not>
 			</condition>
-           You need Apache Ivy 2.0 or later from http://ant.apache.org/
-           It could not be loaded from ${ivy.repo.url}
-          </fail>
+     You need Apache Ivy 2.0 or later from http://ant.apache.org/
+     It could not be loaded from ${ivy.repo.url}
+    </fail>
 	</target>
 
 	<!-- ================================================================== -->
@@ -382,7 +375,7 @@
 				</fileset>
 			</classpath>
 
-			<group title="Core" packages="org.apache.scent.*" />
+			<group title="Core" packages="org.qiwur.scent.*" />
 			<!--
 			<group title="Plugins API" packages="${plugins.api}" />
 			<group title="Protocol Plugins" packages="${plugins.protocol}" />
@@ -394,7 +387,7 @@
 			-->
 		</javadoc>
 		<!-- Copy the plugin.dtd file to the plugin doc-files dir -->
-		<copy file="${plugins.dir}/plugin.dtd" todir="${build.javadoc}/org/apache/scent/plugin/doc-files" />
+		<copy file="${plugins.dir}/plugin.dtd" todir="${build.javadoc}/org/qiwur/scent/plugin/doc-files" />
 	</target>
 
 	<target name="default-doc" description="--> generate default Nutch documentation">

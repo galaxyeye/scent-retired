@@ -3,7 +3,7 @@ package org.qiwur.scent.utils;
 import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;
-import org.qiwur.scent.configuration.ScentConfiguration;
+import org.junit.Test;
 import org.qiwur.scent.jsoup.block.BlockLabel;
 import org.qiwur.scent.jsoup.block.BlockPattern;
 import org.qiwur.scent.jsoup.block.DomSegment;
@@ -24,7 +24,8 @@ public class TestCollections {
     }
   }
 
-  private static void testBlockTracker() {
+  @Test
+  public void testBlockTracker() {
     // Map<BlockLabel, Double> trackees = new HashMap<BlockLabel, Double>();
     // BlockLabelTracker tracker = new BlockLabelTracker();
     DomSegment segment = new DomSegment(null, null, null);
@@ -51,7 +52,7 @@ public class TestCollections {
     System.out.println(segment.labelTracker().get(BlockLabel.fromString("BadBlock")));
   }
 
-  static List<BlockPattern> parsePatterns(String text) {
+  public List<BlockPattern> parsePatterns(String text) {
     List<BlockPattern> patterns = Lists.newArrayList();
 
     for (String pattern : text.split(",")) {

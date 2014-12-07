@@ -1,5 +1,7 @@
 package org.qiwur.scent.utils;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -7,6 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
+import org.junit.Test;
 
 public class TestString {
 
@@ -71,7 +74,8 @@ public class TestString {
     System.out.print(candidates2);
   }
 
-  public static void testPattern() {
+  @Test
+  public void testPattern() {
     String text = "￥799.00 (降价通知)";
     // text = text.replaceAll("¥|,|'", "");
     System.out.println(text);
@@ -92,10 +96,12 @@ public class TestString {
     }
   }
 
-  public static void testTrimNonChar() {
+  @Test
+  public void testTrimNonChar() {
     String text = "天王表 正品热卖 机械表 全自动 男士商务气派钢带手表GS5733T/D尊贵大气 个性表盘  ";
-    System.out.println(text.trim());
-    System.out.println(StringUtil.trimNonChar(text));
+
+    assertEquals(text.trim(), "天王表 正品热卖 机械表 全自动 男士商务气派钢带手表GS5733T/D尊贵大气 个性表盘  ");
+    assertEquals(StringUtil.trimNonChar(text), "天王表 正品热卖 机械表 全自动 男士商务气派钢带手表GS5733T/D尊贵大气 个性表盘");
   }
 
   public static void main(String[] args) throws Exception {

@@ -7,9 +7,9 @@ import java.util.Map.Entry;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.qiwur.scent.entity.EntityAttribute;
-import org.qiwur.scent.entity.EntityCategory;
-import org.qiwur.scent.entity.PageEntity;
+import org.qiwur.scent.data.entity.EntityAttribute;
+import org.qiwur.scent.data.entity.EntityCategory;
+import org.qiwur.scent.data.entity.PageEntity;
 
 import com.google.common.collect.Multimap;
 

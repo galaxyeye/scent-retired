@@ -3,8 +3,8 @@ package org.qiwur.scent.data.filter;
 import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;
-import org.qiwur.scent.entity.EntityAttribute;
-import org.qiwur.scent.entity.PageEntity;
+import org.qiwur.scent.data.entity.EntityAttribute;
+import org.qiwur.scent.data.entity.PageEntity;
 
 import com.google.common.collect.Lists;
 

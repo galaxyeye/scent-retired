@@ -55,7 +55,7 @@ import org.apache.nutch.storage.StorageUtils;
 import org.apache.nutch.storage.TableUtil;
 import org.apache.nutch.storage.ToolUtil;
 import org.apache.nutch.storage.WebPage;
-import org.qiwur.scent.configuration.ScentConfiguration;
+import org.qiwur.scent.utils.ScentConfiguration;
 import org.qiwur.scent.utils.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -6,11 +6,11 @@ import java.util.Arrays;
 import org.apache.hadoop.conf.Configuration;
 import org.qiwur.scent.data.builder.template.MiniTemplator;
 import org.qiwur.scent.data.builder.template.MiniTemplator.TemplateSyntaxException;
-import org.qiwur.scent.entity.EntityAttribute;
-import org.qiwur.scent.entity.PageEntity;
+import org.qiwur.scent.data.entity.EntityAttribute;
+import org.qiwur.scent.data.entity.PageEntity;
+import org.qiwur.scent.data.wiki.Page;
 import org.qiwur.scent.jsoup.Jsoup;
 import org.qiwur.scent.jsoup.nodes.Document;
-import org.qiwur.scent.wiki.Page;
 
 public class ProductWikiBuilder extends ProductBuilder {
 

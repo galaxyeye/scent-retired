@@ -3,7 +3,7 @@ package org.qiwur.scent.learning;
 import java.util.Collection;
 
 import org.apache.hadoop.conf.Configuration;
-import org.qiwur.scent.entity.EntityCategory;
+import org.qiwur.scent.data.entity.EntityCategory;
 
 import com.google.common.collect.Multiset;
 

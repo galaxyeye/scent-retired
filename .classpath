@@ -88,7 +88,7 @@
 	<classpathentry kind="lib" path="build/lib/jsp-api-2.1-6.1.14.jar"/>
 	<classpathentry kind="lib" path="build/lib/jsr311-api-1.1.1.jar"/>
 	<classpathentry kind="lib" path="build/lib/jtidy-4aug2000r7-dev.jar"/>
-	<classpathentry kind="lib" path="build/lib/junit-4.11.jar"/>
+	<classpathentry kind="lib" path="build/lib/junit-4.11.jar" sourcepath="/home/vincent/.m2/repository/junit/junit/4.11/junit-4.11-sources.jar"/>
 	<classpathentry kind="lib" path="build/lib/kfs-0.3.jar"/>
 	<classpathentry kind="lib" path="build/lib/libthrift-0.8.0.jar"/>
 	<classpathentry kind="lib" path="build/lib/log4j-api-2.0-rc1.jar"/>
@@ -96,7 +96,7 @@
 	<classpathentry kind="lib" path="build/lib/log4j-slf4j-impl-2.0-rc1.jar"/>
 	<classpathentry kind="lib" path="build/lib/lucene-analyzers-common-4.6.1.jar"/>
 	<classpathentry kind="lib" path="build/lib/lucene-core-4.6.1.jar"/>
-	<classpathentry kind="lib" path="build/lib/mahout-core-0.9.jar"/>
+	<classpathentry kind="lib" path="build/lib/mahout-core-0.9.jar" sourcepath="/mahout-core"/>
 	<classpathentry kind="lib" path="build/lib/mahout-math-0.9.jar"/>
 	<classpathentry kind="lib" path="build/lib/mail-1.4.2.jar"/>
 	<classpathentry kind="lib" path="build/lib/metrics-core-2.1.2.jar"/>

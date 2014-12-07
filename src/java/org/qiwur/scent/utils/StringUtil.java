@@ -539,6 +539,26 @@ public final class StringUtil {
     return r;
   }
 
+  public static int tryParseInt(String s) {
+    return tryParseInt(s, 0);
+  }
+
+  public static int tryParseInt(String s, int defaultValue) {
+    int r = defaultValue;
+
+    if (StringUtils.isEmpty(s)) {
+      return r;
+    }
+
+    try {
+      r = Integer.parseInt(s);
+    }
+    catch (Exception e) {
+    }
+
+    return r;
+  }
+
   private static final int charToNibble(char c) {
     if (c >= '0' && c <= '9') {
       return c - '0';

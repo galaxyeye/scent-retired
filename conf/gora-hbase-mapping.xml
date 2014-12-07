@@ -92,7 +92,9 @@ http://gora.apache.org/current/gora-hbase.html
         <field name="baseUrl"       family="b"    qualifier="bas" />
         <field name="xpath"         family="b"    qualifier="xph" />
         <field name="baseSequence"  family="b"    qualifier="seq" />
+        <field name="name"          family="b"    qualifier="nm" />
         <field name="content"       family="b"    qualifier="cnt" />
+        <field name="contentMD5"    family="b"    qualifier="md5" />
         <field name="status"        family="b"    qualifier="st" />
         <field name="buildTime"     family="b"    qualifier="bt" />
         <field name="batchId"       family="b"    qualifier="bid" />

@@ -4,11 +4,12 @@ import java.io.IOException;
 import java.util.Map.Entry;
 
 import org.apache.hadoop.conf.Configuration;
-import org.qiwur.scent.configuration.ScentConfiguration;
+import org.junit.Test;
 
 public class TestConfiguration {
 
-  public static void main(String[] args) throws IOException {
+  @Test
+  public void testConf() throws IOException {
     Configuration conf = ScentConfiguration.create();
     String file = conf.get("scent.block.stat.feature.file");
 

@@ -7,9 +7,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.qiwur.scent.configuration.ScentConfiguration;
+import org.qiwur.scent.data.wiki.Page;
 import org.qiwur.scent.learning.EntityCategoryLearner;
-import org.qiwur.scent.wiki.Page;
+import org.qiwur.scent.utils.ScentConfiguration;
 
 public class WikiCategoryBuilder {
 

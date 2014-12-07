@@ -5,8 +5,8 @@ import java.util.Map;
 
 import org.apache.hadoop.conf.Configuration;
 import org.qiwur.scent.classifier.RuleBasedBlockClassifier;
-import org.qiwur.scent.feature.FeatureManager;
-import org.qiwur.scent.feature.PhraseFeature;
+import org.qiwur.scent.data.feature.FeatureManager;
+import org.qiwur.scent.data.feature.PhraseFeature;
 import org.qiwur.scent.jsoup.block.DomSegment;
 
 import ruc.irm.similarity.FuzzyProbability;

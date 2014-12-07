@@ -35,7 +35,7 @@ import org.apache.hadoop.conf.Configuration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.qiwur.scent.configuration.ScentConfiguration;
+import org.qiwur.scent.utils.ScentConfiguration;
 
 /**
  * Unit tests for the plugin system

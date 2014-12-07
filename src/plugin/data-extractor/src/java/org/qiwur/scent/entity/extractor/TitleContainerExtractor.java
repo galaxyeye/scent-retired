@@ -3,8 +3,8 @@ package org.qiwur.scent.entity.extractor;
 import java.util.Map.Entry;
 
 import org.apache.hadoop.conf.Configuration;
+import org.qiwur.scent.data.entity.PageEntity;
 import org.qiwur.scent.data.extractor.DomSegmentExtractor;
-import org.qiwur.scent.entity.PageEntity;
 import org.qiwur.scent.jsoup.block.BlockLabel;
 import org.qiwur.scent.jsoup.block.DomSegment;
 import org.qiwur.scent.jsoup.nodes.Element;

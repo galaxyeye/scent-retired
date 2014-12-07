@@ -6,7 +6,7 @@
 package org.qiwur.scent.storage;  
 @SuppressWarnings("all")
 public class PageBlock extends org.apache.gora.persistency.impl.PersistentBase implements org.apache.avro.specific.SpecificRecord, org.apache.gora.persistency.Persistent {
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"PageBlock\",\"namespace\":\"org.qiwur.scent.storage\",\"fields\":[{\"name\":\"__g__dirty\",\"type\":\"bytes\",\"doc\":\"Bytes used to represent weather or not a field is dirty.\",\"default\":\"AAA=\"},{\"name\":\"baseUrl\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"xpath\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"baseSequence\",\"type\":\"int\",\"default\":0},{\"name\":\"status\",\"type\":\"int\",\"default\":0},{\"name\":\"buildTime\",\"type\":\"long\",\"default\":0},{\"name\":\"content\",\"type\":[\"null\",\"bytes\"],\"default\":null},{\"name\":\"label\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"labelScore\",\"type\":\"float\",\"default\":0},{\"name\":\"kvpairs\",\"type\":{\"type\":\"map\",\"values\":[\"null\",\"string\"]},\"default\":{}},{\"name\":\"markers\",\"type\":{\"type\":\"map\",\"values\":[\"null\",\"string\"]},\"default\":{}},{\"name\":\"batchId\",\"type\":[\"null\",\"string\"],\"default\":null}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"PageBlock\",\"namespace\":\"org.qiwur.scent.storage\",\"fields\":[{\"name\":\"__g__dirty\",\"type\":\"bytes\",\"doc\":\"Bytes used to represent weather or not a field is dirty.\",\"default\":\"AAA=\"},{\"name\":\"baseUrl\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"xpath\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"baseSequence\",\"type\":\"int\",\"default\":0},{\"name\":\"name\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"status\",\"type\":\"int\",\"default\":0},{\"name\":\"buildTime\",\"type\":\"long\",\"default\":0},{\"name\":\"content\",\"type\":[\"null\",\"bytes\"],\"default\":null},{\"name\":\"contentMD5\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"label\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"labelScore\",\"type\":\"float\",\"default\":0},{\"name\":\"kvpairs\",\"type\":{\"type\":\"map\",\"values\":[\"null\",\"string\"]},\"default\":{}},{\"name\":\"markers\",\"type\":{\"type\":\"map\",\"values\":[\"null\",\"string\"]},\"default\":{}},{\"name\":\"batchId\",\"type\":[\"null\",\"string\"],\"default\":null}]}");
 
   /** Enum containing all data bean's fields. */
   public static enum Field {
@@ -14,14 +14,16 @@ public class PageBlock extends org.apache.gora.persistency.impl.PersistentBase i
     BASE_URL(1, "baseUrl"),
     XPATH(2, "xpath"),
     BASE_SEQUENCE(3, "baseSequence"),
-    STATUS(4, "status"),
-    BUILD_TIME(5, "buildTime"),
-    CONTENT(6, "content"),
-    LABEL(7, "label"),
-    LABEL_SCORE(8, "labelScore"),
-    KVPAIRS(9, "kvpairs"),
-    MARKERS(10, "markers"),
-    BATCH_ID(11, "batchId"),
+    NAME(4, "name"),
+    STATUS(5, "status"),
+    BUILD_TIME(6, "buildTime"),
+    CONTENT(7, "content"),
+    CONTENT_MD5(8, "contentMD5"),
+    LABEL(9, "label"),
+    LABEL_SCORE(10, "labelScore"),
+    KVPAIRS(11, "kvpairs"),
+    MARKERS(12, "markers"),
+    BATCH_ID(13, "batchId"),
     ;
     /**
      * Field's index.
@@ -64,9 +66,11 @@ public class PageBlock extends org.apache.gora.persistency.impl.PersistentBase i
   "baseUrl",
   "xpath",
   "baseSequence",
+  "name",
   "status",
   "buildTime",
   "content",
+  "contentMD5",
   "label",
   "labelScore",
   "kvpairs",
@@ -79,9 +83,11 @@ public class PageBlock extends org.apache.gora.persistency.impl.PersistentBase i
   private java.lang.CharSequence baseUrl;
   private java.lang.CharSequence xpath;
   private int baseSequence;
+  private java.lang.CharSequence name;
   private int status;
   private long buildTime;
   private java.nio.ByteBuffer content;
+  private java.lang.CharSequence contentMD5;
   private java.lang.CharSequence label;
   private float labelScore;
   private java.util.Map<java.lang.CharSequence,java.lang.CharSequence> kvpairs;
@@ -95,14 +101,16 @@ public class PageBlock extends org.apache.gora.persistency.impl.PersistentBase i
     case 1: return baseUrl;
     case 2: return xpath;
     case 3: return baseSequence;
-    case 4: return status;
-    case 5: return buildTime;
-    case 6: return content;
-    case 7: return label;
-    case 8: return labelScore;
-    case 9: return kvpairs;
-    case 10: return markers;
-    case 11: return batchId;
+    case 4: return name;
+    case 5: return status;
+    case 6: return buildTime;
+    case 7: return content;
+    case 8: return contentMD5;
+    case 9: return label;
+    case 10: return labelScore;
+    case 11: return kvpairs;
+    case 12: return markers;
+    case 13: return batchId;
     default: throw new org.apache.avro.AvroRuntimeException("Bad index");
     }
   }
@@ -115,14 +123,16 @@ public class PageBlock extends org.apache.gora.persistency.impl.PersistentBase i
     case 1: baseUrl = (java.lang.CharSequence)(value); break;
     case 2: xpath = (java.lang.CharSequence)(value); break;
     case 3: baseSequence = (java.lang.Integer)(value); break;
-    case 4: status = (java.lang.Integer)(value); break;
-    case 5: buildTime = (java.lang.Long)(value); break;
-    case 6: content = (java.nio.ByteBuffer)(value); break;
-    case 7: label = (java.lang.CharSequence)(value); break;
-    case 8: labelScore = (java.lang.Float)(value); break;
-    case 9: kvpairs = (java.util.Map<java.lang.CharSequence,java.lang.CharSequence>)((value instanceof org.apache.gora.persistency.Dirtyable) ? value : new org.apache.gora.persistency.impl.DirtyMapWrapper((java.util.Map)value)); break;
-    case 10: markers = (java.util.Map<java.lang.CharSequence,java.lang.CharSequence>)((value instanceof org.apache.gora.persistency.Dirtyable) ? value : new org.apache.gora.persistency.impl.DirtyMapWrapper((java.util.Map)value)); break;
-    case 11: batchId = (java.lang.CharSequence)(value); break;
+    case 4: name = (java.lang.CharSequence)(value); break;
+    case 5: status = (java.lang.Integer)(value); break;
+    case 6: buildTime = (java.lang.Long)(value); break;
+    case 7: content = (java.nio.ByteBuffer)(value); break;
+    case 8: contentMD5 = (java.lang.CharSequence)(value); break;
+    case 9: label = (java.lang.CharSequence)(value); break;
+    case 10: labelScore = (java.lang.Float)(value); break;
+    case 11: kvpairs = (java.util.Map<java.lang.CharSequence,java.lang.CharSequence>)((value instanceof org.apache.gora.persistency.Dirtyable) ? value : new org.apache.gora.persistency.impl.DirtyMapWrapper((java.util.Map)value)); break;
+    case 12: markers = (java.util.Map<java.lang.CharSequence,java.lang.CharSequence>)((value instanceof org.apache.gora.persistency.Dirtyable) ? value : new org.apache.gora.persistency.impl.DirtyMapWrapper((java.util.Map)value)); break;
+    case 13: batchId = (java.lang.CharSequence)(value); break;
     default: throw new org.apache.avro.AvroRuntimeException("Bad index");
     }
   }
@@ -200,6 +210,30 @@ public class PageBlock extends org.apache.gora.persistency.impl.PersistentBase i
   }
 
   /**
+   * Gets the value of the 'name' field.
+   */
+  public java.lang.CharSequence getName() {
+    return name;
+  }
+
+  /**
+   * Sets the value of the 'name' field.
+   * @param value the value to set.
+   */
+  public void setName(java.lang.CharSequence value) {
+    this.name = value;
+    setDirty(4);
+  }
+  
+  /**
+   * Checks the dirty status of the 'name' field. A field is dirty if it represents a change that has not yet been written to the database.
+   * @param value the value to set.
+   */
+  public boolean isNameDirty(java.lang.CharSequence value) {
+    return isDirty(4);
+  }
+
+  /**
    * Gets the value of the 'status' field.
    */
   public java.lang.Integer getStatus() {
@@ -212,7 +246,7 @@ public class PageBlock extends org.apache.gora.persistency.impl.PersistentBase i
    */
   public void setStatus(java.lang.Integer value) {
     this.status = value;
-    setDirty(4);
+    setDirty(5);
   }
   
   /**
@@ -220,7 +254,7 @@ public class PageBlock extends org.apache.gora.persistency.impl.PersistentBase i
    * @param value the value to set.
    */
   public boolean isStatusDirty(java.lang.Integer value) {
-    return isDirty(4);
+    return isDirty(5);
   }
 
   /**
@@ -236,7 +270,7 @@ public class PageBlock extends org.apache.gora.persistency.impl.PersistentBase i
    */
   public void setBuildTime(java.lang.Long value) {
     this.buildTime = value;
-    setDirty(5);
+    setDirty(6);
   }
   
   /**
@@ -244,7 +278,7 @@ public class PageBlock extends org.apache.gora.persistency.impl.PersistentBase i
    * @param value the value to set.
    */
   public boolean isBuildTimeDirty(java.lang.Long value) {
-    return isDirty(5);
+    return isDirty(6);
   }
 
   /**
@@ -260,7 +294,7 @@ public class PageBlock extends org.apache.gora.persistency.impl.PersistentBase i
    */
   public void setContent(java.nio.ByteBuffer value) {
     this.content = value;
-    setDirty(6);
+    setDirty(7);
   }
   
   /**
@@ -268,7 +302,31 @@ public class PageBlock extends org.apache.gora.persistency.impl.PersistentBase i
    * @param value the value to set.
    */
   public boolean isContentDirty(java.nio.ByteBuffer value) {
-    return isDirty(6);
+    return isDirty(7);
+  }
+
+  /**
+   * Gets the value of the 'contentMD5' field.
+   */
+  public java.lang.CharSequence getContentMD5() {
+    return contentMD5;
+  }
+
+  /**
+   * Sets the value of the 'contentMD5' field.
+   * @param value the value to set.
+   */
+  public void setContentMD5(java.lang.CharSequence value) {
+    this.contentMD5 = value;
+    setDirty(8);
+  }
+  
+  /**
+   * Checks the dirty status of the 'contentMD5' field. A field is dirty if it represents a change that has not yet been written to the database.
+   * @param value the value to set.
+   */
+  public boolean isContentMD5Dirty(java.lang.CharSequence value) {
+    return isDirty(8);
   }
 
   /**
@@ -284,7 +342,7 @@ public class PageBlock extends org.apache.gora.persistency.impl.PersistentBase i
    */
   public void setLabel(java.lang.CharSequence value) {
     this.label = value;
-    setDirty(7);
+    setDirty(9);
   }
   
   /**
@@ -292,7 +350,7 @@ public class PageBlock extends org.apache.gora.persistency.impl.PersistentBase i
    * @param value the value to set.
    */
   public boolean isLabelDirty(java.lang.CharSequence value) {
-    return isDirty(7);
+    return isDirty(9);
   }
 
   /**
@@ -308,7 +366,7 @@ public class PageBlock extends org.apache.gora.persistency.impl.PersistentBase i
    */
   public void setLabelScore(java.lang.Float value) {
     this.labelScore = value;
-    setDirty(8);
+    setDirty(10);
   }
   
   /**
@@ -316,7 +374,7 @@ public class PageBlock extends org.apache.gora.persistency.impl.PersistentBase i
    * @param value the value to set.
    */
   public boolean isLabelScoreDirty(java.lang.Float value) {
-    return isDirty(8);
+    return isDirty(10);
   }
 
   /**
@@ -332,7 +390,7 @@ public class PageBlock extends org.apache.gora.persistency.impl.PersistentBase i
    */
   public void setKvpairs(java.util.Map<java.lang.CharSequence,java.lang.CharSequence> value) {
     this.kvpairs = (value instanceof org.apache.gora.persistency.Dirtyable) ? value : new org.apache.gora.persistency.impl.DirtyMapWrapper(value);
-    setDirty(9);
+    setDirty(11);
   }
   
   /**
@@ -340,7 +398,7 @@ public class PageBlock extends org.apache.gora.persistency.impl.PersistentBase i
    * @param value the value to set.
    */
   public boolean isKvpairsDirty(java.util.Map<java.lang.CharSequence,java.lang.CharSequence> value) {
-    return isDirty(9);
+    return isDirty(11);
   }
 
   /**
@@ -356,7 +414,7 @@ public class PageBlock extends org.apache.gora.persistency.impl.PersistentBase i
    */
   public void setMarkers(java.util.Map<java.lang.CharSequence,java.lang.CharSequence> value) {
     this.markers = (value instanceof org.apache.gora.persistency.Dirtyable) ? value : new org.apache.gora.persistency.impl.DirtyMapWrapper(value);
-    setDirty(10);
+    setDirty(12);
   }
   
   /**
@@ -364,7 +422,7 @@ public class PageBlock extends org.apache.gora.persistency.impl.PersistentBase i
    * @param value the value to set.
    */
   public boolean isMarkersDirty(java.util.Map<java.lang.CharSequence,java.lang.CharSequence> value) {
-    return isDirty(10);
+    return isDirty(12);
   }
 
   /**
@@ -380,7 +438,7 @@ public class PageBlock extends org.apache.gora.persistency.impl.PersistentBase i
    */
   public void setBatchId(java.lang.CharSequence value) {
     this.batchId = value;
-    setDirty(11);
+    setDirty(13);
   }
   
   /**
@@ -388,7 +446,7 @@ public class PageBlock extends org.apache.gora.persistency.impl.PersistentBase i
    * @param value the value to set.
    */
   public boolean isBatchIdDirty(java.lang.CharSequence value) {
-    return isDirty(11);
+    return isDirty(13);
   }
 
   /** Creates a new PageBlock RecordBuilder */
@@ -439,9 +497,11 @@ public class PageBlock extends org.apache.gora.persistency.impl.PersistentBase i
     private java.lang.CharSequence baseUrl;
     private java.lang.CharSequence xpath;
     private int baseSequence;
+    private java.lang.CharSequence name;
     private int status;
     private long buildTime;
     private java.nio.ByteBuffer content;
+    private java.lang.CharSequence contentMD5;
     private java.lang.CharSequence label;
     private float labelScore;
     private java.util.Map<java.lang.CharSequence,java.lang.CharSequence> kvpairs;
@@ -477,37 +537,45 @@ public class PageBlock extends org.apache.gora.persistency.impl.PersistentBase i
         this.baseSequence = (java.lang.Integer) data().deepCopy(fields()[3].schema(), other.baseSequence);
         fieldSetFlags()[3] = true;
       }
-      if (isValidValue(fields()[4], other.status)) {
-        this.status = (java.lang.Integer) data().deepCopy(fields()[4].schema(), other.status);
+      if (isValidValue(fields()[4], other.name)) {
+        this.name = (java.lang.CharSequence) data().deepCopy(fields()[4].schema(), other.name);
         fieldSetFlags()[4] = true;
       }
-      if (isValidValue(fields()[5], other.buildTime)) {
-        this.buildTime = (java.lang.Long) data().deepCopy(fields()[5].schema(), other.buildTime);
+      if (isValidValue(fields()[5], other.status)) {
+        this.status = (java.lang.Integer) data().deepCopy(fields()[5].schema(), other.status);
         fieldSetFlags()[5] = true;
       }
-      if (isValidValue(fields()[6], other.content)) {
-        this.content = (java.nio.ByteBuffer) data().deepCopy(fields()[6].schema(), other.content);
+      if (isValidValue(fields()[6], other.buildTime)) {
+        this.buildTime = (java.lang.Long) data().deepCopy(fields()[6].schema(), other.buildTime);
         fieldSetFlags()[6] = true;
       }
-      if (isValidValue(fields()[7], other.label)) {
-        this.label = (java.lang.CharSequence) data().deepCopy(fields()[7].schema(), other.label);
+      if (isValidValue(fields()[7], other.content)) {
+        this.content = (java.nio.ByteBuffer) data().deepCopy(fields()[7].schema(), other.content);
         fieldSetFlags()[7] = true;
       }
-      if (isValidValue(fields()[8], other.labelScore)) {
-        this.labelScore = (java.lang.Float) data().deepCopy(fields()[8].schema(), other.labelScore);
+      if (isValidValue(fields()[8], other.contentMD5)) {
+        this.contentMD5 = (java.lang.CharSequence) data().deepCopy(fields()[8].schema(), other.contentMD5);
         fieldSetFlags()[8] = true;
       }
-      if (isValidValue(fields()[9], other.kvpairs)) {
-        this.kvpairs = (java.util.Map<java.lang.CharSequence,java.lang.CharSequence>) data().deepCopy(fields()[9].schema(), other.kvpairs);
+      if (isValidValue(fields()[9], other.label)) {
+        this.label = (java.lang.CharSequence) data().deepCopy(fields()[9].schema(), other.label);
         fieldSetFlags()[9] = true;
       }
-      if (isValidValue(fields()[10], other.markers)) {
-        this.markers = (java.util.Map<java.lang.CharSequence,java.lang.CharSequence>) data().deepCopy(fields()[10].schema(), other.markers);
+      if (isValidValue(fields()[10], other.labelScore)) {
+        this.labelScore = (java.lang.Float) data().deepCopy(fields()[10].schema(), other.labelScore);
         fieldSetFlags()[10] = true;
       }
-      if (isValidValue(fields()[11], other.batchId)) {
-        this.batchId = (java.lang.CharSequence) data().deepCopy(fields()[11].schema(), other.batchId);
+      if (isValidValue(fields()[11], other.kvpairs)) {
+        this.kvpairs = (java.util.Map<java.lang.CharSequence,java.lang.CharSequence>) data().deepCopy(fields()[11].schema(), other.kvpairs);
         fieldSetFlags()[11] = true;
+      }
+      if (isValidValue(fields()[12], other.markers)) {
+        this.markers = (java.util.Map<java.lang.CharSequence,java.lang.CharSequence>) data().deepCopy(fields()[12].schema(), other.markers);
+        fieldSetFlags()[12] = true;
+      }
+      if (isValidValue(fields()[13], other.batchId)) {
+        this.batchId = (java.lang.CharSequence) data().deepCopy(fields()[13].schema(), other.batchId);
+        fieldSetFlags()[13] = true;
       }
     }
 
@@ -585,6 +653,31 @@ public class PageBlock extends org.apache.gora.persistency.impl.PersistentBase i
       return this;
     }
     
+    /** Gets the value of the 'name' field */
+    public java.lang.CharSequence getName() {
+      return name;
+    }
+    
+    /** Sets the value of the 'name' field */
+    public org.qiwur.scent.storage.PageBlock.Builder setName(java.lang.CharSequence value) {
+      validate(fields()[4], value);
+      this.name = value;
+      fieldSetFlags()[4] = true;
+      return this; 
+    }
+    
+    /** Checks whether the 'name' field has been set */
+    public boolean hasName() {
+      return fieldSetFlags()[4];
+    }
+    
+    /** Clears the value of the 'name' field */
+    public org.qiwur.scent.storage.PageBlock.Builder clearName() {
+      name = null;
+      fieldSetFlags()[4] = false;
+      return this;
+    }
+    
     /** Gets the value of the 'status' field */
     public java.lang.Integer getStatus() {
       return status;
@@ -592,20 +685,20 @@ public class PageBlock extends org.apache.gora.persistency.impl.PersistentBase i
     
     /** Sets the value of the 'status' field */
     public org.qiwur.scent.storage.PageBlock.Builder setStatus(int value) {
-      validate(fields()[4], value);
+      validate(fields()[5], value);
       this.status = value;
-      fieldSetFlags()[4] = true;
+      fieldSetFlags()[5] = true;
       return this; 
     }
     
     /** Checks whether the 'status' field has been set */
     public boolean hasStatus() {
-      return fieldSetFlags()[4];
+      return fieldSetFlags()[5];
     }
     
     /** Clears the value of the 'status' field */
     public org.qiwur.scent.storage.PageBlock.Builder clearStatus() {
-      fieldSetFlags()[4] = false;
+      fieldSetFlags()[5] = false;
       return this;
     }
     
@@ -616,20 +709,20 @@ public class PageBlock extends org.apache.gora.persistency.impl.PersistentBase i
     
     /** Sets the value of the 'buildTime' field */
     public org.qiwur.scent.storage.PageBlock.Builder setBuildTime(long value) {
-      validate(fields()[5], value);
+      validate(fields()[6], value);
       this.buildTime = value;
-      fieldSetFlags()[5] = true;
+      fieldSetFlags()[6] = true;
       return this; 
     }
     
     /** Checks whether the 'buildTime' field has been set */
     public boolean hasBuildTime() {
-      return fieldSetFlags()[5];
+      return fieldSetFlags()[6];
     }
     
     /** Clears the value of the 'buildTime' field */
     public org.qiwur.scent.storage.PageBlock.Builder clearBuildTime() {
-      fieldSetFlags()[5] = false;
+      fieldSetFlags()[6] = false;
       return this;
     }
     
@@ -640,21 +733,46 @@ public class PageBlock extends org.apache.gora.persistency.impl.PersistentBase i
     
     /** Sets the value of the 'content' field */
     public org.qiwur.scent.storage.PageBlock.Builder setContent(java.nio.ByteBuffer value) {
-      validate(fields()[6], value);
+      validate(fields()[7], value);
       this.content = value;
-      fieldSetFlags()[6] = true;
+      fieldSetFlags()[7] = true;
       return this; 
     }
     
     /** Checks whether the 'content' field has been set */
     public boolean hasContent() {
-      return fieldSetFlags()[6];
+      return fieldSetFlags()[7];
     }
     
     /** Clears the value of the 'content' field */
     public org.qiwur.scent.storage.PageBlock.Builder clearContent() {
       content = null;
-      fieldSetFlags()[6] = false;
+      fieldSetFlags()[7] = false;
+      return this;
+    }
+    
+    /** Gets the value of the 'contentMD5' field */
+    public java.lang.CharSequence getContentMD5() {
+      return contentMD5;
+    }
+    
+    /** Sets the value of the 'contentMD5' field */
+    public org.qiwur.scent.storage.PageBlock.Builder setContentMD5(java.lang.CharSequence value) {
+      validate(fields()[8], value);
+      this.contentMD5 = value;
+      fieldSetFlags()[8] = true;
+      return this; 
+    }
+    
+    /** Checks whether the 'contentMD5' field has been set */
+    public boolean hasContentMD5() {
+      return fieldSetFlags()[8];
+    }
+    
+    /** Clears the value of the 'contentMD5' field */
+    public org.qiwur.scent.storage.PageBlock.Builder clearContentMD5() {
+      contentMD5 = null;
+      fieldSetFlags()[8] = false;
       return this;
     }
     
@@ -665,21 +783,21 @@ public class PageBlock extends org.apache.gora.persistency.impl.PersistentBase i
     
     /** Sets the value of the 'label' field */
     public org.qiwur.scent.storage.PageBlock.Builder setLabel(java.lang.CharSequence value) {
-      validate(fields()[7], value);
+      validate(fields()[9], value);
       this.label = value;
-      fieldSetFlags()[7] = true;
+      fieldSetFlags()[9] = true;
       return this; 
     }
     
     /** Checks whether the 'label' field has been set */
     public boolean hasLabel() {
-      return fieldSetFlags()[7];
+      return fieldSetFlags()[9];
     }
     
     /** Clears the value of the 'label' field */
     public org.qiwur.scent.storage.PageBlock.Builder clearLabel() {
       label = null;
-      fieldSetFlags()[7] = false;
+      fieldSetFlags()[9] = false;
       return this;
     }
     
@@ -690,20 +808,20 @@ public class PageBlock extends org.apache.gora.persistency.impl.PersistentBase i
     
     /** Sets the value of the 'labelScore' field */
     public org.qiwur.scent.storage.PageBlock.Builder setLabelScore(float value) {
-      validate(fields()[8], value);
+      validate(fields()[10], value);
       this.labelScore = value;
-      fieldSetFlags()[8] = true;
+      fieldSetFlags()[10] = true;
       return this; 
     }
     
     /** Checks whether the 'labelScore' field has been set */
     public boolean hasLabelScore() {
-      return fieldSetFlags()[8];
+      return fieldSetFlags()[10];
     }
     
     /** Clears the value of the 'labelScore' field */
     public org.qiwur.scent.storage.PageBlock.Builder clearLabelScore() {
-      fieldSetFlags()[8] = false;
+      fieldSetFlags()[10] = false;
       return this;
     }
     
@@ -714,21 +832,21 @@ public class PageBlock extends org.apache.gora.persistency.impl.PersistentBase i
     
     /** Sets the value of the 'kvpairs' field */
     public org.qiwur.scent.storage.PageBlock.Builder setKvpairs(java.util.Map<java.lang.CharSequence,java.lang.CharSequence> value) {
-      validate(fields()[9], value);
+      validate(fields()[11], value);
       this.kvpairs = value;
-      fieldSetFlags()[9] = true;
+      fieldSetFlags()[11] = true;
       return this; 
     }
     
     /** Checks whether the 'kvpairs' field has been set */
     public boolean hasKvpairs() {
-      return fieldSetFlags()[9];
+      return fieldSetFlags()[11];
     }
     
     /** Clears the value of the 'kvpairs' field */
     public org.qiwur.scent.storage.PageBlock.Builder clearKvpairs() {
       kvpairs = null;
-      fieldSetFlags()[9] = false;
+      fieldSetFlags()[11] = false;
       return this;
     }
     
@@ -739,21 +857,21 @@ public class PageBlock extends org.apache.gora.persistency.impl.PersistentBase i
     
     /** Sets the value of the 'markers' field */
     public org.qiwur.scent.storage.PageBlock.Builder setMarkers(java.util.Map<java.lang.CharSequence,java.lang.CharSequence> value) {
-      validate(fields()[10], value);
+      validate(fields()[12], value);
       this.markers = value;
-      fieldSetFlags()[10] = true;
+      fieldSetFlags()[12] = true;
       return this; 
     }
     
     /** Checks whether the 'markers' field has been set */
     public boolean hasMarkers() {
-      return fieldSetFlags()[10];
+      return fieldSetFlags()[12];
     }
     
     /** Clears the value of the 'markers' field */
     public org.qiwur.scent.storage.PageBlock.Builder clearMarkers() {
       markers = null;
-      fieldSetFlags()[10] = false;
+      fieldSetFlags()[12] = false;
       return this;
     }
     
@@ -764,21 +882,21 @@ public class PageBlock extends org.apache.gora.persistency.impl.PersistentBase i
     
     /** Sets the value of the 'batchId' field */
     public org.qiwur.scent.storage.PageBlock.Builder setBatchId(java.lang.CharSequence value) {
-      validate(fields()[11], value);
+      validate(fields()[13], value);
       this.batchId = value;
-      fieldSetFlags()[11] = true;
+      fieldSetFlags()[13] = true;
       return this; 
     }
     
     /** Checks whether the 'batchId' field has been set */
     public boolean hasBatchId() {
-      return fieldSetFlags()[11];
+      return fieldSetFlags()[13];
     }
     
     /** Clears the value of the 'batchId' field */
     public org.qiwur.scent.storage.PageBlock.Builder clearBatchId() {
       batchId = null;
-      fieldSetFlags()[11] = false;
+      fieldSetFlags()[13] = false;
       return this;
     }
     
@@ -790,14 +908,16 @@ public class PageBlock extends org.apache.gora.persistency.impl.PersistentBase i
         record.baseUrl = fieldSetFlags()[1] ? this.baseUrl : (java.lang.CharSequence) defaultValue(fields()[1]);
         record.xpath = fieldSetFlags()[2] ? this.xpath : (java.lang.CharSequence) defaultValue(fields()[2]);
         record.baseSequence = fieldSetFlags()[3] ? this.baseSequence : (java.lang.Integer) defaultValue(fields()[3]);
-        record.status = fieldSetFlags()[4] ? this.status : (java.lang.Integer) defaultValue(fields()[4]);
-        record.buildTime = fieldSetFlags()[5] ? this.buildTime : (java.lang.Long) defaultValue(fields()[5]);
-        record.content = fieldSetFlags()[6] ? this.content : (java.nio.ByteBuffer) defaultValue(fields()[6]);
-        record.label = fieldSetFlags()[7] ? this.label : (java.lang.CharSequence) defaultValue(fields()[7]);
-        record.labelScore = fieldSetFlags()[8] ? this.labelScore : (java.lang.Float) defaultValue(fields()[8]);
-        record.kvpairs = fieldSetFlags()[9] ? this.kvpairs : (java.util.Map<java.lang.CharSequence,java.lang.CharSequence>) new org.apache.gora.persistency.impl.DirtyMapWrapper((java.util.Map)defaultValue(fields()[9]));
-        record.markers = fieldSetFlags()[10] ? this.markers : (java.util.Map<java.lang.CharSequence,java.lang.CharSequence>) new org.apache.gora.persistency.impl.DirtyMapWrapper((java.util.Map)defaultValue(fields()[10]));
-        record.batchId = fieldSetFlags()[11] ? this.batchId : (java.lang.CharSequence) defaultValue(fields()[11]);
+        record.name = fieldSetFlags()[4] ? this.name : (java.lang.CharSequence) defaultValue(fields()[4]);
+        record.status = fieldSetFlags()[5] ? this.status : (java.lang.Integer) defaultValue(fields()[5]);
+        record.buildTime = fieldSetFlags()[6] ? this.buildTime : (java.lang.Long) defaultValue(fields()[6]);
+        record.content = fieldSetFlags()[7] ? this.content : (java.nio.ByteBuffer) defaultValue(fields()[7]);
+        record.contentMD5 = fieldSetFlags()[8] ? this.contentMD5 : (java.lang.CharSequence) defaultValue(fields()[8]);
+        record.label = fieldSetFlags()[9] ? this.label : (java.lang.CharSequence) defaultValue(fields()[9]);
+        record.labelScore = fieldSetFlags()[10] ? this.labelScore : (java.lang.Float) defaultValue(fields()[10]);
+        record.kvpairs = fieldSetFlags()[11] ? this.kvpairs : (java.util.Map<java.lang.CharSequence,java.lang.CharSequence>) new org.apache.gora.persistency.impl.DirtyMapWrapper((java.util.Map)defaultValue(fields()[11]));
+        record.markers = fieldSetFlags()[12] ? this.markers : (java.util.Map<java.lang.CharSequence,java.lang.CharSequence>) new org.apache.gora.persistency.impl.DirtyMapWrapper((java.util.Map)defaultValue(fields()[12]));
+        record.batchId = fieldSetFlags()[13] ? this.batchId : (java.lang.CharSequence) defaultValue(fields()[13]);
         return record;
       } catch (Exception e) {
         throw new org.apache.avro.AvroRuntimeException(e);
@@ -889,6 +1009,29 @@ public class PageBlock extends org.apache.gora.persistency.impl.PersistentBase i
 	  }
 	
 				  /**
+	   * Gets the value of the 'name' field.
+		   */
+	  public java.lang.CharSequence getName() {
+	    throw new java.lang.UnsupportedOperationException("Get is not supported on tombstones");
+	  }
+	
+	  /**
+	   * Sets the value of the 'name' field.
+		   * @param value the value to set.
+	   */
+	  public void setName(java.lang.CharSequence value) {
+	    throw new java.lang.UnsupportedOperationException("Set is not supported on tombstones");
+	  }
+	  
+	  /**
+	   * Checks the dirty status of the 'name' field. A field is dirty if it represents a change that has not yet been written to the database.
+		   * @param value the value to set.
+	   */
+	  public boolean isNameDirty(java.lang.CharSequence value) {
+	    throw new java.lang.UnsupportedOperationException("IsDirty is not supported on tombstones");
+	  }
+	
+				  /**
 	   * Gets the value of the 'status' field.
 		   */
 	  public java.lang.Integer getStatus() {
@@ -954,6 +1097,29 @@ public class PageBlock extends org.apache.gora.persistency.impl.PersistentBase i
 		   * @param value the value to set.
 	   */
 	  public boolean isContentDirty(java.nio.ByteBuffer value) {
+	    throw new java.lang.UnsupportedOperationException("IsDirty is not supported on tombstones");
+	  }
+	
+				  /**
+	   * Gets the value of the 'contentMD5' field.
+		   */
+	  public java.lang.CharSequence getContentMD5() {
+	    throw new java.lang.UnsupportedOperationException("Get is not supported on tombstones");
+	  }
+	
+	  /**
+	   * Sets the value of the 'contentMD5' field.
+		   * @param value the value to set.
+	   */
+	  public void setContentMD5(java.lang.CharSequence value) {
+	    throw new java.lang.UnsupportedOperationException("Set is not supported on tombstones");
+	  }
+	  
+	  /**
+	   * Checks the dirty status of the 'contentMD5' field. A field is dirty if it represents a change that has not yet been written to the database.
+		   * @param value the value to set.
+	   */
+	  public boolean isContentMD5Dirty(java.lang.CharSequence value) {
 	    throw new java.lang.UnsupportedOperationException("IsDirty is not supported on tombstones");
 	  }
 	

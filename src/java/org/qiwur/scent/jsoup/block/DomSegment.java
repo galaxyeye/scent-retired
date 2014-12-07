@@ -96,6 +96,16 @@ public class DomSegment implements Comparable<DomSegment> {
     return segment;
   }
 
+  public String getBaseUrl() {
+    return root.baseUri();
+  }
+
+  public Element root() {
+    Validate.notNull(root);
+
+    return root;
+  }
+
   public Element title() {
     return title;
   }
@@ -121,24 +131,19 @@ public class DomSegment implements Comparable<DomSegment> {
     return titleText() != "";
   }
 
-  public String outerHtml() {
-    if (root == null)
-      return "";
+  public String md5hex() {
+    return root.md5hex();
+  }
 
+  public String outerHtml() {
     return root.outerHtml();
   }
 
   public String html() {
-    if (root == null)
-      return "";
-
     return root.html();
   }
 
   public String text() {
-    if (root == null)
-      return "";
-
     return root.text();
   }
 
@@ -324,9 +329,40 @@ public class DomSegment implements Comparable<DomSegment> {
     return patternTracker.certainly(pattern);
   }
 
+  public String xpath() {
+    return root.xpath();
+  }
+
+  public String name() {
+    return root.prettyName();
+  }
+
+  @Override
+  public String toString() {
+    return root.toString();
+  }
+
+  @Override
+  public int hashCode() {
+    return root.hashCode();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (!(o instanceof DomSegment)) return false;
+
+    return compareTo((DomSegment)o) == 0;
+  }
+
+  @Override
+  public int compareTo(DomSegment o) {
+    return root.compareTo(o.block);
+  }
+
   private void findBlockRootAndHeader(Element baseBlock) {
-    if (baseBlock == null)
+    if (baseBlock == null) {
       return;
+    }
 
     // 向上寻找的层次
     int upwardDepth = 3;
@@ -382,34 +418,6 @@ public class DomSegment implements Comparable<DomSegment> {
       }
     }
 
-    // TODO : getLongestTitle
-
     return null;
-  }
-
-  public String name() {
-    return block().prettyName();
-  }
-
-  @Override
-  public String toString() {
-    return block().toString();
-  }
-
-  @Override
-  public int hashCode() {
-    return block.hashCode();
-  }
-  
-  @Override
-  public boolean equals(Object o) {
-    if (!(o instanceof DomSegment)) return false;
-
-    return compareTo((DomSegment)o) == 0;
-  }
-
-  @Override
-  public int compareTo(DomSegment o) {
-    return block.compareTo(o.block);
   }
 }

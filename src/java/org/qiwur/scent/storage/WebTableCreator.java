@@ -19,7 +19,7 @@ package org.qiwur.scent.storage;
 import org.apache.gora.store.DataStore;
 import org.apache.nutch.storage.StorageUtils;
 import org.apache.nutch.storage.WebPage;
-import org.qiwur.scent.configuration.ScentConfiguration;
+import org.qiwur.scent.utils.ScentConfiguration;
 
 public class WebTableCreator {
   public static void main(String[] args) throws Exception {

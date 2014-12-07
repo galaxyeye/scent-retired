@@ -5,8 +5,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
-import org.qiwur.scent.feature.FeatureManager;
-import org.qiwur.scent.feature.LinedFeature;
+import org.qiwur.scent.data.feature.FeatureManager;
+import org.qiwur.scent.data.feature.LinedFeature;
 
 public class BadWordFilter implements DataFilter {
 

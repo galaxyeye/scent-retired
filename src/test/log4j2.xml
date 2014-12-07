@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+  <Properties>
+    <Property name="filename">logs/scent.log</Property>
+    <Property name="stat_filename">logs/statistics.log</Property>
+  </Properties>
+  <Appenders>
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout pattern="%msg%n"/>
+    </Console>
+    <File name="File" fileName="${filename}">
+      <PatternLayout pattern="%d %p %C{1.} [%t] %m%n"/>
+    </File>
+    <File name="StatFile" fileName="${stat_filename}">
+      <PatternLayout pattern="%m%n"/>
+    </File>
+  </Appenders>
+  <Loggers>
+    <Root level="debug">
+      <AppenderRef ref="File"/>
+    </Root>
+
+    <Logger name="org.apache.hadoop" level="debug" additivity="false">
+      <AppenderRef ref="File"/>
+    </Logger>
+    <Logger name="org.apache.zookeeper" level="warn" additivity="false">
+      <AppenderRef ref="File"/>
+    </Logger>
+    <Logger name="org.apache.hbase" level="debug" additivity="false">
+      <AppenderRef ref="File"/>
+    </Logger>
+    <Logger name="org.apache.gora" level="debug" additivity="false">
+      <AppenderRef ref="File"/>
+    </Logger>
+
+    <Logger name="org.qiwur.scent.segment.SegmentJob" level="debug" additivity="false">
+      <AppenderRef ref="File"/>
+    </Logger>
+
+    <Logger name="org.qiwur.scent.application.WikiProductBuilder" level="info" additivity="false">
+      <AppenderRef ref="Console"/>
+    </Logger>
+
+    <Logger name="org.qiwur.scent.classifier.DomSegmentsClassifier" level="debug" additivity="false">
+      <AppenderRef ref="StatFile"/>
+    </Logger>
+
+    <Logger name="org.qiwur.scent.printer.DomStatisticsPrinter" level="debug" additivity="false">
+      <AppenderRef ref="StatFile"/>
+    </Logger>
+
+    <Logger name="org.qiwur.scent.classifier.sgd.BlockFeatureVectorEncoder" level="debug" additivity="false">
+      <AppenderRef ref="StatFile"/>
+    </Logger>
+
+    <Logger name="org.qiwur.scent.classifier.statistics.BlockVarianceCalculator" level="debug" additivity="false">
+      <AppenderRef ref="StatFile"/>
+    </Logger>
+
+  </Loggers>
+</Configuration>

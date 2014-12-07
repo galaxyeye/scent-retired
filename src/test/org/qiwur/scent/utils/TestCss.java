@@ -1,6 +1,9 @@
 package org.qiwur.scent.utils;
 
+import static org.junit.Assert.assertTrue;
+
 import org.apache.commons.lang.StringUtils;
+import org.junit.Test;
 
 public class TestCss {
 
@@ -50,9 +53,10 @@ public class TestCss {
     return StringUtil.tryParseDouble(value, defaultValue);
   }
 
-  public static void main(String[] args) throws Exception {
+  @Test
+  public void testGetPixel() throws Exception {
     String height = getStyle("width: 750px; height: 488px;", "height");
 
-    System.out.println(pixelatedValue(height, 0.0));
+    assertTrue(pixelatedValue(height, 0.0) == 488.0);
   }
 }

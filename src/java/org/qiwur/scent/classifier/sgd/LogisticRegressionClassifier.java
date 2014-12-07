@@ -59,7 +59,7 @@ public class LogisticRegressionClassifier extends BlockClassifier {
       // double score = result.maxValue();
       // double ll = classifier.logLikelihood(actual, input);
       //
-      // ClassifierResult cr = new
+      // ClassifierResult cr = new 
       // ClassifierResult(newsGroups.values().get(cat), score, ll);
       // resultAnalyzer.addInstance(newsGroups.values().get(actual), cr);
     }

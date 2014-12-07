@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
-import org.qiwur.scent.entity.PageEntity;
-import org.qiwur.scent.feature.CategoryFeature;
-import org.qiwur.scent.feature.FeatureManager;
+import org.qiwur.scent.data.entity.PageEntity;
+import org.qiwur.scent.data.feature.CategoryFeature;
+import org.qiwur.scent.data.feature.FeatureManager;
 import org.qiwur.scent.jsoup.block.BlockLabel;
 import org.qiwur.scent.jsoup.block.DomSegment;
 import org.qiwur.scent.jsoup.nodes.Element;

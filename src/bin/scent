@@ -139,7 +139,7 @@ elif [ "$COMMAND" = "readdb" ] ; then
 CLASS=org.qiwur.scent.storage.WebTableReader
 elif [ "$COMMAND" = "junit" ] ; then
   CLASSPATH=$CLASSPATH:$SCENT_HOME/test/classes/
-  CLASS=junit.textui.TestRunner
+  CLASS=org.junit.runner.JUnitCore
 else
 CLASS=$COMMAND
 fi

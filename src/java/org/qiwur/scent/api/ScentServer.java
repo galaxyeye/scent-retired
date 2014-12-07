@@ -6,8 +6,8 @@ import java.util.logging.Level;
 import javax.ws.rs.core.Application;
 
 import org.apache.hadoop.conf.Configuration;
-import org.qiwur.scent.configuration.ScentConfiguration;
 import org.qiwur.scent.net.ProxyUpdateThread;
+import org.qiwur.scent.utils.ScentConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.restlet.Component;

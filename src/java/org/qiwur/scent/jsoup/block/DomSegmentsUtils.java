@@ -119,8 +119,8 @@ public class DomSegmentsUtils {
         double like = child.likelihood(parent);
 
         if (DomSegment.logger.isDebugEnabled() && like > 0.6) {
-          DomSegment.logger.debug("likelihood : {}, {}, {}", String.format("%.2f", like), parent.block().prettyName(), 
-              child.block().prettyName());
+//          DomSegment.logger.debug("likelihood : {}, {}, {}", String.format("%.2f", like), parent.block().prettyName(), 
+//              child.block().prettyName());
         }
 
         // it's the parent rather then the child should be removed
@@ -148,7 +148,7 @@ public class DomSegmentsUtils {
         names.add(segment.block().prettyName());
       }
 
-      DomSegment.logger.debug("remove redundant segments : {}", names);
+      // DomSegment.logger.debug("remove redundant segments : {}", names);
     }
 
     return removal;

@@ -14,8 +14,8 @@ import org.apache.mahout.classifier.sgd.AdaptiveLogisticRegression;
 import org.apache.mahout.classifier.sgd.L1;
 import org.apache.mahout.classifier.sgd.ModelSerializer;
 import org.apache.mahout.vectorizer.encoders.Dictionary;
-import org.qiwur.scent.configuration.ScentConfiguration;
 import org.qiwur.scent.jsoup.nodes.Indicator;
+import org.qiwur.scent.utils.ScentConfiguration;
 
 import com.google.common.collect.Lists;
 
