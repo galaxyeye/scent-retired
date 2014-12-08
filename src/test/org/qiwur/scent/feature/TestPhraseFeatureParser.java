@@ -1,7 +1,6 @@
 package org.qiwur.scent.feature;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.mahout.math.Arrays;
 import org.junit.Before;
 import org.junit.Test;
 import org.qiwur.scent.data.feature.PhraseFeatureParser;

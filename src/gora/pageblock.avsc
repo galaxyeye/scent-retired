@@ -3,16 +3,17 @@
  "namespace": "org.qiwur.scent.storage",
  "fields": [
         {"name": "baseUrl", "type": ["null","string"], "default":null},
-        {"name": "xpath", "type": ["null","string"], "default":null},
         {"name": "baseSequence", "type": "int", "default":0},
+        {"name": "cssSelector", "type": ["null","string"], "default":null},
         {"name": "name", "type": ["null","string"], "default":null},
-        {"name": "status", "type": "int", "default":0},
-        {"name": "buildTime", "type": "long", "default":0},
         {"name": "content", "type": ["null","bytes"], "default":null},
-        {"name": "contentMD5", "type": ["null","string"], "default":null},
+        {"name": "text", "type": ["null","string"], "default":null},
+        {"name": "codeDigest", "type": ["null","string"], "default":null},
+        {"name": "textDigest", "type": ["null","string"], "default":null},
+        {"name": "indicators", "type": {"type":"map", "values": ["null","string"]}, "default":{}},
         {"name": "label", "type": ["null","string"], "default":null},
         {"name": "labelScore", "type": "float", "default":0},
-        {"name": "kvpairs", "type": {"type":"map", "values": ["null","string"]}, "default":{}},
+        {"name": "kvs", "type": {"type":"map", "values": ["null","string"]}, "default":{}},
         {"name": "markers", "type": {"type": "map", "values": ["null","string"]}, "default":{}},
         {"name": "batchId", "type": ["null","string"], "default":null}
    ]

@@ -69,7 +69,7 @@ public class PageExtractor implements DataExtractor {
     return doc;
   }
 
-  public PageEntity pageEntity() {
+  public PageEntity getResult() {
     return pageEntity;
   }
 

@@ -30,8 +30,8 @@ public class BlockTitleFeatureClassifier extends RuleBasedBlockClassifier {
   protected double getScore(DomSegment segment, String label) {
     double score = 0.0;
 
-    if (segment.hasTitle()) {
-      String text = preprocessTitleText(segment.titleText());
+    if (!segment.title().isEmpty()) {
+      String text = preprocessTitleText(segment.title());
 
       if (text != null) {
         // we use 10 marked system, so map [0, 1] to [0, 10]

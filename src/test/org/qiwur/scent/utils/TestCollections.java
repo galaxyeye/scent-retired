@@ -28,7 +28,7 @@ public class TestCollections {
   public void testBlockTracker() {
     // Map<BlockLabel, Double> trackees = new HashMap<BlockLabel, Double>();
     // BlockLabelTracker tracker = new BlockLabelTracker();
-    DomSegment segment = new DomSegment(null, null, null);
+    DomSegment segment = new DomSegment(null);
 
     int count = 0;
     for (BlockLabel label : BlockLabel.builtinLabels) {

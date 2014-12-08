@@ -71,7 +71,7 @@ public final class MenuLocator extends BlockLocator {
       Entry<Double, Element> bestEntry = founder.getMenuItems().entries().iterator().next();
 
       if (bestEntry.getKey() >= MenuMinScore) {
-        segment = new DomSegment(null, null, bestEntry.getValue());
+        segment = new DomSegment(bestEntry.getValue());
         segment.tag(targetLabel, FuzzyProbability.MUST_BE);
       }
     }

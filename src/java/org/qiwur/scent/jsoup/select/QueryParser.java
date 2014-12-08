@@ -168,7 +168,7 @@ class QueryParser {
             matches(true);
         else if (tq.matches(":not("))
             not();
-        else if (tq.matchChomp(":nth-child("))
+		else if (tq.matchChomp(":nth-child("))
         	cssNthChild(false, false);
         else if (tq.matchChomp(":nth-last-child("))
         	cssNthChild(true, false);
@@ -192,9 +192,9 @@ class QueryParser {
         	evals.add(new Evaluator.IsEmpty());
         else if (tq.matchChomp(":root"))
         	evals.add(new Evaluator.IsRoot());
-        else // unhandled
-            throw new Selector.SelectorParseException("Could not parse query '%s': unexpected token at '%s'", query, 
-                tq.remainder());
+		else // unhandled
+            throw new Selector.SelectorParseException("Could not parse query '%s': unexpected token at '%s'", query, tq.remainder());
+
     }
 
     private void byId() {

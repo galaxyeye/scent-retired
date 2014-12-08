@@ -2,6 +2,7 @@ package org.qiwur.scent.jsoup.safety;
 
 import org.qiwur.scent.jsoup.nodes.Attribute;
 import org.qiwur.scent.jsoup.nodes.Attributes;
+import org.qiwur.scent.jsoup.nodes.DataNode;
 import org.qiwur.scent.jsoup.nodes.Document;
 import org.qiwur.scent.jsoup.nodes.Element;
 import org.qiwur.scent.jsoup.nodes.Node;
@@ -120,22 +121,23 @@ public class Cleaner {
         TextNode sourceText = (TextNode) source;
         TextNode destText = new TextNode(sourceText.getWholeText(), source.baseUri());
         destination.appendChild(destText);
+      } else if (source instanceof DataNode && whitelist.isSafeTag(source.parent().nodeName())) {
+        DataNode sourceData = (DataNode) source;
+        DataNode destData = new DataNode(sourceData.getWholeData(), source.baseUri());
+        destination.appendChild(destData);
       } else { // else, we don't care about comments, xml proc instructions, etc
         numDiscarded++;
       }
     }
 
-    public void tail(Node source, int depth) {
-      if (source instanceof Element && whitelist.isSafeTag(source.nodeName())) {
-        destination = destination.parent(); // would have descended, so pop
-                                            // destination stack
-      }
+    @Override
+    public boolean stopped() {
+      return false;
     }
 
     @Override
-    public boolean stopped() {
-      // TODO Auto-generated method stub
-      return false;
+    public void tail(Node node, int depth) {
+     
     }
   }
 

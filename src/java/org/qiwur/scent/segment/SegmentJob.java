@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Random;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
@@ -92,11 +93,10 @@ public class SegmentJob implements Tool {
         return;
       }
 
+      // content type must be html/xhtml
       if (page.getContentType() != null && !page.getContentType().toString().contains("html")) {
         return;
       }
-
-      // content type must be html/xhtml
 
       // checks whether the Key passes the regex
       String url = TableUtil.unreverseUrl(key.toString());
@@ -106,15 +106,22 @@ public class SegmentJob implements Tool {
           return;
         }
 
+        // batch id
         long now = System.currentTimeMillis();
+        int randomSeed = Math.abs(new Random().nextInt());
+        String batchId = (now / 1000) + "-" + randomSeed;
+
         for (DomSegment segment : SegmentUtil.segment(Bytes.toString(page.getContent()), url, conf)) {
           if (writeDb) {
-            PageBlock block = SegmentUtil.buildBlock(segment, now);
-            context.write(new Text(block.getContentMD5().toString()), block);
+            PageBlock block = SegmentUtil.buildBlock(segment, now, batchId);
+
+            // use block digest to be the combine key to filter the common blocks such as page headers
+            String combineKey = block.getCodeDigest() + "." + block.getTextDigest();
+            context.write(new Text(combineKey), block);
           }
           else {
-            System.out.println(getBlockRepresentation(url, segment));
-          }
+              System.out.println(getBlockRepresentation(url, segment));
+            }
         }
       }
     }
@@ -141,6 +148,8 @@ public class SegmentJob implements Tool {
           // this is the meaning of "combine"!
           context.write(key, block);
         }
+
+        ++counter;
       }
 
       boolean debug = false;
@@ -201,12 +210,13 @@ public class SegmentJob implements Tool {
       int counter = 0;
       for (PageBlock block : blocks) {
         if (counter == 0) {
-          ScentMark.BUILD_MARK.putMark(block, ScentMark.BUILD_MARK.checkMark(block));
+          ScentMark.SEGMENT_MARK.putMark(block, block.getBatchId().toString());
 
           // TODO : write features
 
           // write the first record only and ignore the rest because they are the same
-          context.write(block.getBaseUrl().toString(), block);
+          String K3 = block.getBaseUrl() + "#" + block.getBaseSequence();
+          context.write(K3, block);
         }
 
         ++counter;
@@ -271,7 +281,13 @@ public class SegmentJob implements Tool {
     sb.append("baseUrl:\t" + segment.getBaseUrl()).append("\n");
 
     sb.append("content:start:\n");
-    sb.append(segment.html());
+    String text = segment.text();
+    if (text.length() > 10) {
+      sb.append(StringUtils.substring(segment.text(), 0, 300));
+    }
+    else {
+      sb.append(segment.html());
+    }
     sb.append("\ncontent:end:\n");
 
     return sb.toString();

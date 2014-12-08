@@ -1,10 +1,9 @@
 package org.qiwur.scent.utils;
 
 import java.nio.ByteBuffer;
-import java.util.Date;
+import java.util.Map;
 import java.util.Set;
 
-import org.apache.avro.util.Utf8;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.nutch.storage.Bytes;
 import org.qiwur.scent.classifier.statistics.BlockVarianceCalculator;
@@ -15,6 +14,7 @@ import org.qiwur.scent.diagnosis.ScentDiagnoser;
 import org.qiwur.scent.jsoup.Jsoup;
 import org.qiwur.scent.jsoup.block.DomSegment;
 import org.qiwur.scent.jsoup.nodes.Document;
+import org.qiwur.scent.jsoup.nodes.Indicator;
 import org.qiwur.scent.segment.DomSegmentsBuilder;
 import org.qiwur.scent.storage.PageBlock;
 
@@ -41,37 +41,44 @@ public class SegmentUtil {
     return segmentSet;
   }
 
-  public static PageBlock buildBlock(DomSegment segment, long time) {
+  public static PageBlock buildBlock(DomSegment segment, long time, String batchId) {
     PageBlock block = PageBlock.newBuilder().build();
 
     block.setBaseUrl(segment.getBaseUrl() + "#" + segment.baseSequence());
     block.setBaseSequence(segment.baseSequence());
+    block.setCssSelector(segment.cssSelector());
     block.setName(segment.name());
-    block.setXpath(segment.xpath());
-    block.setBuildTime(time);
     block.setContent(ByteBuffer.wrap(Bytes.toBytes(segment.html())));
-    block.setContentMD5(segment.md5hex());
-    // TODO : set a batch id
-    block.setBatchId(new Date().toString());
+    block.setText(segment.text());
+    block.setCodeDigest(segment.codeDigest());
+    block.setTextDigest(segment.textDigest());
+
+    // indicators
+    Map<CharSequence, CharSequence> indicators = Maps.newHashMap();
+    for (Indicator indicator : segment.block().indicators()) {
+      indicators.put(indicator.getKey(), indicator.getValue().toString());
+    }
+
+    block.setBatchId(batchId);
 
     return block;
   }
 
-  public static PageBlock mokePageBlock() {
-    PageBlock block = new PageBlock();
-
-    long now = System.currentTimeMillis();
-    block.setBaseUrl("http://123.com");
-    // block.setXpath(value);
-    block.setBaseSequence(1);
-    block.setName("moke-block");
-    block.setBuildTime(now);
-    block.setContent(ByteBuffer.wrap(Bytes.toBytes("<html></html>")));
-    block.setBatchId(new Utf8("111111111"));
-    java.util.Map<java.lang.CharSequence,java.lang.CharSequence> kvs = Maps.newHashMap();
-    block.setKvpairs(kvs);
-    block.setMarkers(kvs);
-
-    return block;
-  }
+//  public static PageBlock mokePageBlock() {
+//    PageBlock block = new PageBlock();
+//
+//    long now = System.currentTimeMillis();
+//    block.setBaseUrl("http://123.com");
+//    // block.setXpath(value);
+//    block.setBaseSequence(1);
+//    block.setName("moke-block");
+//    block.setBuildTime(now);
+//    block.setContent(ByteBuffer.wrap(Bytes.toBytes("<html></html>")));
+//    block.setBatchId(new Utf8("111111111"));
+//    java.util.Map<java.lang.CharSequence,java.lang.CharSequence> kvs = Maps.newHashMap();
+//    block.setKvpairs(kvs);
+//    block.setMarkers(kvs);
+//
+//    return block;
+//  }
 }

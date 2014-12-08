@@ -4,14 +4,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 
-import org.apache.commons.collections.SetUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -32,7 +29,7 @@ import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
 import com.google.common.collect.TreeMultimap;
 
-class PhraseFeatureParser {
+public class PhraseFeatureParser {
 
 	final Logger logger = LogManager.getLogger(PhraseFeatureParser.class);
 

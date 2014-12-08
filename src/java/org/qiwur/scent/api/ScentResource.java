@@ -77,8 +77,7 @@ public class ScentResource extends ServerResource {
 
     long time = System.currentTimeMillis();
 
-    // TODO : thread safe?
-    PageEntity pageEntity = extractor.extract(new PageExtractor(doc, conf));
+    PageEntity pageEntity = extractor.extract(doc);
 
     logger.debug(pageEntity);
 

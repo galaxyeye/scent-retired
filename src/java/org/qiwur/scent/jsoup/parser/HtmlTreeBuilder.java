@@ -51,22 +51,20 @@ class HtmlTreeBuilder extends TreeBuilder {
     private boolean framesetOk = true; // if ok to go into frameset
     private boolean fosterInserts = false; // if next inserts should be fostered
     private boolean fragmentParsing = false; // if parsing a fragment of html
-    private int sequence = 0; // tag sequence
 
     HtmlTreeBuilder() {}
 
     @Override
     Document parse(String input, String baseUri, ParseErrorList errors) {
         state = HtmlTreeBuilderState.Initial;
-
+        baseUriSetFromDoc = false;
         return super.parse(input, baseUri, errors);
     }
 
-    List<Node> parseFragment(String inputFragment, Element context, String baseUri, ParseErrorList errors) {    	
+    List<Node> parseFragment(String inputFragment, Element context, String baseUri, ParseErrorList errors) {
+        // context may be null
         state = HtmlTreeBuilderState.Initial;
-
         initialiseParse(inputFragment, baseUri, errors);
-        
         contextElement = context;
         fragmentParsing = true;
         Element root = null;
@@ -258,9 +256,9 @@ class HtmlTreeBuilder extends TreeBuilder {
     private void insertNode(Node node) {
         // if the stack hasn't been set up yet, elements (doctype, comments) go into the doc
         if (stack.size() == 0)
-            doc.appendChild(node); // root
+            doc.appendChild(node);
         else if (isFosterInserts())
-            insertInFosterParent(node); // 
+            insertInFosterParent(node);
         else
             currentElement().appendChild(node);
 

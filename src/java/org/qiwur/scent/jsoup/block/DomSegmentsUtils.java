@@ -153,5 +153,4 @@ public class DomSegmentsUtils {
 
     return removal;
   }
-
 }

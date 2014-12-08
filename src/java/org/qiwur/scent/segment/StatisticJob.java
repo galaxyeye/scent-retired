@@ -90,8 +90,8 @@ public class StatisticJob implements Tool {
         }
 
         long now = System.currentTimeMillis();
-        for (DomSegment segment : SegmentUtil.segment(Bytes.toString(page.getContent()), conf)) {
-          context.write(new Text(url), SegmentUtil.buildBlock(segment, now));
+        for (DomSegment segment : SegmentUtil.segment(Bytes.toString(page.getContent()), page.getBaseUrl().toString(), conf)) {
+          context.write(new Text(url), SegmentUtil.buildBlock(segment, now, ""));
         }
       }
     }

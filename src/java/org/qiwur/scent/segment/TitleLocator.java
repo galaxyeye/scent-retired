@@ -114,7 +114,7 @@ public final class TitleLocator extends BlockLocator {
     if (candiateTitles.isEmpty()) return null;
 
     Entry<Double, Element> eleTitle = candiateTitles.firstEntry();
-    DomSegment segTitle = new DomSegment(null, null, eleTitle.getValue());
+    DomSegment segTitle = new DomSegment(eleTitle.getValue());
     segTitle.tag(targetLabel(), eleTitle.getKey());
 
     return segTitle;

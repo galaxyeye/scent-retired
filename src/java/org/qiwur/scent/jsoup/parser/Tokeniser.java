@@ -192,6 +192,8 @@ class Tokeniser {
     }
 
     String appropriateEndTagName() {
+        if (lastStartTag == null)
+            return null;
         return lastStartTag.tagName;
     }
 

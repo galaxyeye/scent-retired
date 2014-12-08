@@ -14,14 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.qiwur.scent.classifier;
+package org.qiwur.scent.data.extractor;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.gora.mapreduce.GoraMapper;
 import org.apache.gora.mapreduce.GoraReducer;
@@ -34,26 +32,20 @@ import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.nutch.storage.Bytes;
 import org.apache.nutch.storage.Nutch;
 import org.apache.nutch.storage.WebPage;
-import org.qiwur.scent.jsoup.Jsoup;
-import org.qiwur.scent.jsoup.block.DomSegment;
-import org.qiwur.scent.jsoup.nodes.Document;
 import org.qiwur.scent.storage.PageBlock;
 import org.qiwur.scent.storage.ScentMark;
-import org.qiwur.scent.utils.FileUtil;
 import org.qiwur.scent.utils.ScentConfiguration;
 import org.qiwur.scent.utils.StringUtil;
 
 /**
- * 
- * 
+ * Scans the web table and create host entries for each unique host.
  * 
  **/
-public class LRTrainerJob implements Tool {
+public class ExtractJob implements Tool {
 
-  protected static final Logger LOG = LogManager.getLogger(LRTrainerJob.class);
+  protected static final Logger LOG = LogManager.getLogger(ExtractJob.class);
 
   private static final Collection<WebPage.Field> FIELDS = new HashSet<WebPage.Field>();
 
@@ -76,40 +68,17 @@ public class LRTrainerJob implements Tool {
     @Override
     protected void map(String key, PageBlock block, Context context) throws IOException, InterruptedException {
       // filtering
-      if (ScentMark.BUILD_MARK.checkMark(block) == null) {
+      if (ScentMark.CLASSIFY_MARK.checkMark(block) == null) {
         return;
       }
 
-      // TODO 
+      // TODO
       context.write(new Text(key), block);
     }
 
     @Override
     protected void setup(Context context) throws IOException, InterruptedException {
       conf = context.getConfiguration();
-    }
-  }
-
-  /**
-   * Map [0, maxSequence] to [0, numPartitions]
-   * */
-  public static class Partitioner extends org.apache.hadoop.mapreduce.Partitioner<Text, PageBlock> {
-    private int maxSequence = 1;
-
-    @Override
-    public int getPartition(Text key, PageBlock block, int numPartitions) {
-      int sequence = block.getBaseSequence();
-      if (sequence > maxSequence) {
-        maxSequence = sequence;
-      }
-
-      float tmp = (1.0f * sequence / maxSequence) * numPartitions;
-      int r = (int)tmp;
-      if (r > numPartitions - 1) {
-        r = numPartitions - 1;
-      }
-
-      return r;
     }
   }
 
@@ -130,23 +99,21 @@ public class LRTrainerJob implements Tool {
 
       // TDOO : we can do road runner here
 
+      // new PageExtractor(doc, conf);
+      // extract segment via proper extractors
+
+      // PageExtractor extractor = new PageExtractor(doc, conf);
+
       for (PageBlock block : blocks) {
-        Document doc = Jsoup.parse(Bytes.toString(block.getContent()), block.getBaseUrl().toString());
-        DomSegment segment = DomSegment.create(doc.getAllElements().first());
-        DomSegment[] segments = {segment};
-
-        DomSegmentsClassifier classifier = new DomSegmentsClassifier(segments, labels, conf);
-        classifier.classify();
-
-        block.setLabel(segment.primaryLabel().toString());
-        ScentMark.CLASSIFY_MARK.putMark(block, ScentMark.CLASSIFY_MARK.toString());
-
-        context.write(block.getBaseUrl().toString(), block);
+        // String html = Bytes.toString(block.getContent());
+        // Document doc = Jsoup.parseFragment();
+        // PageEntity entity = extractor.extract(doc);
+        // block.setKVs(entity.getKVs());
       }
     }
   }
 
-  public LRTrainerJob() {
+  public ExtractJob() {
   }
 
   @Override
@@ -170,22 +137,18 @@ public class LRTrainerJob implements Tool {
     Job job = new Job(getConf());
     job.setJobName("SegmentJob");
 
-    DataStore<String, WebPage> pageStore = DataStoreFactory.getDataStore(String.class, WebPage.class, conf);
-    DataStore<String, PageBlock> blockStore = DataStoreFactory.getDataStore(String.class, PageBlock.class, conf);
+    DataStore<String, PageBlock> store = DataStoreFactory.getDataStore(String.class, PageBlock.class, conf);
 
     LOG.info("\nCreating Hadoop Job: " + job.getJobName());
     // job.setNumReduceTasks(getConf().getInt("scent.reduce.task.number", 50));
     job.setJarByClass(getClass());
 
-    job.setPartitionerClass(LRTrainerJob.Partitioner.class);
-
-    GoraMapper.initMapperJob(job, pageStore, Text.class, PageBlock.class, LRTrainerJob.Mapper.class, true);
-    GoraReducer.initReducerJob(job, blockStore, LRTrainerJob.Reducer.class);
+    GoraMapper.initMapperJob(job, store, Text.class, PageBlock.class, ExtractJob.Mapper.class, true);
+    GoraReducer.initReducerJob(job, store, ExtractJob.Reducer.class);
 
     boolean success = job.waitForCompletion(true);
 
-    pageStore.close();
-    blockStore.close();
+    store.close();
 
     LOG.info("SegmentJob completed with " + (success ? "success" : "failure"));
 
@@ -231,19 +194,8 @@ public class LRTrainerJob implements Tool {
     return 0;
   }
 
-  private static void cache(String pageUri, String content, String suffix) {
-    try {
-      File file = new File(FileUtil.getFileForPage(pageUri, "/tmp/segment", suffix));
-      FileUtils.write(file, content, "utf-8");
-
-      LOG.debug("saved in {}", file.getAbsoluteFile());
-    } catch (IOException e) {
-      LOG.error(e);
-    }
-  }
-
   public static void main(String[] args) throws Exception {
-    final int res = ToolRunner.run(ScentConfiguration.create(), new LRTrainerJob(), args);
+    final int res = ToolRunner.run(ScentConfiguration.create(), new ExtractJob(), args);
     System.exit(res);
   }
 }

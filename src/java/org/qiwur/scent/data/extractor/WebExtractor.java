@@ -67,13 +67,9 @@ public class WebExtractor {
     FeatureManager.create(conf).reloadAll();
   }
 
-  public PageEntity extract(PageExtractor extractorImpl) {
-    Validate.notNull(extractorImpl);
-
+  public PageEntity extract(Document doc) {
     // reload features if necessary
     refreshFeatures();
-
-    Document doc = extractorImpl.doc();
 
     // Calculate all indicators, this step is essential for the extraction
     doc.calculateIndicators();
@@ -103,10 +99,11 @@ public class WebExtractor {
     // new BlockFeatureRecorder(doc, conf).process();
 
     // extract each code segment
-    extractorImpl.process();
+    PageExtractor pageExtractor = new PageExtractor(doc, conf);
+    pageExtractor.process();
 
     diagnoser.diagnose();
 
-    return extractorImpl.pageEntity();
+    return pageExtractor.getResult();
   }
 }

@@ -393,7 +393,7 @@ public abstract class Node implements Cloneable, Comparable<Node> {
    * As an alternate, you can use the {@link #attr} method with the
    * <code>abs:</code> prefix, e.g.:
    * <code>String absUrl = linkEl.attr("abs:href");</code>
-   * 
+   *
    * @param attributeKey
    *          The attribute key
    * @return An absolute URL if one could be made, or an empty string (not null)
@@ -836,7 +836,7 @@ public abstract class Node implements Cloneable, Comparable<Node> {
 
   // if this node has no document (or parent), retrieve the default output
   // settings
-  private Document.OutputSettings getOutputSettings() {
+  Document.OutputSettings getOutputSettings() {
     return ownerDocument() != null ? ownerDocument().outputSettings() : (new Document("")).outputSettings();
   }
 

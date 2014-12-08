@@ -116,8 +116,6 @@ public class DomSegmentsBuilder {
 //    logger.debug(test.strippedText());
 
     // set global variables
-    // TODO : in such case, conf is used as a global variables manager,
-    // is it a correct behavior? should we do not modify conf?
     doc.attr("data-title", segTitle.text());
     conf.setInt("scent.page.title.sequence", segTitle.block().sequence());
     conf.setInt("scent.page.menu.sequence", segMenu.block().sequence());
@@ -140,7 +138,7 @@ public class DomSegmentsBuilder {
 
     adjustMenu(segMenu.block());
 
-    // ensure the similarity be very likely at least
+    // ensure the similarity be very likely
     segMenu.tag(BlockLabel.Menu, FuzzyProbability.VERY_LIKELY);
     segments.add(segMenu);
 

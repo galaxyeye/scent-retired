@@ -7,32 +7,28 @@ import java.util.ArrayList;
  * 
  * @author Jonathan Hedley
  */
-class ParseErrorList extends ArrayList<ParseError> {
-  /**
-   * 
-   */
-  private static final long serialVersionUID = -2507756835592798005L;
-  private static final int INITIAL_CAPACITY = 16;
-  private final int maxSize;
+class ParseErrorList extends ArrayList<ParseError>{
+    private static final int INITIAL_CAPACITY = 16;
+    private final int maxSize;
+    
+    ParseErrorList(int initialCapacity, int maxSize) {
+        super(initialCapacity);
+        this.maxSize = maxSize;
+    }
+    
+    boolean canAddError() {
+        return size() < maxSize;
+    }
 
-  ParseErrorList(int initialCapacity, int maxSize) {
-    super(initialCapacity);
-    this.maxSize = maxSize;
-  }
+    int getMaxSize() {
+        return maxSize;
+    }
 
-  boolean canAddError() {
-    return size() < maxSize;
-  }
-
-  int getMaxSize() {
-    return maxSize;
-  }
-
-  static ParseErrorList noTracking() {
-    return new ParseErrorList(0, 0);
-  }
-
-  static ParseErrorList tracking(int maxSize) {
-    return new ParseErrorList(INITIAL_CAPACITY, maxSize);
-  }
+    static ParseErrorList noTracking() {
+        return new ParseErrorList(0, 0);
+    }
+    
+    static ParseErrorList tracking(int maxSize) {
+        return new ParseErrorList(INITIAL_CAPACITY, maxSize);
+    }
 }

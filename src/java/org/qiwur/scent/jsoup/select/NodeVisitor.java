@@ -10,7 +10,6 @@ import org.qiwur.scent.jsoup.nodes.Node;
  * create a start tag for a node, and tail to create the end tag.
  */
 public interface NodeVisitor {
-
     /**
      * Callback for when a node is first visited.
      *

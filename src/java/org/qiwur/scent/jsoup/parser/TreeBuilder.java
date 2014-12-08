@@ -11,7 +11,6 @@ import org.qiwur.scent.utils.Validate;
  * @author Jonathan Hedley
  */
 abstract class TreeBuilder {
-
   CharacterReader reader;
   Tokeniser tokeniser;
   protected Document doc; // current doc we are building into
@@ -48,16 +47,13 @@ abstract class TreeBuilder {
 
   Document parse(String input, String baseUri, ParseErrorList errors) {
     initialiseParse(input, baseUri, errors);
-
     runParser();
-
     return doc;
   }
 
   protected void runParser() {
     while (true) {
       Token token = tokeniser.read();
-
       process(token);
 
       if (token.type == Token.TokenType.EOF)

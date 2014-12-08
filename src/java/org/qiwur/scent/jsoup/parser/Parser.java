@@ -1,18 +1,18 @@
 package org.qiwur.scent.jsoup.parser;
 
-import java.util.List;
-
 import org.qiwur.scent.jsoup.nodes.Document;
 import org.qiwur.scent.jsoup.nodes.Element;
 import org.qiwur.scent.jsoup.nodes.Node;
 
+import java.util.List;
+
 /**
- * Parses HTML into a {@link org.qiwur.scent.jsoup.nodes.Document}. Generally best to use one of the  more convenient parse methods
- * in {@link org.qiwur.scent.jsoup.Jsoup}.
+ * Parses HTML into a {@link org.jsoup.nodes.Document}. Generally best to use one of the  more convenient parse methods
+ * in {@link org.jsoup.Jsoup}.
  */
 public class Parser {
     private static final int DEFAULT_MAX_ERRORS = 0; // by default, error tracking is disabled.
-
+    
     private TreeBuilder treeBuilder;
     private int maxErrors = DEFAULT_MAX_ERRORS;
     private ParseErrorList errors;
@@ -24,7 +24,7 @@ public class Parser {
     public Parser(TreeBuilder treeBuilder) {
         this.treeBuilder = treeBuilder;
     }
-
+    
     public Document parseInput(String html, String baseUri) {
         errors = isTrackErrors() ? ParseErrorList.tracking(maxErrors) : ParseErrorList.noTracking();
         Document doc = treeBuilder.parse(html, baseUri, errors);

@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.qiwur.scent.jsoup.parser.MessageDigestCalculator;
+import org.qiwur.scent.jsoup.parser.CodeDigestCalculator;
 import org.qiwur.scent.jsoup.parser.Parser;
 import org.qiwur.scent.jsoup.parser.Tag;
 import org.qiwur.scent.jsoup.select.Collector;
@@ -90,7 +90,7 @@ public class Element extends Node {
   /**
    * Change the tag of this element. For example, convert a {@code <span>} to a
    * {@code <div>} with {@code el.tagName("div");}.
-   * 
+   *
    * @param tagName
    *          new tag name for this element
    * @return this element, for chaining
@@ -219,7 +219,7 @@ public class Element extends Node {
   public Elements children() {
     // create on the fly rather than maintaining two lists. if gets slow,
     // memoize, and mark dirty on change
-    List<Element> elements = new ArrayList<Element>();
+    List<Element> elements = new ArrayList<Element>(childNodes.size());
     for (Node node : childNodes) {
       if (node instanceof Element)
         elements.add((Element) node);
@@ -336,7 +336,7 @@ public class Element extends Node {
    * Inserts the given child nodes into this element at the specified index.
    * Current nodes will be shifted to the right. The inserted nodes will be
    * moved from their current parent. To prevent moving, copy the nodes first.
-   * 
+   *
    * @param index
    *          0-based index to insert children at. Specify {@code 0} to insert
    *          at the start, {@code -1} at the end
@@ -448,7 +448,7 @@ public class Element extends Node {
   /**
    * Insert the specified HTML into the DOM before this element (as a preceding
    * sibling).
-   * 
+   *
    * @param html
    *          HTML to add before this element
    * @return this element, for chaining
@@ -476,7 +476,7 @@ public class Element extends Node {
   /**
    * Insert the specified HTML into the DOM after this element (as a following
    * sibling).
-   * 
+   *
    * @param html
    *          HTML to add after this element
    * @return this element, for chaining
@@ -513,7 +513,7 @@ public class Element extends Node {
 
   /**
    * Wrap the supplied HTML around this element.
-   * 
+   *
    * @param html
    *          HTML to wrap around this element, e.g.
    *          {@code <div class="head"></div>}. Can be arbitrarily deep.
@@ -522,6 +522,57 @@ public class Element extends Node {
   @Override
   public Element wrap(String html) {
     return (Element) super.wrap(html);
+  }
+
+  /**
+   * Get full xpath
+   * */
+  public String xpath() {
+    StringBuilder accum = new StringBuilder();
+
+    for (Element ele : Lists.reverse(parents())) {
+      accum.append('/');
+      accum.append(ele.tagName());
+      if (ele.siblingSize() > 0) {
+        accum.append('[');
+        accum.append(ele.siblingIndex());
+        accum.append(']');
+      }
+    }
+
+    return accum.toString();
+  }
+
+  /**
+   * Get a CSS selector that will uniquely select this element.
+   * <p/>
+   * If the element has an ID, returns #id; otherwise returns the parent (if
+   * any) CSS selector, followed by '>', followed by a unique selector for the
+   * element (tag.class.class:nth-child(n)).
+   *
+   * @return the CSS Path that can be used to retrieve the element in a
+   *         selector.
+   */
+  public String cssSelector() {
+    if (id().length() > 0)
+      return "#" + id();
+
+    StringBuilder selector = new StringBuilder(tagName());
+    String classes = StringUtil.join(classNames(), ".");
+    if (classes.length() > 0)
+      selector.append('.').append(classes);
+
+    if (parent() == null || parent() instanceof Document) // don't add Document
+                                                          // to selector, as
+                                                          // will always have a
+                                                          // html node
+      return selector.toString();
+
+    selector.insert(0, " > ");
+    if (parent().select(selector.toString()).size() > 1)
+      selector.append(String.format(":nth-child(%d)", elementSiblingIndex() + 1));
+
+    return parent().cssSelector() + selector.toString();
   }
 
   /**
@@ -541,15 +592,6 @@ public class Element extends Node {
       if (el != this)
         siblings.add(el);
     return siblings;
-  }
-
-  @Override
-  public int siblingSize() {
-    if (parent() == null) {
-      return 0;
-    }
-
-    return parent().children().size();
   }
 
   /**
@@ -703,7 +745,7 @@ public class Element extends Node {
 
   /**
    * Find elements that have a named attribute set. Case insensitive.
-   * 
+   *
    * @param key
    *          name of the attribute, e.g. {@code href}
    * @return elements that have this attribute, empty if none
@@ -1069,7 +1111,7 @@ public class Element extends Node {
    * returns {@code "Hello there now!"}. Note that the text within the {@code b}
    * element is not returned, as it is not a direct child of the {@code p}
    * element.
-   * 
+   *
    * @return unencoded text, or empty string if none.
    * @see #text()
    * @see #textNodes()
@@ -1160,7 +1202,7 @@ public class Element extends Node {
    * {@code script} tag.
    * 
    * @return the data, or empty string if none
-   * 
+   *
    * @see #dataNodes()
    */
   public String data() {
@@ -1327,9 +1369,14 @@ public class Element extends Node {
     accum.append("<").append(tagName());
     attributes.html(accum, out);
 
-    if (childNodes.isEmpty() && tag.isSelfClosing())
-      accum.append(" />");
-    else
+    // selfclosing includes unknown tags, isEmpty defines tags that are always
+    // empty
+    if (childNodes.isEmpty() && tag.isSelfClosing()) {
+      if (out.syntax() == Document.OutputSettings.Syntax.html && tag.isEmpty())
+        accum.append('>');
+      else
+        accum.append(" />"); // <img> in html, <img /> in xml
+    } else
       accum.append(">");
   }
 
@@ -1344,31 +1391,19 @@ public class Element extends Node {
   }
 
   /**
-   * Get full xpath
+   * Get html code digest
    * */
-  public String xpath() {
+  public String codeDigest() {
     StringBuilder accum = new StringBuilder();
-
-    for (Element ele : Lists.reverse(parents())) {
-      accum.append('/');
-      accum.append(ele.tagName());
-      if (ele.siblingSize() > 0) {
-        accum.append('[');
-        accum.append(ele.siblingIndex());
-        accum.append(']');
-      }
-    }
-
-    return accum.toString();
+    new ElementTraversor(new CodeDigestCalculator(accum)).traverse(this);
+    return DigestUtils.md5Hex(accum.toString());
   }
 
   /**
-   * Get html message digest
+   * Get text content digest
    * */
-  public String md5hex() {
-    StringBuilder accum = new StringBuilder();
-    new ElementTraversor(new MessageDigestCalculator(accum)).traverse(this);
-    return DigestUtils.md5Hex(accum.toString());
+  public String textDigest() {
+    return DigestUtils.md5Hex(text());
   }
 
   /**
@@ -1384,7 +1419,7 @@ public class Element extends Node {
   public String html() {
     StringBuilder accum = new StringBuilder();
     html(accum);
-    return accum.toString().trim();
+    return getOutputSettings().prettyPrint() ? accum.toString().trim() : accum.toString();
   }
 
   private void html(StringBuilder accum) {

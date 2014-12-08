@@ -49,7 +49,7 @@ public class BlockFeatureVectorEncoder extends ContinuousValueEncoder {
   public List<String> getFeatures() {
     return features;
   }
-  
+
   public Vector encode(File file) {
     Vector v = new RandomAccessSparseVector(vectorSize());
     encode(file, v);
@@ -90,7 +90,6 @@ public class BlockFeatureVectorEncoder extends ContinuousValueEncoder {
 
   public void encode(Element block, Vector v) {
     for (String feature : features) {
-//      logger.debug("{} : {}", feature, getValue(block, feature));
       addToVector((byte[])null, getValue(block, feature), v);
     }
 

@@ -79,7 +79,7 @@ public class ClassifyJob implements Tool {
     @Override
     protected void map(String key, PageBlock block, Context context) throws IOException, InterruptedException {
       // filtering
-      if (ScentMark.BUILD_MARK.checkMark(block) == null) {
+      if (ScentMark.SEGMENT_MARK.checkMark(block) == null) {
         return;
       }
 
@@ -135,7 +135,7 @@ public class ClassifyJob implements Tool {
 
       for (PageBlock block : blocks) {
         Document doc = Jsoup.parse(Bytes.toString(block.getContent()), block.getBaseUrl().toString());
-        DomSegment segment = DomSegment.create(doc.getAllElements().first());
+        DomSegment segment = new DomSegment(doc.getAllElements().first());
         DomSegment[] segments = {segment};
 
         DomSegmentsClassifier classifier = new DomSegmentsClassifier(segments, labels, conf);

@@ -152,12 +152,12 @@ public class PageEntityBuilder {
     }
   }
 
-  private void processDocument(Document doc) throws IOException, DataExtractorNotFound {
+  private PageEntity processDocument(Document doc) throws IOException, DataExtractorNotFound {
     Validate.notNull(doc);
 
     long time = System.currentTimeMillis();
 
-    PageEntity pageEntity = extractor.extract(new PageExtractor(doc, conf));
+    PageEntity pageEntity = extractor.extract(doc);
     cache(doc.baseUri(), pageEntity.toString(), "log");
 
     time = System.currentTimeMillis() - time;
@@ -171,6 +171,8 @@ public class PageEntityBuilder {
 //    cache(doc.baseUri(), wiki.text(), "wiki");
 
     // if (uploadWiki) wiki.upload();
+
+    return pageEntity;
   }
 
   private Document readInternet(String uri) {

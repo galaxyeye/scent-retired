@@ -15,10 +15,11 @@ import org.qiwur.scent.jsoup.nodes.Node;
 import org.qiwur.scent.utils.Validate;
 
 /**
- * A list of {@link Element Elements}, with methods that act on every element in
- * the list.
+ * A list of {@link Element}s, with methods that act on every element in the
+ * list.
  * <p/>
- * To get an Elements object, use the {@link Element#select(String)} method.
+ * To get an {@code Elements} object, use the {@link Element#select(String)}
+ * method.
  * 
  * @author Jonathan Hedley, jonathan@hedley.net
  */
@@ -415,7 +416,7 @@ public class Elements implements List<Element>, Cloneable {
    * {@code <div><font>One</font> <font><a href="/">Two</a></font></div>}<br/>
    * {@code doc.select("font").unwrap();}<br/>
    * HTML = {@code <div>One <a href="/">Two</a></div>}
-   * 
+   *
    * @return this (for chaining)
    * @see Node#unwrap
    */
@@ -457,7 +458,7 @@ public class Elements implements List<Element>, Cloneable {
    * HTML = {@code <div> <img /></div>}
    * <p>
    * Note that this method should not be used to clean user-submitted HTML;
-   * rather, use {@link org.qiwur.scent.jsoup.safety.Cleaner} to clean HTML.
+   * rather, use {@link org.jsoup.safety.Cleaner} to clean HTML.
    * 
    * @return this, for chaining
    * @see Element#empty()
@@ -580,8 +581,8 @@ public class Elements implements List<Element>, Cloneable {
   /**
    * Get the {@link FormElement} forms from the selected elements, if any.
    * 
-   * @return a list of FormElements pulled from the matched elements. The list
-   *         will be empty if the elements contain no forms.
+   * @return a list of {@link FormElement}s pulled from the matched elements.
+   *         The list will be empty if the elements contain no forms.
    */
   public List<FormElement> forms() {
     ArrayList<FormElement> forms = new ArrayList<FormElement>();

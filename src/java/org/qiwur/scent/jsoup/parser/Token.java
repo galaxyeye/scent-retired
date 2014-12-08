@@ -78,7 +78,7 @@ abstract class Token {
         }
 
         String name() {
-            Validate.isFalse(tagName.length() == 0);
+            Validate.isFalse(tagName == null || tagName.length() == 0);
             return tagName;
         }
 
@@ -91,6 +91,7 @@ abstract class Token {
             return selfClosing;
         }
 
+        @SuppressWarnings({"TypeMayBeWeakened"})
         Attributes getAttributes() {
             return attributes;
         }

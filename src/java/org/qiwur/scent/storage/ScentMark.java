@@ -19,7 +19,7 @@ package org.qiwur.scent.storage;
 import org.apache.avro.util.Utf8;
 
 public enum ScentMark {
-  BUILD_MARK("_bldmrk_"), CLASSIFY_MARK("_clsmrk_"), EXTRACT_MARK("_extmrk_");
+  SEGMENT_MARK("_segmrk_"), CLASSIFY_MARK("_clsmrk_"), EXTRACT_MARK("_extmrk_");
 
   private Utf8 name;
 

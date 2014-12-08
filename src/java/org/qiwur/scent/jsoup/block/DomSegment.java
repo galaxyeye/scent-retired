@@ -27,57 +27,25 @@ public class DomSegment implements Comparable<DomSegment> {
   // 经验值，如一个很长的短语（14字符）："看过此商品后顾客买的其它商品"
   public final static int MaxTitleLength = 18;
 
-  private Element root = null;
-  private Element title = null;
   private Element block = null;
+  private String title = null;
 
+  // dom segment tree
   private DomSegment parent = null;
   private List<DomSegment> children = Lists.newArrayList();
 
   BlockLabelTracker labelTracker = new BlockLabelTracker();
   BlockPatternTracker patternTracker = new BlockPatternTracker();
 
-  public DomSegment(Element root, Element title, Element block) {
-    Validate.notNull(block);
-
-    if (title != null && title.text() == "") {
-      title = null;
-    }
-
-    if (root == null) {
-      root = block;
-    }
-
-    this.root = root;
-    this.title = title;
-    this.block = block;
-
-    root.attr("data-segmented", "1");
-    block.attr("data-segmented", "1");
-  }
-
   public DomSegment(Element baseBlock) {
     Validate.notNull(baseBlock);
-
     block = baseBlock;
-
     findBlockRootAndHeader(block);
-
-    if (title != null && title.text() == "") {
-      title = null;
-    }
-
-    if (root == null) {
-      title = null;
-      root = block;
-    }
-
-    root.attr("data-segmented", "1");
     block.attr("data-segmented", "1");
   }
 
   public static DomSegment create(Element block) {
-    return new DomSegment(null, null, block);
+    return new DomSegment(block);
   }
 
   public static DomSegment create(Element block, BlockLabel label) {
@@ -89,62 +57,46 @@ public class DomSegment implements Comparable<DomSegment> {
   }
 
   public static DomSegment create(Element block, BlockLabel label, FuzzyProbability p) {
-    DomSegment segment = new DomSegment(null, null, block);
-
+    DomSegment segment = new DomSegment(block);
     segment.tag(label, p);
-
     return segment;
   }
 
   public String getBaseUrl() {
-    return root.baseUri();
+    return block.baseUri();
   }
 
-  public Element root() {
-    Validate.notNull(root);
-
-    return root;
-  }
-
-  public Element title() {
+  public String title() {
     return title;
   }
 
   public Element block() {
     Validate.notNull(block);
-
     return block;
   }
 
-  public String titleText() {
-    if (title == null)
-      return "";
-
-    return title.text();
-  }
-
   public int baseSequence() {
-    return root.sequence();
+    return block.sequence();
   }
 
-  public boolean hasTitle() {
-    return titleText() != "";
+  public String codeDigest() {
+    return block.codeDigest();
   }
 
-  public String md5hex() {
-    return root.md5hex();
+  public String textDigest() {
+    return block.textDigest();
   }
 
   public String outerHtml() {
-    return root.outerHtml();
+    return block.outerHtml();
   }
 
   public String html() {
-    return root.html();
+    return block.html();
   }
 
   public String text() {
-    return root.text();
+    return block.text();
   }
 
   public boolean hasParent() {
@@ -329,22 +281,22 @@ public class DomSegment implements Comparable<DomSegment> {
     return patternTracker.certainly(pattern);
   }
 
-  public String xpath() {
-    return root.xpath();
+  public String cssSelector() {
+    return block.cssSelector();
   }
 
   public String name() {
-    return root.prettyName();
+    return block.prettyName();
   }
 
   @Override
   public String toString() {
-    return root.toString();
+    return block.toString();
   }
 
   @Override
   public int hashCode() {
-    return root.hashCode();
+    return block.hashCode();
   }
 
   @Override
@@ -356,7 +308,7 @@ public class DomSegment implements Comparable<DomSegment> {
 
   @Override
   public int compareTo(DomSegment o) {
-    return root.compareTo(o.block);
+    return block.compareTo(o.block);
   }
 
   private void findBlockRootAndHeader(Element baseBlock) {
@@ -367,8 +319,9 @@ public class DomSegment implements Comparable<DomSegment> {
     // 向上寻找的层次
     int upwardDepth = 3;
     Element parent = baseBlock.parent();
+    Element titleElement = null;
 
-    while (parent != null && title == null && upwardDepth-- > 0) {
+    while (parent != null && titleElement == null && upwardDepth-- > 0) {
       // 找到的根节点不应该包含太多其他标签
       double numDescend = baseBlock.indic(Indicator.D);
       double numDescend2 = parent.indic(Indicator.D);
@@ -388,14 +341,14 @@ public class DomSegment implements Comparable<DomSegment> {
       // 经验值：字符块数相差3个以内
       // 标题中可能会包含em, strong, span等标签
       if (delta >= 1 && delta <= 3) {
-        title = findTitleFromChildren(parent, baseBlock);
-
-        if (title != null) {
-          root = parent;
-        }
+        titleElement = findTitleFromChildren(parent, baseBlock);
       }
 
       parent = parent.parent();
+    }
+
+    if (titleElement != null) {
+      title = titleElement.text();
     }
   }
 

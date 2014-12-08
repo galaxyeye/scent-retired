@@ -82,7 +82,7 @@ public class TestSegment {
         }
 
         long now = System.currentTimeMillis();
-        for (DomSegment segment : SegmentUtil.segment(Bytes.toString(page.getContent()), conf)) {
+        for (DomSegment segment : SegmentUtil.segment(Bytes.toString(page.getContent()), page.getBaseUrl().toString(), conf)) {
           System.out.println(StringUtils.substring(segment.html(), 0, 20));
         }
       }catch (Exception e) {

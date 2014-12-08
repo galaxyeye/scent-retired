@@ -91,8 +91,7 @@ public class WebTableReader extends NutchTool implements Tool {
       context.write(new Text("T"), COUNT_1);
       context.write(new Text("status " + value.getStatus()), COUNT_1);
       context.write(new Text("retry " + value.getRetriesSinceFetch()), COUNT_1);
-      context.write(new Text("s"), new LongWritable(
-          (long) (value.getScore() * 1000.0)));
+      context.write(new Text("s"), new LongWritable((long) (value.getScore() * 1000.0)));
       if (sort) {
         URL u = new URL(TableUtil.unreverseUrl(key.toString()));
         String host = u.getHost();
@@ -147,7 +146,6 @@ public class WebTableReader extends NutchTool implements Tool {
         context.write(new Text("sct"), new LongWritable(total));
       }
     }
-
   }
 
   public static class WebTableStatReducer extends

@@ -32,6 +32,7 @@ public abstract class BlockClassifier {
 
   protected double weight = 1.0;
 
+  // TODO : change DomSegment[] to feature vector
 	public BlockClassifier(DomSegment[] segments, String[] labels, Configuration conf) {
 	  this.segments = segments;
 	  this.labels = labels;
