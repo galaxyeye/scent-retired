@@ -239,7 +239,7 @@
 	<!-- ================================================================== -->
 	<target name="test" depends="test-core, test-plugins" description="--> run JUnit tests" />
 
-	<target name="test-core" depends="job, compile-core-test" description="--> run core JUnit tests only">
+	<target name="test-core" depends="compile-core-test" description="--> run core JUnit tests only">
 		<delete dir="${test.build.data}" />
 		<mkdir dir="${test.build.data}" />
 		<!-- 
@@ -259,8 +259,12 @@
 			<sysproperty key="javax.xml.parsers.DocumentBuilderFactory" value="com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl" />
 			<classpath refid="test.classpath" />
 			<formatter type="${test.junit.output.format}" />
+
+			<test name="org.qiwur.scent.jsoup.TestElement" todir="${test.build.dir}" >
+			</test>
+
 			<batchtest todir="${test.build.dir}" unless="testcase">
-				<fileset dir="${test.src.dir}" includes="**/Test*.java" excludes="**/${test.exclude}.java" />
+				<fileset dir="${test.src.dir}" includes="**/Test*.java" excludes="${test.exclude}" />
 			</batchtest>
 			<batchtest todir="${test.build.dir}" if="testcase">
 				<fileset dir="${test.src.dir}" includes="**/${testcase}.java" />
@@ -270,6 +274,35 @@
 		<fail if="tests.failed">Tests failed!</fail>
 	</target>
 
+  <target name="test-one" depends="compile-core-test" description="--> run one JUnit test">
+    <delete dir="${test.build.data}" />
+    <mkdir dir="${test.build.data}" />
+    <!-- 
+      copy resources needed in junit tests 
+      -->
+    <copy todir="${test.build.data}">
+      <fileset dir="src/testresources" includes="**/*" />
+    </copy>
+    <copy file="${test.src.dir}/scent-site.xml" todir="${test.build.classes}" />
+    <copy file="${test.src.dir}/log4j2.xml" todir="${test.build.classes}" />
+    <copy file="${test.src.dir}/gora.properties" todir="${test.build.classes}" />
+
+    <junit printsummary="yes" haltonfailure="no" fork="yes" dir="${basedir}" errorProperty="tests.failed" 
+      failureProperty="tests.failed" maxmemory="1000m">
+      <sysproperty key="test.build.data" value="${test.build.data}" />
+      <sysproperty key="test.src.dir" value="${test.src.dir}" />
+      <sysproperty key="javax.xml.parsers.DocumentBuilderFactory" value="com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl" />
+      <classpath refid="test.classpath" />
+      <formatter type="${test.junit.output.format}" />
+
+      <test name="org.qiwur.scent.jsoup.TestElement" todir="${test.build.dir}" >
+      </test>
+
+    </junit>
+
+    <fail if="tests.failed">Tests failed!</fail>
+  </target>
+	
 	<target name="test-plugins" depends="compile" description="--> run plugin JUnit tests only">
 		<ant dir="src/plugin" target="test" inheritAll="false" />
 	</target>

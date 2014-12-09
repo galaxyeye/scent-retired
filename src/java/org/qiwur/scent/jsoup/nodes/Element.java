@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang.StringUtils;
 import org.qiwur.scent.jsoup.parser.CodeDigestCalculator;
 import org.qiwur.scent.jsoup.parser.Parser;
 import org.qiwur.scent.jsoup.parser.Tag;
@@ -37,6 +38,8 @@ import com.google.common.collect.Lists;
  * @author Jonathan Hedley, jonathan@hedley.net
  */
 public class Element extends Node {
+  public static String CssRegex = "-?[_a-zA-Z]+[_a-zA-Z0-9-]*";
+
   private Tag tag;
   private Set<String> classNames;
 
@@ -526,6 +529,8 @@ public class Element extends Node {
 
   /**
    * Get full xpath
+   * TODO : buggy so mark it as deprecated
+   * @deprecated
    * */
   public String xpath() {
     StringBuilder accum = new StringBuilder();
@@ -533,11 +538,20 @@ public class Element extends Node {
     for (Element ele : Lists.reverse(parents())) {
       accum.append('/');
       accum.append(ele.tagName());
-      if (ele.siblingSize() > 0) {
+      if (ele.siblingSize() > 1) {
         accum.append('[');
         accum.append(ele.siblingIndex());
         accum.append(']');
       }
+    }
+
+    // myself
+    accum.append('/');
+    accum.append(tagName());
+    if (siblingSize() > 1) {
+      accum.append('[');
+      accum.append(siblingIndex());
+      accum.append(']');
     }
 
     return accum.toString();
@@ -554,23 +568,28 @@ public class Element extends Node {
    *         selector.
    */
   public String cssSelector() {
-    if (id().length() > 0)
+    if (id().length() > 0) {
       return "#" + id();
+    }
 
     StringBuilder selector = new StringBuilder(tagName());
-    String classes = StringUtil.join(classNames(), ".");
-    if (classes.length() > 0)
-      selector.append('.').append(classes);
 
-    if (parent() == null || parent() instanceof Document) // don't add Document
-                                                          // to selector, as
-                                                          // will always have a
-                                                          // html node
+    String classes = StringUtil.join(classNames(), ".");
+    if (classes.length() > 0) {
+      selector.append('.').append(classes);
+    }
+
+    if (parent() == null || parent() instanceof Document) {
+      // don't add Document to selector, as will always have a html node
       return selector.toString();
+    }
+
+    System.out.println(selector.toString());
 
     selector.insert(0, " > ");
-    if (parent().select(selector.toString()).size() > 1)
+    if (parent().select(selector.toString()).size() > 1) {
       selector.append(String.format(":nth-child(%d)", elementSiblingIndex() + 1));
+    }
 
     return parent().cssSelector() + selector.toString();
   }
@@ -1231,7 +1250,7 @@ public class Element extends Node {
    *         attribute set.
    */
   public String className() {
-    return attr("class");
+    return attr("class").trim();
   }
 
   /**
@@ -1246,8 +1265,16 @@ public class Element extends Node {
   public Set<String> classNames() {
     if (classNames == null) {
       String[] names = className().split("\\s+");
-      classNames = new LinkedHashSet<String>(Arrays.asList(names));
+
+      classNames = new LinkedHashSet<String>();
+      // vincent : add only valid css names
+      for (String cls : names) {
+        if (cls.matches(CssRegex)) {
+          classNames.add(cls);
+        }
+      }
     }
+
     return classNames;
   }
 
@@ -1260,7 +1287,24 @@ public class Element extends Node {
    */
   public Element classNames(Set<String> classNames) {
     Validate.notNull(classNames);
-    attributes.put("class", StringUtil.join(classNames, " "));
+
+    // vincent : filter bad classes
+    String cls = "";
+    int i = 0;
+    for (String name : classNames) {
+      if (name.matches(CssRegex)) {
+        if (i++ != 0) {
+          cls += " ";
+        }
+
+        cls += name;
+      }
+    }
+
+    if (!cls.isEmpty()) {
+      attributes.put("class", cls);
+    }
+
     return this;
   }
 
@@ -1290,9 +1334,11 @@ public class Element extends Node {
   public Element addClass(String className) {
     Validate.notNull(className);
 
-    Set<String> classes = classNames();
-    classes.add(className);
-    classNames(classes);
+    if (className.matches(CssRegex)) {
+      Set<String> classes = classNames();
+      classes.add(className);
+      classNames(classes);
+    }
 
     return this;
   }

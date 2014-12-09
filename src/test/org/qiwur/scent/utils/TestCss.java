@@ -2,6 +2,10 @@ package org.qiwur.scent.utils;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 
@@ -58,5 +62,17 @@ public class TestCss {
     String height = getStyle("width: 750px; height: 488px;", "height");
 
     assertTrue(pixelatedValue(height, 0.0) == 488.0);
+  }
+
+  public static void main(String s[]) throws Exception {
+    String cssRegex = "-?[_a-zA-Z]+[_a-zA-Z0-9-]*";
+
+    assertTrue("_".matches(cssRegex));
+    assertTrue("-_abc".matches(cssRegex));
+
+    assertTrue(!"abc.".matches(cssRegex));
+    assertTrue(!" __".matches(cssRegex));
+    assertTrue(!".abc".matches(cssRegex));
+    assertTrue(!" ".matches(cssRegex));
   }
 }

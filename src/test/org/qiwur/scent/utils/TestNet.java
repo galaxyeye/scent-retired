@@ -7,13 +7,14 @@ import java.net.ProxySelector;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.Properties;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.qiwur.scent.jsoup.block.BlockPattern;
 
 public class TestNet {
 
@@ -58,6 +59,8 @@ public class TestNet {
 	}
 
 	public static void main(String s[]) throws Exception {
-    logger.debug("all block patterns : {}", BlockPattern.patterns);
+	  LinkedHashSet<String> classNames = new LinkedHashSet<String>(Arrays.asList(" __01".trim().split("\\s+")));
+    String classes = StringUtil.join(classNames, ".");
+	  System.out.println(classes);
   }
 }

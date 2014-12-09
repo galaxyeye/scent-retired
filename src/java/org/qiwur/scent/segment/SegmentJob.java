@@ -120,8 +120,9 @@ public class SegmentJob implements Tool {
             context.write(new Text(combineKey), block);
           }
           else {
-              System.out.println(getBlockRepresentation(url, segment));
-            }
+              String output = getBlockRepresentation(url, segment);
+              // System.out.println(output);
+          }
         }
       }
     }
@@ -279,6 +280,8 @@ public class SegmentJob implements Tool {
     StringBuffer sb = new StringBuffer();
     sb.append("key:\t" + key).append("\n");
     sb.append("baseUrl:\t" + segment.getBaseUrl()).append("\n");
+    sb.append("baseSequence:\t" + segment.baseSequence()).append("\n");
+    sb.append("cssSelector:\t" + segment.cssSelector()).append("\n");
 
     sb.append("content:start:\n");
     String text = segment.text();

@@ -43,10 +43,13 @@ public class CodeCleaner extends InterruptiveElementVisitor {
 
     // inherit code information from table tag
     if (ele.tagName().equals("tbody")) {
-      ele.classNames(ele.parent().classNames());
+      Element parent = ele.parent();
+      if (parent.tagName().equals("table")) {
+        ele.classNames(parent.classNames());
 
-      if (!ele.parent().id().isEmpty()) {
-        ele.addClass(ele.parent().id());
+        if (!parent.id().isEmpty()) {
+          ele.addClass(ele.parent().id());
+        }
       }
     }
 
