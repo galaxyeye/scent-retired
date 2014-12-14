@@ -10,9 +10,9 @@ import org.apache.logging.log4j.Logger;
 import org.apache.mahout.math.Matrix;
 import org.apache.mahout.math.SparseMatrix;
 import org.apache.mahout.math.function.DoubleFunction;
-import org.qiwur.scent.jsoup.block.BlockLabel;
-import org.qiwur.scent.jsoup.block.DomSegment;
-import org.qiwur.scent.jsoup.select.DOMUtil;
+import org.jsoup.block.BlockLabel;
+import org.jsoup.block.DomSegment;
+import org.jsoup.select.DOMUtil;
 import org.qiwur.scent.utils.MatrixUtil;
 import org.qiwur.scent.utils.StringUtil;
 

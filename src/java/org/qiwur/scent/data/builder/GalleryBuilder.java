@@ -8,9 +8,9 @@ import java.util.Set;
 import org.apache.hadoop.conf.Configuration;
 import org.qiwur.scent.data.entity.EntityAttribute;
 import org.qiwur.scent.data.entity.PageEntity;
-import org.qiwur.scent.jsoup.Jsoup;
-import org.qiwur.scent.jsoup.nodes.Document;
-import org.qiwur.scent.jsoup.nodes.Element;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.qiwur.scent.utils.StringUtil;
 
 public class GalleryBuilder extends EntityBuilder {

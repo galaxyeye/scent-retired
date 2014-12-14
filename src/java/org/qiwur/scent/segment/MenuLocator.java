@@ -1,23 +1,21 @@
 package org.qiwur.scent.segment;
 
-import java.util.Map.Entry;
 import java.util.Collections;
+import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.ComparatorUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.conf.Configuration;
-import org.qiwur.scent.jsoup.block.BlockLabel;
-import org.qiwur.scent.jsoup.block.DomSegment;
-import org.qiwur.scent.jsoup.nodes.Document;
-import org.qiwur.scent.jsoup.nodes.Element;
-import org.qiwur.scent.jsoup.nodes.Indicator;
-import org.qiwur.scent.jsoup.select.ElementTraversor;
-import org.qiwur.scent.jsoup.select.InterruptiveElementVisitor;
+import org.jsoup.block.BlockLabel;
+import org.jsoup.block.DomSegment;
+import org.jsoup.helper.FuzzyProbability;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Indicator;
+import org.jsoup.select.ElementTraversor;
+import org.jsoup.select.InterruptiveElementVisitor;
 import org.qiwur.scent.utils.StringUtil;
-
-import ruc.irm.similarity.FuzzyProbability;
 
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;

@@ -11,10 +11,11 @@ import org.qiwur.scent.diagnosis.BlockPatternFormatter;
 import org.qiwur.scent.diagnosis.BlockVarianceFormatter;
 import org.qiwur.scent.diagnosis.IndicatorsFormatter;
 import org.qiwur.scent.diagnosis.ScentDiagnoser;
-import org.qiwur.scent.jsoup.Jsoup;
-import org.qiwur.scent.jsoup.block.DomSegment;
-import org.qiwur.scent.jsoup.nodes.Document;
-import org.qiwur.scent.jsoup.nodes.Indicator;
+import org.jsoup.Jsoup;
+import org.jsoup.block.BlockLabel;
+import org.jsoup.block.DomSegment;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Indicator;
 import org.qiwur.scent.segment.DomSegmentsBuilder;
 import org.qiwur.scent.storage.PageBlock;
 
@@ -44,7 +45,7 @@ public class SegmentUtil {
   public static PageBlock buildBlock(DomSegment segment, long time, String batchId) {
     PageBlock block = PageBlock.newBuilder().build();
 
-    block.setBaseUrl(segment.getBaseUrl() + "#" + segment.baseSequence());
+    block.setBaseUrl(segment.getBaseUrl());
     block.setBaseSequence(segment.baseSequence());
     block.setCssSelector(segment.cssSelector());
     block.setName(segment.name());
@@ -57,6 +58,13 @@ public class SegmentUtil {
     Map<CharSequence, CharSequence> indicators = Maps.newHashMap();
     for (Indicator indicator : segment.block().indicators()) {
       indicators.put(indicator.getKey(), indicator.getValue().toString());
+    }
+    block.setIndicators(indicators);
+
+    BlockLabel label = segment.primaryLabel();
+    if (label != null) {
+      block.setLabel(label.toString());
+      block.setLabelScore((float)segment.primaryLabelScore());
     }
 
     block.setBatchId(batchId);

@@ -134,10 +134,4 @@
     <value>org.apache.gora.hbase.store.HBaseStore</value>
   </property>
 
-  <property>
-    <name>storage.crawl.id</name>
-    <value>ccc</value>
-    <description>crawl 3C pages</description>
-  </property>
-
 </configuration>

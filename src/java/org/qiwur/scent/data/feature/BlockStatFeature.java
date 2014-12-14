@@ -16,11 +16,11 @@ import org.qiwur.scent.classifier.BlockRule;
 import org.qiwur.scent.classifier.ScentRule;
 import org.qiwur.scent.classifier.StatRule;
 import org.qiwur.scent.classifier.statistics.StatIndicator;
-import org.qiwur.scent.jsoup.Jsoup;
-import org.qiwur.scent.jsoup.block.BlockPattern;
-import org.qiwur.scent.jsoup.nodes.Document;
-import org.qiwur.scent.jsoup.nodes.Element;
-import org.qiwur.scent.jsoup.parser.Parser;
+import org.jsoup.Jsoup;
+import org.jsoup.block.BlockPattern;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.parser.Parser;
 import org.qiwur.scent.utils.StringUtil;
 
 import com.google.common.collect.LinkedListMultimap;

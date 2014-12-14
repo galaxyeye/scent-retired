@@ -11,8 +11,8 @@ import org.apache.mahout.classifier.sgd.ModelSerializer;
 import org.apache.mahout.classifier.sgd.OnlineLogisticRegression;
 import org.apache.mahout.math.Vector;
 import org.qiwur.scent.classifier.BlockClassifier;
-import org.qiwur.scent.jsoup.block.DomSegment;
-import org.qiwur.scent.jsoup.nodes.Indicator;
+import org.jsoup.block.DomSegment;
+import org.jsoup.nodes.Indicator;
 
 public class LogisticRegressionClassifier extends BlockClassifier {
 

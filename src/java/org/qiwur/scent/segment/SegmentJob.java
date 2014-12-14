@@ -20,8 +20,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
@@ -39,22 +39,16 @@ import org.apache.hadoop.util.ToolRunner;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.nutch.storage.Bytes;
-import org.apache.nutch.storage.Mark;
 import org.apache.nutch.storage.Nutch;
 import org.apache.nutch.storage.TableUtil;
 import org.apache.nutch.storage.WebPage;
-import org.qiwur.scent.classifier.DomSegmentsClassifier;
-import org.qiwur.scent.jsoup.Jsoup;
-import org.qiwur.scent.jsoup.block.DomSegment;
-import org.qiwur.scent.jsoup.nodes.Document;
+import org.jsoup.block.DomSegment;
 import org.qiwur.scent.storage.PageBlock;
 import org.qiwur.scent.storage.ScentMark;
 import org.qiwur.scent.utils.FileUtil;
 import org.qiwur.scent.utils.ScentConfiguration;
 import org.qiwur.scent.utils.SegmentUtil;
 import org.qiwur.scent.utils.StringUtil;
-
-import com.google.common.collect.Maps;
 
 /**
  * Scans the web table and create host entries for each unique host.
@@ -87,6 +81,15 @@ public class SegmentJob implements Tool {
     private int count = 0;
 
     @Override
+    protected void setup(Context context) throws IOException, InterruptedException {
+      conf = context.getConfiguration();
+
+      pattern = Pattern.compile(conf.get(RegexParamName, ".+"));
+      limit = conf.getInt(LimitParamName, -1);
+      writeDb = conf.getBoolean(WriteDbParamName, false);
+    }
+
+    @Override
     protected void map(String key, WebPage page, Context context) throws IOException, InterruptedException {
       // filtering
       if (org.apache.nutch.storage.Mark.FETCH_MARK.checkMark(page) == null) {
@@ -98,42 +101,40 @@ public class SegmentJob implements Tool {
         return;
       }
 
-      // checks whether the Key passes the regex
+      // check whether the Key passes the regex
       String url = TableUtil.unreverseUrl(key.toString());
-
-      if (pattern == null || pattern.matcher(url).matches()) {
-        if (limit > 0 && count++ > limit) {
-          return;
-        }
-
-        // batch id
-        long now = System.currentTimeMillis();
-        int randomSeed = Math.abs(new Random().nextInt());
-        String batchId = (now / 1000) + "-" + randomSeed;
-
-        for (DomSegment segment : SegmentUtil.segment(Bytes.toString(page.getContent()), url, conf)) {
-          if (writeDb) {
-            PageBlock block = SegmentUtil.buildBlock(segment, now, batchId);
-
-            // use block digest to be the combine key to filter the common blocks such as page headers
-            String combineKey = block.getCodeDigest() + "." + block.getTextDigest();
-            context.write(new Text(combineKey), block);
-          }
-          else {
-              String output = getBlockRepresentation(url, segment);
-              // System.out.println(output);
-          }
-        }
+      if (!pattern.matcher(url).matches()) {
+        return;
       }
-    }
 
-    @Override
-    protected void setup(Context context) throws IOException, InterruptedException {
-      conf = context.getConfiguration();
+      // check row limit
+      if (limit > 0 && count > limit) {
+        return;
+      }
 
-      pattern = Pattern.compile(conf.get(RegexParamName, ".+"));
-      limit = conf.getInt(LimitParamName, -1);
-      writeDb = conf.getBoolean(WriteDbParamName, false);
+      ++count;
+
+      // batch id
+      long now = System.currentTimeMillis();
+      int randomSeed = Math.abs(new Random().nextInt());
+      String batchId = (now / 1000) + "-" + randomSeed;
+
+      Set<DomSegment> segments = SegmentUtil.segment(Bytes.toString(page.getContent()), url, conf);
+      for (DomSegment segment : segments) {
+        if (writeDb) {
+          PageBlock block = SegmentUtil.buildBlock(segment, now, batchId);
+
+          // use block digest to be the combine key to filter the common blocks such as page headers
+          String combineKey = block.getCodeDigest() + "." + block.getTextDigest();
+          context.write(new Text(combineKey), block);
+        }
+        else {
+          String output = getBlockRepresentation(url, segment);
+          System.out.println(output);
+        }
+      } // for
+
+      LOG.debug("{}. {} segments in {}", count, segments.size(), url);
     }
   }
 
@@ -213,8 +214,6 @@ public class SegmentJob implements Tool {
         if (counter == 0) {
           ScentMark.SEGMENT_MARK.putMark(block, block.getBatchId().toString());
 
-          // TODO : write features
-
           // write the first record only and ignore the rest because they are the same
           String K3 = block.getBaseUrl() + "#" + block.getBaseSequence();
           context.write(K3, block);
@@ -223,7 +222,7 @@ public class SegmentJob implements Tool {
         ++counter;
       }
 
-      if (counter > 1) {
+      if (counter > 2) {
         LOG.debug("Reducer : page block {} count {}", key, counter);
       }
     }

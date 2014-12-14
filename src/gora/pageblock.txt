@@ -1,0 +1,28 @@
+{"name": "PageBlock",
+ "type": "record",
+ "namespace": "org.qiwur.scent.storage",
+
+key : baseUrl + "#" + baseSequence
+fields : 
+    # content meta info
+    baseUrl
+    baseSequence
+    cssSelector -> locate block in the whole document
+    name -> readability
+    content -> road runner to find out the attribute space
+    text -> readability
+    codeDigest -> partition
+    textDigest -> partition
+    indicators -> spark RDD
+    batchId
+
+    # classify meta info
+    label
+    labelScore
+
+    # extract meta info
+    kvs
+
+    # common meta info
+    markers : _segmrk_, _clsmrk_, _extmrk_
+}

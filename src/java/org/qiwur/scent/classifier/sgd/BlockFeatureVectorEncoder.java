@@ -13,8 +13,8 @@ import org.apache.logging.log4j.Logger;
 import org.apache.mahout.math.RandomAccessSparseVector;
 import org.apache.mahout.math.Vector;
 import org.apache.mahout.vectorizer.encoders.ContinuousValueEncoder;
-import org.qiwur.scent.jsoup.nodes.Document;
-import org.qiwur.scent.jsoup.nodes.Element;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 public class BlockFeatureVectorEncoder extends ContinuousValueEncoder {
 

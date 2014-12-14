@@ -7,20 +7,19 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.qiwur.scent.jsoup.block.BlockLabel;
-import org.qiwur.scent.jsoup.block.BlockPattern;
-import org.qiwur.scent.jsoup.block.DomSegment;
-import org.qiwur.scent.jsoup.block.DomSegments;
-import org.qiwur.scent.jsoup.block.DomSegmentsUtils;
-import org.qiwur.scent.jsoup.nodes.Document;
-import org.qiwur.scent.jsoup.nodes.Element;
-import org.qiwur.scent.jsoup.nodes.Indicator;
-import org.qiwur.scent.jsoup.nodes.IndicatorIndex;
-import org.qiwur.scent.jsoup.select.DOMUtil;
-import org.qiwur.scent.jsoup.select.Elements;
+import org.jsoup.block.BlockLabel;
+import org.jsoup.block.BlockPattern;
+import org.jsoup.block.DomSegment;
+import org.jsoup.block.DomSegments;
+import org.jsoup.block.DomSegmentsUtils;
+import org.jsoup.helper.FuzzyProbability;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Indicator;
+import org.jsoup.nodes.IndicatorIndex;
+import org.jsoup.select.DOMUtil;
+import org.jsoup.select.Elements;
 import org.qiwur.scent.utils.StringUtil;
-
-import ruc.irm.similarity.FuzzyProbability;
 
 import com.google.common.collect.Multimap;
 
@@ -121,7 +120,7 @@ public class DomSegmentsBuilder {
     conf.setInt("scent.page.menu.sequence", segMenu.block().sequence());
     conf.setInt("scent.page.all.node.count", doc.indic(Indicator.D).intValue());
 
-    logger.debug("{} segments in {}", doc.domSegments().size(), doc.baseUri());
+    // logger.debug("{} segments in {}", doc.domSegments().size(), doc.baseUri());
 
     return segments;
   }

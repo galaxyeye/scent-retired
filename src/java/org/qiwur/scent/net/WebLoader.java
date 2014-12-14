@@ -7,9 +7,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.qiwur.scent.jsoup.Connection.Response;
-import org.qiwur.scent.jsoup.Jsoup;
-import org.qiwur.scent.jsoup.nodes.Document;
+import org.jsoup.Connection.Response;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.qiwur.scent.utils.FileUtil;
 
 public class WebLoader {
@@ -97,7 +97,7 @@ public class WebLoader {
       }
   
       if (useProxy) {
-        response = Jsoup.connect(uri, proxyHost, proxyPort).execute();
+        // response = Jsoup.connect(uri, proxyHost, proxyPort).execute();
       }
       else {
         response = Jsoup.connect(uri).execute();

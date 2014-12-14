@@ -7,10 +7,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.qiwur.scent.jsoup.nodes.Element;
-import org.qiwur.scent.jsoup.nodes.Indicator;
-import org.qiwur.scent.jsoup.select.DOMUtil;
-import org.qiwur.scent.jsoup.select.Elements;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Indicator;
+import org.jsoup.select.DOMUtil;
+import org.jsoup.select.Elements;
 import org.qiwur.scent.utils.StringUtil;
 
 import com.google.common.collect.LinkedListMultimap;

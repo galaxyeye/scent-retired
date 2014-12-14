@@ -9,9 +9,9 @@ import org.apache.commons.lang.Validate;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.nutch.storage.WebPage.Field;
 import org.qiwur.scent.data.entity.PageEntity;
-import org.qiwur.scent.jsoup.block.BlockLabel;
-import org.qiwur.scent.jsoup.block.BlockPattern;
-import org.qiwur.scent.jsoup.block.DomSegment;
+import org.jsoup.block.BlockLabel;
+import org.jsoup.block.BlockPattern;
+import org.jsoup.block.DomSegment;
 import org.qiwur.scent.utils.StringUtil;
 
 import com.google.common.collect.Maps;

@@ -49,7 +49,8 @@ if [ $# = 0 ]; then
   echo " build-categories build categories from learned categories"
   echo " build-properties build properties from learned properties"
   echo " scentserver    run a (local) Scent server on a user defined port"
-  echo " readdb         read webpage database"
+  echo " readweb        read webpage database"
+  echo " readblock      read pageblock database"
   echo " junit         	runs the given JUnit test"
   echo " or"
   echo " CLASSNAME 	run the class named CLASSNAME"
@@ -135,8 +136,10 @@ elif [ "$COMMAND" = "plugin" ] ; then
 CLASS=org.qiwur.scent.plugin.PluginRepository
 elif [ "$COMMAND" = "scentserver" ] ; then
 CLASS=org.qiwur.scent.api.ScentServer
-elif [ "$COMMAND" = "readdb" ] ; then
+elif [ "$COMMAND" = "readweb" ] ; then
 CLASS=org.qiwur.scent.storage.WebTableReader
+elif [ "$COMMAND" = "readblock" ] ; then
+CLASS=org.qiwur.scent.storage.BlockTableReader
 elif [ "$COMMAND" = "junit" ] ; then
   CLASSPATH=$CLASSPATH:$SCENT_HOME/test/classes/
   CLASS=org.junit.runner.JUnitCore

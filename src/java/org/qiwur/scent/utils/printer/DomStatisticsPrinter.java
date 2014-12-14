@@ -2,11 +2,11 @@ package org.qiwur.scent.utils.printer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.qiwur.scent.jsoup.nodes.Document;
-import org.qiwur.scent.jsoup.nodes.Element;
-import org.qiwur.scent.jsoup.nodes.Indicator;
-import org.qiwur.scent.jsoup.select.ElementTraversor;
-import org.qiwur.scent.jsoup.select.InterruptiveElementVisitor;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Indicator;
+import org.jsoup.select.ElementTraversor;
+import org.jsoup.select.InterruptiveElementVisitor;
 import org.qiwur.scent.utils.StringUtil;
 
 public class DomStatisticsPrinter {

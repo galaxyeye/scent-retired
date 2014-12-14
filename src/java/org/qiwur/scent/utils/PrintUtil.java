@@ -2,8 +2,8 @@ package org.qiwur.scent.utils;
 
 import java.util.Set;
 
-import org.qiwur.scent.jsoup.nodes.Element;
-import org.qiwur.scent.jsoup.nodes.Node;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
 
 import com.google.common.collect.TreeMultimap;
 

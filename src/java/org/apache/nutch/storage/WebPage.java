@@ -6,35 +6,34 @@
 package org.apache.nutch.storage;  
 @SuppressWarnings("all")
 public class WebPage extends org.apache.gora.persistency.impl.PersistentBase implements org.apache.avro.specific.SpecificRecord, org.apache.gora.persistency.Persistent {
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"WebPage\",\"namespace\":\"org.apache.nutch.storage\",\"fields\":[{\"name\":\"__g__dirty\",\"type\":\"bytes\",\"doc\":\"Bytes used to represent weather or not a field is dirty.\",\"default\":\"AAAAAA==\"},{\"name\":\"baseUrl\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"status\",\"type\":\"int\",\"default\":0},{\"name\":\"fetchTime\",\"type\":\"long\",\"default\":0},{\"name\":\"prevFetchTime\",\"type\":\"long\",\"default\":0},{\"name\":\"fetchInterval\",\"type\":\"int\",\"default\":0},{\"name\":\"retriesSinceFetch\",\"type\":\"int\",\"default\":0},{\"name\":\"modifiedTime\",\"type\":\"long\",\"default\":0},{\"name\":\"prevModifiedTime\",\"type\":\"long\",\"default\":0},{\"name\":\"protocolStatus\",\"type\":[\"null\",{\"type\":\"record\",\"name\":\"ProtocolStatus\",\"fields\":[{\"name\":\"__g__dirty\",\"type\":\"bytes\",\"doc\":\"Bytes used to represent weather or not a field is dirty.\",\"default\":\"AA==\"},{\"name\":\"code\",\"type\":\"int\",\"default\":0},{\"name\":\"args\",\"type\":{\"type\":\"array\",\"items\":\"string\"},\"default\":[]},{\"name\":\"lastModified\",\"type\":\"long\",\"default\":0}]}],\"default\":null},{\"name\":\"content\",\"type\":[\"null\",\"bytes\"],\"default\":null},{\"name\":\"contentType\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"prevSignature\",\"type\":[\"null\",\"bytes\"],\"default\":null},{\"name\":\"signature\",\"type\":[\"null\",\"bytes\"],\"default\":null},{\"name\":\"title\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"text\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"parseStatus\",\"type\":[\"null\",{\"type\":\"record\",\"name\":\"ParseStatus\",\"fields\":[{\"name\":\"__g__dirty\",\"type\":\"bytes\",\"doc\":\"Bytes used to represent weather or not a field is dirty.\",\"default\":\"AA==\"},{\"name\":\"majorCode\",\"type\":\"int\",\"default\":0},{\"name\":\"minorCode\",\"type\":\"int\",\"default\":0},{\"name\":\"args\",\"type\":{\"type\":\"array\",\"items\":\"string\"},\"default\":[]}]}],\"default\":null},{\"name\":\"score\",\"type\":\"float\",\"default\":0},{\"name\":\"reprUrl\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"headers\",\"type\":{\"type\":\"map\",\"values\":[\"null\",\"string\"]},\"default\":{}},{\"name\":\"outlinks\",\"type\":{\"type\":\"map\",\"values\":[\"null\",\"string\"]},\"default\":{}},{\"name\":\"inlinks\",\"type\":{\"type\":\"map\",\"values\":[\"null\",\"string\"]},\"default\":{}},{\"name\":\"markers\",\"type\":{\"type\":\"map\",\"values\":[\"null\",\"string\"]},\"default\":{}},{\"name\":\"metadata\",\"type\":{\"type\":\"map\",\"values\":[\"null\",\"bytes\"]},\"default\":{}},{\"name\":\"batchId\",\"type\":[\"null\",\"string\"],\"default\":null}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"WebPage\",\"namespace\":\"org.apache.nutch.storage\",\"fields\":[{\"name\":\"baseUrl\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"status\",\"type\":\"int\",\"default\":0},{\"name\":\"fetchTime\",\"type\":\"long\",\"default\":0},{\"name\":\"prevFetchTime\",\"type\":\"long\",\"default\":0},{\"name\":\"fetchInterval\",\"type\":\"int\",\"default\":0},{\"name\":\"retriesSinceFetch\",\"type\":\"int\",\"default\":0},{\"name\":\"modifiedTime\",\"type\":\"long\",\"default\":0},{\"name\":\"prevModifiedTime\",\"type\":\"long\",\"default\":0},{\"name\":\"protocolStatus\",\"type\":[\"null\",{\"type\":\"record\",\"name\":\"ProtocolStatus\",\"fields\":[{\"name\":\"code\",\"type\":\"int\",\"default\":0},{\"name\":\"args\",\"type\":{\"type\":\"array\",\"items\":\"string\"},\"default\":[]},{\"name\":\"lastModified\",\"type\":\"long\",\"default\":0}]}],\"default\":null},{\"name\":\"content\",\"type\":[\"null\",\"bytes\"],\"default\":null},{\"name\":\"contentType\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"prevSignature\",\"type\":[\"null\",\"bytes\"],\"default\":null},{\"name\":\"signature\",\"type\":[\"null\",\"bytes\"],\"default\":null},{\"name\":\"title\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"text\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"parseStatus\",\"type\":[\"null\",{\"type\":\"record\",\"name\":\"ParseStatus\",\"fields\":[{\"name\":\"majorCode\",\"type\":\"int\",\"default\":0},{\"name\":\"minorCode\",\"type\":\"int\",\"default\":0},{\"name\":\"args\",\"type\":{\"type\":\"array\",\"items\":\"string\"},\"default\":[]}]}],\"default\":null},{\"name\":\"score\",\"type\":\"float\",\"default\":0},{\"name\":\"reprUrl\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"headers\",\"type\":{\"type\":\"map\",\"values\":[\"null\",\"string\"]},\"default\":{}},{\"name\":\"outlinks\",\"type\":{\"type\":\"map\",\"values\":[\"null\",\"string\"]},\"default\":{}},{\"name\":\"inlinks\",\"type\":{\"type\":\"map\",\"values\":[\"null\",\"string\"]},\"default\":{}},{\"name\":\"markers\",\"type\":{\"type\":\"map\",\"values\":[\"null\",\"string\"]},\"default\":{}},{\"name\":\"metadata\",\"type\":{\"type\":\"map\",\"values\":[\"null\",\"bytes\"]},\"default\":{}},{\"name\":\"batchId\",\"type\":[\"null\",\"string\"],\"default\":null}]}");
 
   /** Enum containing all data bean's fields. */
   public static enum Field {
-    __G__DIRTY(0, "__g__dirty"),
-    BASE_URL(1, "baseUrl"),
-    STATUS(2, "status"),
-    FETCH_TIME(3, "fetchTime"),
-    PREV_FETCH_TIME(4, "prevFetchTime"),
-    FETCH_INTERVAL(5, "fetchInterval"),
-    RETRIES_SINCE_FETCH(6, "retriesSinceFetch"),
-    MODIFIED_TIME(7, "modifiedTime"),
-    PREV_MODIFIED_TIME(8, "prevModifiedTime"),
-    PROTOCOL_STATUS(9, "protocolStatus"),
-    CONTENT(10, "content"),
-    CONTENT_TYPE(11, "contentType"),
-    PREV_SIGNATURE(12, "prevSignature"),
-    SIGNATURE(13, "signature"),
-    TITLE(14, "title"),
-    TEXT(15, "text"),
-    PARSE_STATUS(16, "parseStatus"),
-    SCORE(17, "score"),
-    REPR_URL(18, "reprUrl"),
-    HEADERS(19, "headers"),
-    OUTLINKS(20, "outlinks"),
-    INLINKS(21, "inlinks"),
-    MARKERS(22, "markers"),
-    METADATA(23, "metadata"),
-    BATCH_ID(24, "batchId"),
+    BASE_URL(0, "baseUrl"),
+    STATUS(1, "status"),
+    FETCH_TIME(2, "fetchTime"),
+    PREV_FETCH_TIME(3, "prevFetchTime"),
+    FETCH_INTERVAL(4, "fetchInterval"),
+    RETRIES_SINCE_FETCH(5, "retriesSinceFetch"),
+    MODIFIED_TIME(6, "modifiedTime"),
+    PREV_MODIFIED_TIME(7, "prevModifiedTime"),
+    PROTOCOL_STATUS(8, "protocolStatus"),
+    CONTENT(9, "content"),
+    CONTENT_TYPE(10, "contentType"),
+    PREV_SIGNATURE(11, "prevSignature"),
+    SIGNATURE(12, "signature"),
+    TITLE(13, "title"),
+    TEXT(14, "text"),
+    PARSE_STATUS(15, "parseStatus"),
+    SCORE(16, "score"),
+    REPR_URL(17, "reprUrl"),
+    HEADERS(18, "headers"),
+    OUTLINKS(19, "outlinks"),
+    INLINKS(20, "inlinks"),
+    MARKERS(21, "markers"),
+    METADATA(22, "metadata"),
+    BATCH_ID(23, "batchId"),
     ;
     /**
      * Field's index.
@@ -73,7 +72,6 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
   };
 
   public static final String[] _ALL_FIELDS = {
-  "__g__dirty",
   "baseUrl",
   "status",
   "fetchTime",
@@ -100,8 +98,14 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
   "batchId",
   };
 
-  /** Bytes used to represent weather or not a field is dirty. */
-  private java.nio.ByteBuffer __g__dirty = java.nio.ByteBuffer.wrap(new byte[4]);
+  /**
+   * Gets the total field count.
+   * @return int field count
+   */
+  public int getFieldsCount() {
+    return WebPage._ALL_FIELDS.length;
+  }
+
   private java.lang.CharSequence baseUrl;
   private int status;
   private long fetchTime;
@@ -130,31 +134,30 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
   // Used by DatumWriter.  Applications should not call. 
   public java.lang.Object get(int field$) {
     switch (field$) {
-    case 0: return __g__dirty;
-    case 1: return baseUrl;
-    case 2: return status;
-    case 3: return fetchTime;
-    case 4: return prevFetchTime;
-    case 5: return fetchInterval;
-    case 6: return retriesSinceFetch;
-    case 7: return modifiedTime;
-    case 8: return prevModifiedTime;
-    case 9: return protocolStatus;
-    case 10: return content;
-    case 11: return contentType;
-    case 12: return prevSignature;
-    case 13: return signature;
-    case 14: return title;
-    case 15: return text;
-    case 16: return parseStatus;
-    case 17: return score;
-    case 18: return reprUrl;
-    case 19: return headers;
-    case 20: return outlinks;
-    case 21: return inlinks;
-    case 22: return markers;
-    case 23: return metadata;
-    case 24: return batchId;
+    case 0: return baseUrl;
+    case 1: return status;
+    case 2: return fetchTime;
+    case 3: return prevFetchTime;
+    case 4: return fetchInterval;
+    case 5: return retriesSinceFetch;
+    case 6: return modifiedTime;
+    case 7: return prevModifiedTime;
+    case 8: return protocolStatus;
+    case 9: return content;
+    case 10: return contentType;
+    case 11: return prevSignature;
+    case 12: return signature;
+    case 13: return title;
+    case 14: return text;
+    case 15: return parseStatus;
+    case 16: return score;
+    case 17: return reprUrl;
+    case 18: return headers;
+    case 19: return outlinks;
+    case 20: return inlinks;
+    case 21: return markers;
+    case 22: return metadata;
+    case 23: return batchId;
     default: throw new org.apache.avro.AvroRuntimeException("Bad index");
     }
   }
@@ -163,31 +166,30 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
   @SuppressWarnings(value="unchecked")
   public void put(int field$, java.lang.Object value) {
     switch (field$) {
-    case 0: __g__dirty = (java.nio.ByteBuffer)(value); break;
-    case 1: baseUrl = (java.lang.CharSequence)(value); break;
-    case 2: status = (java.lang.Integer)(value); break;
-    case 3: fetchTime = (java.lang.Long)(value); break;
-    case 4: prevFetchTime = (java.lang.Long)(value); break;
-    case 5: fetchInterval = (java.lang.Integer)(value); break;
-    case 6: retriesSinceFetch = (java.lang.Integer)(value); break;
-    case 7: modifiedTime = (java.lang.Long)(value); break;
-    case 8: prevModifiedTime = (java.lang.Long)(value); break;
-    case 9: protocolStatus = (org.apache.nutch.storage.ProtocolStatus)(value); break;
-    case 10: content = (java.nio.ByteBuffer)(value); break;
-    case 11: contentType = (java.lang.CharSequence)(value); break;
-    case 12: prevSignature = (java.nio.ByteBuffer)(value); break;
-    case 13: signature = (java.nio.ByteBuffer)(value); break;
-    case 14: title = (java.lang.CharSequence)(value); break;
-    case 15: text = (java.lang.CharSequence)(value); break;
-    case 16: parseStatus = (org.apache.nutch.storage.ParseStatus)(value); break;
-    case 17: score = (java.lang.Float)(value); break;
-    case 18: reprUrl = (java.lang.CharSequence)(value); break;
-    case 19: headers = (java.util.Map<java.lang.CharSequence,java.lang.CharSequence>)((value instanceof org.apache.gora.persistency.Dirtyable) ? value : new org.apache.gora.persistency.impl.DirtyMapWrapper((java.util.Map)value)); break;
-    case 20: outlinks = (java.util.Map<java.lang.CharSequence,java.lang.CharSequence>)((value instanceof org.apache.gora.persistency.Dirtyable) ? value : new org.apache.gora.persistency.impl.DirtyMapWrapper((java.util.Map)value)); break;
-    case 21: inlinks = (java.util.Map<java.lang.CharSequence,java.lang.CharSequence>)((value instanceof org.apache.gora.persistency.Dirtyable) ? value : new org.apache.gora.persistency.impl.DirtyMapWrapper((java.util.Map)value)); break;
-    case 22: markers = (java.util.Map<java.lang.CharSequence,java.lang.CharSequence>)((value instanceof org.apache.gora.persistency.Dirtyable) ? value : new org.apache.gora.persistency.impl.DirtyMapWrapper((java.util.Map)value)); break;
-    case 23: metadata = (java.util.Map<java.lang.CharSequence,java.nio.ByteBuffer>)((value instanceof org.apache.gora.persistency.Dirtyable) ? value : new org.apache.gora.persistency.impl.DirtyMapWrapper((java.util.Map)value)); break;
-    case 24: batchId = (java.lang.CharSequence)(value); break;
+    case 0: baseUrl = (java.lang.CharSequence)(value); break;
+    case 1: status = (java.lang.Integer)(value); break;
+    case 2: fetchTime = (java.lang.Long)(value); break;
+    case 3: prevFetchTime = (java.lang.Long)(value); break;
+    case 4: fetchInterval = (java.lang.Integer)(value); break;
+    case 5: retriesSinceFetch = (java.lang.Integer)(value); break;
+    case 6: modifiedTime = (java.lang.Long)(value); break;
+    case 7: prevModifiedTime = (java.lang.Long)(value); break;
+    case 8: protocolStatus = (org.apache.nutch.storage.ProtocolStatus)(value); break;
+    case 9: content = (java.nio.ByteBuffer)(value); break;
+    case 10: contentType = (java.lang.CharSequence)(value); break;
+    case 11: prevSignature = (java.nio.ByteBuffer)(value); break;
+    case 12: signature = (java.nio.ByteBuffer)(value); break;
+    case 13: title = (java.lang.CharSequence)(value); break;
+    case 14: text = (java.lang.CharSequence)(value); break;
+    case 15: parseStatus = (org.apache.nutch.storage.ParseStatus)(value); break;
+    case 16: score = (java.lang.Float)(value); break;
+    case 17: reprUrl = (java.lang.CharSequence)(value); break;
+    case 18: headers = (java.util.Map<java.lang.CharSequence,java.lang.CharSequence>)((value instanceof org.apache.gora.persistency.Dirtyable) ? value : new org.apache.gora.persistency.impl.DirtyMapWrapper((java.util.Map)value)); break;
+    case 19: outlinks = (java.util.Map<java.lang.CharSequence,java.lang.CharSequence>)((value instanceof org.apache.gora.persistency.Dirtyable) ? value : new org.apache.gora.persistency.impl.DirtyMapWrapper((java.util.Map)value)); break;
+    case 20: inlinks = (java.util.Map<java.lang.CharSequence,java.lang.CharSequence>)((value instanceof org.apache.gora.persistency.Dirtyable) ? value : new org.apache.gora.persistency.impl.DirtyMapWrapper((java.util.Map)value)); break;
+    case 21: markers = (java.util.Map<java.lang.CharSequence,java.lang.CharSequence>)((value instanceof org.apache.gora.persistency.Dirtyable) ? value : new org.apache.gora.persistency.impl.DirtyMapWrapper((java.util.Map)value)); break;
+    case 22: metadata = (java.util.Map<java.lang.CharSequence,java.nio.ByteBuffer>)((value instanceof org.apache.gora.persistency.Dirtyable) ? value : new org.apache.gora.persistency.impl.DirtyMapWrapper((java.util.Map)value)); break;
+    case 23: batchId = (java.lang.CharSequence)(value); break;
     default: throw new org.apache.avro.AvroRuntimeException("Bad index");
     }
   }
@@ -205,7 +207,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    */
   public void setBaseUrl(java.lang.CharSequence value) {
     this.baseUrl = value;
-    setDirty(1);
+    setDirty(0);
   }
   
   /**
@@ -213,7 +215,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    * @param value the value to set.
    */
   public boolean isBaseUrlDirty(java.lang.CharSequence value) {
-    return isDirty(1);
+    return isDirty(0);
   }
 
   /**
@@ -229,7 +231,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    */
   public void setStatus(java.lang.Integer value) {
     this.status = value;
-    setDirty(2);
+    setDirty(1);
   }
   
   /**
@@ -237,7 +239,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    * @param value the value to set.
    */
   public boolean isStatusDirty(java.lang.Integer value) {
-    return isDirty(2);
+    return isDirty(1);
   }
 
   /**
@@ -253,7 +255,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    */
   public void setFetchTime(java.lang.Long value) {
     this.fetchTime = value;
-    setDirty(3);
+    setDirty(2);
   }
   
   /**
@@ -261,7 +263,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    * @param value the value to set.
    */
   public boolean isFetchTimeDirty(java.lang.Long value) {
-    return isDirty(3);
+    return isDirty(2);
   }
 
   /**
@@ -277,7 +279,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    */
   public void setPrevFetchTime(java.lang.Long value) {
     this.prevFetchTime = value;
-    setDirty(4);
+    setDirty(3);
   }
   
   /**
@@ -285,7 +287,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    * @param value the value to set.
    */
   public boolean isPrevFetchTimeDirty(java.lang.Long value) {
-    return isDirty(4);
+    return isDirty(3);
   }
 
   /**
@@ -301,7 +303,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    */
   public void setFetchInterval(java.lang.Integer value) {
     this.fetchInterval = value;
-    setDirty(5);
+    setDirty(4);
   }
   
   /**
@@ -309,7 +311,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    * @param value the value to set.
    */
   public boolean isFetchIntervalDirty(java.lang.Integer value) {
-    return isDirty(5);
+    return isDirty(4);
   }
 
   /**
@@ -325,7 +327,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    */
   public void setRetriesSinceFetch(java.lang.Integer value) {
     this.retriesSinceFetch = value;
-    setDirty(6);
+    setDirty(5);
   }
   
   /**
@@ -333,7 +335,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    * @param value the value to set.
    */
   public boolean isRetriesSinceFetchDirty(java.lang.Integer value) {
-    return isDirty(6);
+    return isDirty(5);
   }
 
   /**
@@ -349,7 +351,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    */
   public void setModifiedTime(java.lang.Long value) {
     this.modifiedTime = value;
-    setDirty(7);
+    setDirty(6);
   }
   
   /**
@@ -357,7 +359,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    * @param value the value to set.
    */
   public boolean isModifiedTimeDirty(java.lang.Long value) {
-    return isDirty(7);
+    return isDirty(6);
   }
 
   /**
@@ -373,7 +375,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    */
   public void setPrevModifiedTime(java.lang.Long value) {
     this.prevModifiedTime = value;
-    setDirty(8);
+    setDirty(7);
   }
   
   /**
@@ -381,7 +383,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    * @param value the value to set.
    */
   public boolean isPrevModifiedTimeDirty(java.lang.Long value) {
-    return isDirty(8);
+    return isDirty(7);
   }
 
   /**
@@ -397,7 +399,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    */
   public void setProtocolStatus(org.apache.nutch.storage.ProtocolStatus value) {
     this.protocolStatus = value;
-    setDirty(9);
+    setDirty(8);
   }
   
   /**
@@ -405,7 +407,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    * @param value the value to set.
    */
   public boolean isProtocolStatusDirty(org.apache.nutch.storage.ProtocolStatus value) {
-    return isDirty(9);
+    return isDirty(8);
   }
 
   /**
@@ -421,7 +423,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    */
   public void setContent(java.nio.ByteBuffer value) {
     this.content = value;
-    setDirty(10);
+    setDirty(9);
   }
   
   /**
@@ -429,7 +431,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    * @param value the value to set.
    */
   public boolean isContentDirty(java.nio.ByteBuffer value) {
-    return isDirty(10);
+    return isDirty(9);
   }
 
   /**
@@ -445,7 +447,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    */
   public void setContentType(java.lang.CharSequence value) {
     this.contentType = value;
-    setDirty(11);
+    setDirty(10);
   }
   
   /**
@@ -453,7 +455,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    * @param value the value to set.
    */
   public boolean isContentTypeDirty(java.lang.CharSequence value) {
-    return isDirty(11);
+    return isDirty(10);
   }
 
   /**
@@ -469,7 +471,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    */
   public void setPrevSignature(java.nio.ByteBuffer value) {
     this.prevSignature = value;
-    setDirty(12);
+    setDirty(11);
   }
   
   /**
@@ -477,7 +479,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    * @param value the value to set.
    */
   public boolean isPrevSignatureDirty(java.nio.ByteBuffer value) {
-    return isDirty(12);
+    return isDirty(11);
   }
 
   /**
@@ -493,7 +495,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    */
   public void setSignature(java.nio.ByteBuffer value) {
     this.signature = value;
-    setDirty(13);
+    setDirty(12);
   }
   
   /**
@@ -501,7 +503,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    * @param value the value to set.
    */
   public boolean isSignatureDirty(java.nio.ByteBuffer value) {
-    return isDirty(13);
+    return isDirty(12);
   }
 
   /**
@@ -517,7 +519,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    */
   public void setTitle(java.lang.CharSequence value) {
     this.title = value;
-    setDirty(14);
+    setDirty(13);
   }
   
   /**
@@ -525,7 +527,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    * @param value the value to set.
    */
   public boolean isTitleDirty(java.lang.CharSequence value) {
-    return isDirty(14);
+    return isDirty(13);
   }
 
   /**
@@ -541,7 +543,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    */
   public void setText(java.lang.CharSequence value) {
     this.text = value;
-    setDirty(15);
+    setDirty(14);
   }
   
   /**
@@ -549,7 +551,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    * @param value the value to set.
    */
   public boolean isTextDirty(java.lang.CharSequence value) {
-    return isDirty(15);
+    return isDirty(14);
   }
 
   /**
@@ -565,7 +567,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    */
   public void setParseStatus(org.apache.nutch.storage.ParseStatus value) {
     this.parseStatus = value;
-    setDirty(16);
+    setDirty(15);
   }
   
   /**
@@ -573,7 +575,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    * @param value the value to set.
    */
   public boolean isParseStatusDirty(org.apache.nutch.storage.ParseStatus value) {
-    return isDirty(16);
+    return isDirty(15);
   }
 
   /**
@@ -589,7 +591,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    */
   public void setScore(java.lang.Float value) {
     this.score = value;
-    setDirty(17);
+    setDirty(16);
   }
   
   /**
@@ -597,7 +599,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    * @param value the value to set.
    */
   public boolean isScoreDirty(java.lang.Float value) {
-    return isDirty(17);
+    return isDirty(16);
   }
 
   /**
@@ -613,7 +615,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    */
   public void setReprUrl(java.lang.CharSequence value) {
     this.reprUrl = value;
-    setDirty(18);
+    setDirty(17);
   }
   
   /**
@@ -621,7 +623,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    * @param value the value to set.
    */
   public boolean isReprUrlDirty(java.lang.CharSequence value) {
-    return isDirty(18);
+    return isDirty(17);
   }
 
   /**
@@ -637,7 +639,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    */
   public void setHeaders(java.util.Map<java.lang.CharSequence,java.lang.CharSequence> value) {
     this.headers = (value instanceof org.apache.gora.persistency.Dirtyable) ? value : new org.apache.gora.persistency.impl.DirtyMapWrapper(value);
-    setDirty(19);
+    setDirty(18);
   }
   
   /**
@@ -645,7 +647,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    * @param value the value to set.
    */
   public boolean isHeadersDirty(java.util.Map<java.lang.CharSequence,java.lang.CharSequence> value) {
-    return isDirty(19);
+    return isDirty(18);
   }
 
   /**
@@ -661,7 +663,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    */
   public void setOutlinks(java.util.Map<java.lang.CharSequence,java.lang.CharSequence> value) {
     this.outlinks = (value instanceof org.apache.gora.persistency.Dirtyable) ? value : new org.apache.gora.persistency.impl.DirtyMapWrapper(value);
-    setDirty(20);
+    setDirty(19);
   }
   
   /**
@@ -669,7 +671,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    * @param value the value to set.
    */
   public boolean isOutlinksDirty(java.util.Map<java.lang.CharSequence,java.lang.CharSequence> value) {
-    return isDirty(20);
+    return isDirty(19);
   }
 
   /**
@@ -685,7 +687,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    */
   public void setInlinks(java.util.Map<java.lang.CharSequence,java.lang.CharSequence> value) {
     this.inlinks = (value instanceof org.apache.gora.persistency.Dirtyable) ? value : new org.apache.gora.persistency.impl.DirtyMapWrapper(value);
-    setDirty(21);
+    setDirty(20);
   }
   
   /**
@@ -693,7 +695,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    * @param value the value to set.
    */
   public boolean isInlinksDirty(java.util.Map<java.lang.CharSequence,java.lang.CharSequence> value) {
-    return isDirty(21);
+    return isDirty(20);
   }
 
   /**
@@ -709,7 +711,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    */
   public void setMarkers(java.util.Map<java.lang.CharSequence,java.lang.CharSequence> value) {
     this.markers = (value instanceof org.apache.gora.persistency.Dirtyable) ? value : new org.apache.gora.persistency.impl.DirtyMapWrapper(value);
-    setDirty(22);
+    setDirty(21);
   }
   
   /**
@@ -717,7 +719,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    * @param value the value to set.
    */
   public boolean isMarkersDirty(java.util.Map<java.lang.CharSequence,java.lang.CharSequence> value) {
-    return isDirty(22);
+    return isDirty(21);
   }
 
   /**
@@ -733,7 +735,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    */
   public void setMetadata(java.util.Map<java.lang.CharSequence,java.nio.ByteBuffer> value) {
     this.metadata = (value instanceof org.apache.gora.persistency.Dirtyable) ? value : new org.apache.gora.persistency.impl.DirtyMapWrapper(value);
-    setDirty(23);
+    setDirty(22);
   }
   
   /**
@@ -741,7 +743,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    * @param value the value to set.
    */
   public boolean isMetadataDirty(java.util.Map<java.lang.CharSequence,java.nio.ByteBuffer> value) {
-    return isDirty(23);
+    return isDirty(22);
   }
 
   /**
@@ -757,7 +759,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    */
   public void setBatchId(java.lang.CharSequence value) {
     this.batchId = value;
-    setDirty(24);
+    setDirty(23);
   }
   
   /**
@@ -765,7 +767,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
    * @param value the value to set.
    */
   public boolean isBatchIdDirty(java.lang.CharSequence value) {
-    return isDirty(24);
+    return isDirty(23);
   }
 
   /** Creates a new WebPage RecordBuilder */
@@ -783,7 +785,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
     return new org.apache.nutch.storage.WebPage.Builder(other);
   }
   
-  private static java.nio.ByteBuffer deepCopyToWriteOnlyBuffer(
+  private static java.nio.ByteBuffer deepCopyToReadOnlyBuffer(
       java.nio.ByteBuffer input) {
     java.nio.ByteBuffer copy = java.nio.ByteBuffer.allocate(input.capacity());
     int position = input.position();
@@ -812,7 +814,6 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
   public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<WebPage>
     implements org.apache.avro.data.RecordBuilder<WebPage> {
 
-    private java.nio.ByteBuffer __g__dirty;
     private java.lang.CharSequence baseUrl;
     private int status;
     private long fetchTime;
@@ -851,105 +852,101 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
     /** Creates a Builder by copying an existing WebPage instance */
     private Builder(org.apache.nutch.storage.WebPage other) {
             super(org.apache.nutch.storage.WebPage.SCHEMA$);
-      if (isValidValue(fields()[0], other.__g__dirty)) {
-        this.__g__dirty = (java.nio.ByteBuffer) data().deepCopy(fields()[0].schema(), other.__g__dirty);
+      if (isValidValue(fields()[0], other.baseUrl)) {
+        this.baseUrl = (java.lang.CharSequence) data().deepCopy(fields()[0].schema(), other.baseUrl);
         fieldSetFlags()[0] = true;
       }
-      if (isValidValue(fields()[1], other.baseUrl)) {
-        this.baseUrl = (java.lang.CharSequence) data().deepCopy(fields()[1].schema(), other.baseUrl);
+      if (isValidValue(fields()[1], other.status)) {
+        this.status = (java.lang.Integer) data().deepCopy(fields()[1].schema(), other.status);
         fieldSetFlags()[1] = true;
       }
-      if (isValidValue(fields()[2], other.status)) {
-        this.status = (java.lang.Integer) data().deepCopy(fields()[2].schema(), other.status);
+      if (isValidValue(fields()[2], other.fetchTime)) {
+        this.fetchTime = (java.lang.Long) data().deepCopy(fields()[2].schema(), other.fetchTime);
         fieldSetFlags()[2] = true;
       }
-      if (isValidValue(fields()[3], other.fetchTime)) {
-        this.fetchTime = (java.lang.Long) data().deepCopy(fields()[3].schema(), other.fetchTime);
+      if (isValidValue(fields()[3], other.prevFetchTime)) {
+        this.prevFetchTime = (java.lang.Long) data().deepCopy(fields()[3].schema(), other.prevFetchTime);
         fieldSetFlags()[3] = true;
       }
-      if (isValidValue(fields()[4], other.prevFetchTime)) {
-        this.prevFetchTime = (java.lang.Long) data().deepCopy(fields()[4].schema(), other.prevFetchTime);
+      if (isValidValue(fields()[4], other.fetchInterval)) {
+        this.fetchInterval = (java.lang.Integer) data().deepCopy(fields()[4].schema(), other.fetchInterval);
         fieldSetFlags()[4] = true;
       }
-      if (isValidValue(fields()[5], other.fetchInterval)) {
-        this.fetchInterval = (java.lang.Integer) data().deepCopy(fields()[5].schema(), other.fetchInterval);
+      if (isValidValue(fields()[5], other.retriesSinceFetch)) {
+        this.retriesSinceFetch = (java.lang.Integer) data().deepCopy(fields()[5].schema(), other.retriesSinceFetch);
         fieldSetFlags()[5] = true;
       }
-      if (isValidValue(fields()[6], other.retriesSinceFetch)) {
-        this.retriesSinceFetch = (java.lang.Integer) data().deepCopy(fields()[6].schema(), other.retriesSinceFetch);
+      if (isValidValue(fields()[6], other.modifiedTime)) {
+        this.modifiedTime = (java.lang.Long) data().deepCopy(fields()[6].schema(), other.modifiedTime);
         fieldSetFlags()[6] = true;
       }
-      if (isValidValue(fields()[7], other.modifiedTime)) {
-        this.modifiedTime = (java.lang.Long) data().deepCopy(fields()[7].schema(), other.modifiedTime);
+      if (isValidValue(fields()[7], other.prevModifiedTime)) {
+        this.prevModifiedTime = (java.lang.Long) data().deepCopy(fields()[7].schema(), other.prevModifiedTime);
         fieldSetFlags()[7] = true;
       }
-      if (isValidValue(fields()[8], other.prevModifiedTime)) {
-        this.prevModifiedTime = (java.lang.Long) data().deepCopy(fields()[8].schema(), other.prevModifiedTime);
+      if (isValidValue(fields()[8], other.protocolStatus)) {
+        this.protocolStatus = (org.apache.nutch.storage.ProtocolStatus) data().deepCopy(fields()[8].schema(), other.protocolStatus);
         fieldSetFlags()[8] = true;
       }
-      if (isValidValue(fields()[9], other.protocolStatus)) {
-        this.protocolStatus = (org.apache.nutch.storage.ProtocolStatus) data().deepCopy(fields()[9].schema(), other.protocolStatus);
+      if (isValidValue(fields()[9], other.content)) {
+        this.content = (java.nio.ByteBuffer) data().deepCopy(fields()[9].schema(), other.content);
         fieldSetFlags()[9] = true;
       }
-      if (isValidValue(fields()[10], other.content)) {
-        this.content = (java.nio.ByteBuffer) data().deepCopy(fields()[10].schema(), other.content);
+      if (isValidValue(fields()[10], other.contentType)) {
+        this.contentType = (java.lang.CharSequence) data().deepCopy(fields()[10].schema(), other.contentType);
         fieldSetFlags()[10] = true;
       }
-      if (isValidValue(fields()[11], other.contentType)) {
-        this.contentType = (java.lang.CharSequence) data().deepCopy(fields()[11].schema(), other.contentType);
+      if (isValidValue(fields()[11], other.prevSignature)) {
+        this.prevSignature = (java.nio.ByteBuffer) data().deepCopy(fields()[11].schema(), other.prevSignature);
         fieldSetFlags()[11] = true;
       }
-      if (isValidValue(fields()[12], other.prevSignature)) {
-        this.prevSignature = (java.nio.ByteBuffer) data().deepCopy(fields()[12].schema(), other.prevSignature);
+      if (isValidValue(fields()[12], other.signature)) {
+        this.signature = (java.nio.ByteBuffer) data().deepCopy(fields()[12].schema(), other.signature);
         fieldSetFlags()[12] = true;
       }
-      if (isValidValue(fields()[13], other.signature)) {
-        this.signature = (java.nio.ByteBuffer) data().deepCopy(fields()[13].schema(), other.signature);
+      if (isValidValue(fields()[13], other.title)) {
+        this.title = (java.lang.CharSequence) data().deepCopy(fields()[13].schema(), other.title);
         fieldSetFlags()[13] = true;
       }
-      if (isValidValue(fields()[14], other.title)) {
-        this.title = (java.lang.CharSequence) data().deepCopy(fields()[14].schema(), other.title);
+      if (isValidValue(fields()[14], other.text)) {
+        this.text = (java.lang.CharSequence) data().deepCopy(fields()[14].schema(), other.text);
         fieldSetFlags()[14] = true;
       }
-      if (isValidValue(fields()[15], other.text)) {
-        this.text = (java.lang.CharSequence) data().deepCopy(fields()[15].schema(), other.text);
+      if (isValidValue(fields()[15], other.parseStatus)) {
+        this.parseStatus = (org.apache.nutch.storage.ParseStatus) data().deepCopy(fields()[15].schema(), other.parseStatus);
         fieldSetFlags()[15] = true;
       }
-      if (isValidValue(fields()[16], other.parseStatus)) {
-        this.parseStatus = (org.apache.nutch.storage.ParseStatus) data().deepCopy(fields()[16].schema(), other.parseStatus);
+      if (isValidValue(fields()[16], other.score)) {
+        this.score = (java.lang.Float) data().deepCopy(fields()[16].schema(), other.score);
         fieldSetFlags()[16] = true;
       }
-      if (isValidValue(fields()[17], other.score)) {
-        this.score = (java.lang.Float) data().deepCopy(fields()[17].schema(), other.score);
+      if (isValidValue(fields()[17], other.reprUrl)) {
+        this.reprUrl = (java.lang.CharSequence) data().deepCopy(fields()[17].schema(), other.reprUrl);
         fieldSetFlags()[17] = true;
       }
-      if (isValidValue(fields()[18], other.reprUrl)) {
-        this.reprUrl = (java.lang.CharSequence) data().deepCopy(fields()[18].schema(), other.reprUrl);
+      if (isValidValue(fields()[18], other.headers)) {
+        this.headers = (java.util.Map<java.lang.CharSequence,java.lang.CharSequence>) data().deepCopy(fields()[18].schema(), other.headers);
         fieldSetFlags()[18] = true;
       }
-      if (isValidValue(fields()[19], other.headers)) {
-        this.headers = (java.util.Map<java.lang.CharSequence,java.lang.CharSequence>) data().deepCopy(fields()[19].schema(), other.headers);
+      if (isValidValue(fields()[19], other.outlinks)) {
+        this.outlinks = (java.util.Map<java.lang.CharSequence,java.lang.CharSequence>) data().deepCopy(fields()[19].schema(), other.outlinks);
         fieldSetFlags()[19] = true;
       }
-      if (isValidValue(fields()[20], other.outlinks)) {
-        this.outlinks = (java.util.Map<java.lang.CharSequence,java.lang.CharSequence>) data().deepCopy(fields()[20].schema(), other.outlinks);
+      if (isValidValue(fields()[20], other.inlinks)) {
+        this.inlinks = (java.util.Map<java.lang.CharSequence,java.lang.CharSequence>) data().deepCopy(fields()[20].schema(), other.inlinks);
         fieldSetFlags()[20] = true;
       }
-      if (isValidValue(fields()[21], other.inlinks)) {
-        this.inlinks = (java.util.Map<java.lang.CharSequence,java.lang.CharSequence>) data().deepCopy(fields()[21].schema(), other.inlinks);
+      if (isValidValue(fields()[21], other.markers)) {
+        this.markers = (java.util.Map<java.lang.CharSequence,java.lang.CharSequence>) data().deepCopy(fields()[21].schema(), other.markers);
         fieldSetFlags()[21] = true;
       }
-      if (isValidValue(fields()[22], other.markers)) {
-        this.markers = (java.util.Map<java.lang.CharSequence,java.lang.CharSequence>) data().deepCopy(fields()[22].schema(), other.markers);
+      if (isValidValue(fields()[22], other.metadata)) {
+        this.metadata = (java.util.Map<java.lang.CharSequence,java.nio.ByteBuffer>) data().deepCopy(fields()[22].schema(), other.metadata);
         fieldSetFlags()[22] = true;
       }
-      if (isValidValue(fields()[23], other.metadata)) {
-        this.metadata = (java.util.Map<java.lang.CharSequence,java.nio.ByteBuffer>) data().deepCopy(fields()[23].schema(), other.metadata);
+      if (isValidValue(fields()[23], other.batchId)) {
+        this.batchId = (java.lang.CharSequence) data().deepCopy(fields()[23].schema(), other.batchId);
         fieldSetFlags()[23] = true;
-      }
-      if (isValidValue(fields()[24], other.batchId)) {
-        this.batchId = (java.lang.CharSequence) data().deepCopy(fields()[24].schema(), other.batchId);
-        fieldSetFlags()[24] = true;
       }
     }
 
@@ -960,21 +957,21 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
     
     /** Sets the value of the 'baseUrl' field */
     public org.apache.nutch.storage.WebPage.Builder setBaseUrl(java.lang.CharSequence value) {
-      validate(fields()[1], value);
+      validate(fields()[0], value);
       this.baseUrl = value;
-      fieldSetFlags()[1] = true;
+      fieldSetFlags()[0] = true;
       return this; 
     }
     
     /** Checks whether the 'baseUrl' field has been set */
     public boolean hasBaseUrl() {
-      return fieldSetFlags()[1];
+      return fieldSetFlags()[0];
     }
     
     /** Clears the value of the 'baseUrl' field */
     public org.apache.nutch.storage.WebPage.Builder clearBaseUrl() {
       baseUrl = null;
-      fieldSetFlags()[1] = false;
+      fieldSetFlags()[0] = false;
       return this;
     }
     
@@ -985,20 +982,20 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
     
     /** Sets the value of the 'status' field */
     public org.apache.nutch.storage.WebPage.Builder setStatus(int value) {
-      validate(fields()[2], value);
+      validate(fields()[1], value);
       this.status = value;
-      fieldSetFlags()[2] = true;
+      fieldSetFlags()[1] = true;
       return this; 
     }
     
     /** Checks whether the 'status' field has been set */
     public boolean hasStatus() {
-      return fieldSetFlags()[2];
+      return fieldSetFlags()[1];
     }
     
     /** Clears the value of the 'status' field */
     public org.apache.nutch.storage.WebPage.Builder clearStatus() {
-      fieldSetFlags()[2] = false;
+      fieldSetFlags()[1] = false;
       return this;
     }
     
@@ -1009,20 +1006,20 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
     
     /** Sets the value of the 'fetchTime' field */
     public org.apache.nutch.storage.WebPage.Builder setFetchTime(long value) {
-      validate(fields()[3], value);
+      validate(fields()[2], value);
       this.fetchTime = value;
-      fieldSetFlags()[3] = true;
+      fieldSetFlags()[2] = true;
       return this; 
     }
     
     /** Checks whether the 'fetchTime' field has been set */
     public boolean hasFetchTime() {
-      return fieldSetFlags()[3];
+      return fieldSetFlags()[2];
     }
     
     /** Clears the value of the 'fetchTime' field */
     public org.apache.nutch.storage.WebPage.Builder clearFetchTime() {
-      fieldSetFlags()[3] = false;
+      fieldSetFlags()[2] = false;
       return this;
     }
     
@@ -1033,20 +1030,20 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
     
     /** Sets the value of the 'prevFetchTime' field */
     public org.apache.nutch.storage.WebPage.Builder setPrevFetchTime(long value) {
-      validate(fields()[4], value);
+      validate(fields()[3], value);
       this.prevFetchTime = value;
-      fieldSetFlags()[4] = true;
+      fieldSetFlags()[3] = true;
       return this; 
     }
     
     /** Checks whether the 'prevFetchTime' field has been set */
     public boolean hasPrevFetchTime() {
-      return fieldSetFlags()[4];
+      return fieldSetFlags()[3];
     }
     
     /** Clears the value of the 'prevFetchTime' field */
     public org.apache.nutch.storage.WebPage.Builder clearPrevFetchTime() {
-      fieldSetFlags()[4] = false;
+      fieldSetFlags()[3] = false;
       return this;
     }
     
@@ -1057,20 +1054,20 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
     
     /** Sets the value of the 'fetchInterval' field */
     public org.apache.nutch.storage.WebPage.Builder setFetchInterval(int value) {
-      validate(fields()[5], value);
+      validate(fields()[4], value);
       this.fetchInterval = value;
-      fieldSetFlags()[5] = true;
+      fieldSetFlags()[4] = true;
       return this; 
     }
     
     /** Checks whether the 'fetchInterval' field has been set */
     public boolean hasFetchInterval() {
-      return fieldSetFlags()[5];
+      return fieldSetFlags()[4];
     }
     
     /** Clears the value of the 'fetchInterval' field */
     public org.apache.nutch.storage.WebPage.Builder clearFetchInterval() {
-      fieldSetFlags()[5] = false;
+      fieldSetFlags()[4] = false;
       return this;
     }
     
@@ -1081,20 +1078,20 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
     
     /** Sets the value of the 'retriesSinceFetch' field */
     public org.apache.nutch.storage.WebPage.Builder setRetriesSinceFetch(int value) {
-      validate(fields()[6], value);
+      validate(fields()[5], value);
       this.retriesSinceFetch = value;
-      fieldSetFlags()[6] = true;
+      fieldSetFlags()[5] = true;
       return this; 
     }
     
     /** Checks whether the 'retriesSinceFetch' field has been set */
     public boolean hasRetriesSinceFetch() {
-      return fieldSetFlags()[6];
+      return fieldSetFlags()[5];
     }
     
     /** Clears the value of the 'retriesSinceFetch' field */
     public org.apache.nutch.storage.WebPage.Builder clearRetriesSinceFetch() {
-      fieldSetFlags()[6] = false;
+      fieldSetFlags()[5] = false;
       return this;
     }
     
@@ -1105,20 +1102,20 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
     
     /** Sets the value of the 'modifiedTime' field */
     public org.apache.nutch.storage.WebPage.Builder setModifiedTime(long value) {
-      validate(fields()[7], value);
+      validate(fields()[6], value);
       this.modifiedTime = value;
-      fieldSetFlags()[7] = true;
+      fieldSetFlags()[6] = true;
       return this; 
     }
     
     /** Checks whether the 'modifiedTime' field has been set */
     public boolean hasModifiedTime() {
-      return fieldSetFlags()[7];
+      return fieldSetFlags()[6];
     }
     
     /** Clears the value of the 'modifiedTime' field */
     public org.apache.nutch.storage.WebPage.Builder clearModifiedTime() {
-      fieldSetFlags()[7] = false;
+      fieldSetFlags()[6] = false;
       return this;
     }
     
@@ -1129,20 +1126,20 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
     
     /** Sets the value of the 'prevModifiedTime' field */
     public org.apache.nutch.storage.WebPage.Builder setPrevModifiedTime(long value) {
-      validate(fields()[8], value);
+      validate(fields()[7], value);
       this.prevModifiedTime = value;
-      fieldSetFlags()[8] = true;
+      fieldSetFlags()[7] = true;
       return this; 
     }
     
     /** Checks whether the 'prevModifiedTime' field has been set */
     public boolean hasPrevModifiedTime() {
-      return fieldSetFlags()[8];
+      return fieldSetFlags()[7];
     }
     
     /** Clears the value of the 'prevModifiedTime' field */
     public org.apache.nutch.storage.WebPage.Builder clearPrevModifiedTime() {
-      fieldSetFlags()[8] = false;
+      fieldSetFlags()[7] = false;
       return this;
     }
     
@@ -1153,21 +1150,21 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
     
     /** Sets the value of the 'protocolStatus' field */
     public org.apache.nutch.storage.WebPage.Builder setProtocolStatus(org.apache.nutch.storage.ProtocolStatus value) {
-      validate(fields()[9], value);
+      validate(fields()[8], value);
       this.protocolStatus = value;
-      fieldSetFlags()[9] = true;
+      fieldSetFlags()[8] = true;
       return this; 
     }
     
     /** Checks whether the 'protocolStatus' field has been set */
     public boolean hasProtocolStatus() {
-      return fieldSetFlags()[9];
+      return fieldSetFlags()[8];
     }
     
     /** Clears the value of the 'protocolStatus' field */
     public org.apache.nutch.storage.WebPage.Builder clearProtocolStatus() {
       protocolStatus = null;
-      fieldSetFlags()[9] = false;
+      fieldSetFlags()[8] = false;
       return this;
     }
     
@@ -1178,21 +1175,21 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
     
     /** Sets the value of the 'content' field */
     public org.apache.nutch.storage.WebPage.Builder setContent(java.nio.ByteBuffer value) {
-      validate(fields()[10], value);
+      validate(fields()[9], value);
       this.content = value;
-      fieldSetFlags()[10] = true;
+      fieldSetFlags()[9] = true;
       return this; 
     }
     
     /** Checks whether the 'content' field has been set */
     public boolean hasContent() {
-      return fieldSetFlags()[10];
+      return fieldSetFlags()[9];
     }
     
     /** Clears the value of the 'content' field */
     public org.apache.nutch.storage.WebPage.Builder clearContent() {
       content = null;
-      fieldSetFlags()[10] = false;
+      fieldSetFlags()[9] = false;
       return this;
     }
     
@@ -1203,21 +1200,21 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
     
     /** Sets the value of the 'contentType' field */
     public org.apache.nutch.storage.WebPage.Builder setContentType(java.lang.CharSequence value) {
-      validate(fields()[11], value);
+      validate(fields()[10], value);
       this.contentType = value;
-      fieldSetFlags()[11] = true;
+      fieldSetFlags()[10] = true;
       return this; 
     }
     
     /** Checks whether the 'contentType' field has been set */
     public boolean hasContentType() {
-      return fieldSetFlags()[11];
+      return fieldSetFlags()[10];
     }
     
     /** Clears the value of the 'contentType' field */
     public org.apache.nutch.storage.WebPage.Builder clearContentType() {
       contentType = null;
-      fieldSetFlags()[11] = false;
+      fieldSetFlags()[10] = false;
       return this;
     }
     
@@ -1228,21 +1225,21 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
     
     /** Sets the value of the 'prevSignature' field */
     public org.apache.nutch.storage.WebPage.Builder setPrevSignature(java.nio.ByteBuffer value) {
-      validate(fields()[12], value);
+      validate(fields()[11], value);
       this.prevSignature = value;
-      fieldSetFlags()[12] = true;
+      fieldSetFlags()[11] = true;
       return this; 
     }
     
     /** Checks whether the 'prevSignature' field has been set */
     public boolean hasPrevSignature() {
-      return fieldSetFlags()[12];
+      return fieldSetFlags()[11];
     }
     
     /** Clears the value of the 'prevSignature' field */
     public org.apache.nutch.storage.WebPage.Builder clearPrevSignature() {
       prevSignature = null;
-      fieldSetFlags()[12] = false;
+      fieldSetFlags()[11] = false;
       return this;
     }
     
@@ -1253,21 +1250,21 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
     
     /** Sets the value of the 'signature' field */
     public org.apache.nutch.storage.WebPage.Builder setSignature(java.nio.ByteBuffer value) {
-      validate(fields()[13], value);
+      validate(fields()[12], value);
       this.signature = value;
-      fieldSetFlags()[13] = true;
+      fieldSetFlags()[12] = true;
       return this; 
     }
     
     /** Checks whether the 'signature' field has been set */
     public boolean hasSignature() {
-      return fieldSetFlags()[13];
+      return fieldSetFlags()[12];
     }
     
     /** Clears the value of the 'signature' field */
     public org.apache.nutch.storage.WebPage.Builder clearSignature() {
       signature = null;
-      fieldSetFlags()[13] = false;
+      fieldSetFlags()[12] = false;
       return this;
     }
     
@@ -1278,21 +1275,21 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
     
     /** Sets the value of the 'title' field */
     public org.apache.nutch.storage.WebPage.Builder setTitle(java.lang.CharSequence value) {
-      validate(fields()[14], value);
+      validate(fields()[13], value);
       this.title = value;
-      fieldSetFlags()[14] = true;
+      fieldSetFlags()[13] = true;
       return this; 
     }
     
     /** Checks whether the 'title' field has been set */
     public boolean hasTitle() {
-      return fieldSetFlags()[14];
+      return fieldSetFlags()[13];
     }
     
     /** Clears the value of the 'title' field */
     public org.apache.nutch.storage.WebPage.Builder clearTitle() {
       title = null;
-      fieldSetFlags()[14] = false;
+      fieldSetFlags()[13] = false;
       return this;
     }
     
@@ -1303,21 +1300,21 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
     
     /** Sets the value of the 'text' field */
     public org.apache.nutch.storage.WebPage.Builder setText(java.lang.CharSequence value) {
-      validate(fields()[15], value);
+      validate(fields()[14], value);
       this.text = value;
-      fieldSetFlags()[15] = true;
+      fieldSetFlags()[14] = true;
       return this; 
     }
     
     /** Checks whether the 'text' field has been set */
     public boolean hasText() {
-      return fieldSetFlags()[15];
+      return fieldSetFlags()[14];
     }
     
     /** Clears the value of the 'text' field */
     public org.apache.nutch.storage.WebPage.Builder clearText() {
       text = null;
-      fieldSetFlags()[15] = false;
+      fieldSetFlags()[14] = false;
       return this;
     }
     
@@ -1328,21 +1325,21 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
     
     /** Sets the value of the 'parseStatus' field */
     public org.apache.nutch.storage.WebPage.Builder setParseStatus(org.apache.nutch.storage.ParseStatus value) {
-      validate(fields()[16], value);
+      validate(fields()[15], value);
       this.parseStatus = value;
-      fieldSetFlags()[16] = true;
+      fieldSetFlags()[15] = true;
       return this; 
     }
     
     /** Checks whether the 'parseStatus' field has been set */
     public boolean hasParseStatus() {
-      return fieldSetFlags()[16];
+      return fieldSetFlags()[15];
     }
     
     /** Clears the value of the 'parseStatus' field */
     public org.apache.nutch.storage.WebPage.Builder clearParseStatus() {
       parseStatus = null;
-      fieldSetFlags()[16] = false;
+      fieldSetFlags()[15] = false;
       return this;
     }
     
@@ -1353,20 +1350,20 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
     
     /** Sets the value of the 'score' field */
     public org.apache.nutch.storage.WebPage.Builder setScore(float value) {
-      validate(fields()[17], value);
+      validate(fields()[16], value);
       this.score = value;
-      fieldSetFlags()[17] = true;
+      fieldSetFlags()[16] = true;
       return this; 
     }
     
     /** Checks whether the 'score' field has been set */
     public boolean hasScore() {
-      return fieldSetFlags()[17];
+      return fieldSetFlags()[16];
     }
     
     /** Clears the value of the 'score' field */
     public org.apache.nutch.storage.WebPage.Builder clearScore() {
-      fieldSetFlags()[17] = false;
+      fieldSetFlags()[16] = false;
       return this;
     }
     
@@ -1377,21 +1374,21 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
     
     /** Sets the value of the 'reprUrl' field */
     public org.apache.nutch.storage.WebPage.Builder setReprUrl(java.lang.CharSequence value) {
-      validate(fields()[18], value);
+      validate(fields()[17], value);
       this.reprUrl = value;
-      fieldSetFlags()[18] = true;
+      fieldSetFlags()[17] = true;
       return this; 
     }
     
     /** Checks whether the 'reprUrl' field has been set */
     public boolean hasReprUrl() {
-      return fieldSetFlags()[18];
+      return fieldSetFlags()[17];
     }
     
     /** Clears the value of the 'reprUrl' field */
     public org.apache.nutch.storage.WebPage.Builder clearReprUrl() {
       reprUrl = null;
-      fieldSetFlags()[18] = false;
+      fieldSetFlags()[17] = false;
       return this;
     }
     
@@ -1402,21 +1399,21 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
     
     /** Sets the value of the 'headers' field */
     public org.apache.nutch.storage.WebPage.Builder setHeaders(java.util.Map<java.lang.CharSequence,java.lang.CharSequence> value) {
-      validate(fields()[19], value);
+      validate(fields()[18], value);
       this.headers = value;
-      fieldSetFlags()[19] = true;
+      fieldSetFlags()[18] = true;
       return this; 
     }
     
     /** Checks whether the 'headers' field has been set */
     public boolean hasHeaders() {
-      return fieldSetFlags()[19];
+      return fieldSetFlags()[18];
     }
     
     /** Clears the value of the 'headers' field */
     public org.apache.nutch.storage.WebPage.Builder clearHeaders() {
       headers = null;
-      fieldSetFlags()[19] = false;
+      fieldSetFlags()[18] = false;
       return this;
     }
     
@@ -1427,21 +1424,21 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
     
     /** Sets the value of the 'outlinks' field */
     public org.apache.nutch.storage.WebPage.Builder setOutlinks(java.util.Map<java.lang.CharSequence,java.lang.CharSequence> value) {
-      validate(fields()[20], value);
+      validate(fields()[19], value);
       this.outlinks = value;
-      fieldSetFlags()[20] = true;
+      fieldSetFlags()[19] = true;
       return this; 
     }
     
     /** Checks whether the 'outlinks' field has been set */
     public boolean hasOutlinks() {
-      return fieldSetFlags()[20];
+      return fieldSetFlags()[19];
     }
     
     /** Clears the value of the 'outlinks' field */
     public org.apache.nutch.storage.WebPage.Builder clearOutlinks() {
       outlinks = null;
-      fieldSetFlags()[20] = false;
+      fieldSetFlags()[19] = false;
       return this;
     }
     
@@ -1452,21 +1449,21 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
     
     /** Sets the value of the 'inlinks' field */
     public org.apache.nutch.storage.WebPage.Builder setInlinks(java.util.Map<java.lang.CharSequence,java.lang.CharSequence> value) {
-      validate(fields()[21], value);
+      validate(fields()[20], value);
       this.inlinks = value;
-      fieldSetFlags()[21] = true;
+      fieldSetFlags()[20] = true;
       return this; 
     }
     
     /** Checks whether the 'inlinks' field has been set */
     public boolean hasInlinks() {
-      return fieldSetFlags()[21];
+      return fieldSetFlags()[20];
     }
     
     /** Clears the value of the 'inlinks' field */
     public org.apache.nutch.storage.WebPage.Builder clearInlinks() {
       inlinks = null;
-      fieldSetFlags()[21] = false;
+      fieldSetFlags()[20] = false;
       return this;
     }
     
@@ -1477,21 +1474,21 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
     
     /** Sets the value of the 'markers' field */
     public org.apache.nutch.storage.WebPage.Builder setMarkers(java.util.Map<java.lang.CharSequence,java.lang.CharSequence> value) {
-      validate(fields()[22], value);
+      validate(fields()[21], value);
       this.markers = value;
-      fieldSetFlags()[22] = true;
+      fieldSetFlags()[21] = true;
       return this; 
     }
     
     /** Checks whether the 'markers' field has been set */
     public boolean hasMarkers() {
-      return fieldSetFlags()[22];
+      return fieldSetFlags()[21];
     }
     
     /** Clears the value of the 'markers' field */
     public org.apache.nutch.storage.WebPage.Builder clearMarkers() {
       markers = null;
-      fieldSetFlags()[22] = false;
+      fieldSetFlags()[21] = false;
       return this;
     }
     
@@ -1502,21 +1499,21 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
     
     /** Sets the value of the 'metadata' field */
     public org.apache.nutch.storage.WebPage.Builder setMetadata(java.util.Map<java.lang.CharSequence,java.nio.ByteBuffer> value) {
-      validate(fields()[23], value);
+      validate(fields()[22], value);
       this.metadata = value;
-      fieldSetFlags()[23] = true;
+      fieldSetFlags()[22] = true;
       return this; 
     }
     
     /** Checks whether the 'metadata' field has been set */
     public boolean hasMetadata() {
-      return fieldSetFlags()[23];
+      return fieldSetFlags()[22];
     }
     
     /** Clears the value of the 'metadata' field */
     public org.apache.nutch.storage.WebPage.Builder clearMetadata() {
       metadata = null;
-      fieldSetFlags()[23] = false;
+      fieldSetFlags()[22] = false;
       return this;
     }
     
@@ -1527,21 +1524,21 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
     
     /** Sets the value of the 'batchId' field */
     public org.apache.nutch.storage.WebPage.Builder setBatchId(java.lang.CharSequence value) {
-      validate(fields()[24], value);
+      validate(fields()[23], value);
       this.batchId = value;
-      fieldSetFlags()[24] = true;
+      fieldSetFlags()[23] = true;
       return this; 
     }
     
     /** Checks whether the 'batchId' field has been set */
     public boolean hasBatchId() {
-      return fieldSetFlags()[24];
+      return fieldSetFlags()[23];
     }
     
     /** Clears the value of the 'batchId' field */
     public org.apache.nutch.storage.WebPage.Builder clearBatchId() {
       batchId = null;
-      fieldSetFlags()[24] = false;
+      fieldSetFlags()[23] = false;
       return this;
     }
     
@@ -1549,31 +1546,30 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
     public WebPage build() {
       try {
         WebPage record = new WebPage();
-        record.__g__dirty = fieldSetFlags()[0] ? this.__g__dirty : (java.nio.ByteBuffer) java.nio.ByteBuffer.wrap(new byte[4]);
-        record.baseUrl = fieldSetFlags()[1] ? this.baseUrl : (java.lang.CharSequence) defaultValue(fields()[1]);
-        record.status = fieldSetFlags()[2] ? this.status : (java.lang.Integer) defaultValue(fields()[2]);
-        record.fetchTime = fieldSetFlags()[3] ? this.fetchTime : (java.lang.Long) defaultValue(fields()[3]);
-        record.prevFetchTime = fieldSetFlags()[4] ? this.prevFetchTime : (java.lang.Long) defaultValue(fields()[4]);
-        record.fetchInterval = fieldSetFlags()[5] ? this.fetchInterval : (java.lang.Integer) defaultValue(fields()[5]);
-        record.retriesSinceFetch = fieldSetFlags()[6] ? this.retriesSinceFetch : (java.lang.Integer) defaultValue(fields()[6]);
-        record.modifiedTime = fieldSetFlags()[7] ? this.modifiedTime : (java.lang.Long) defaultValue(fields()[7]);
-        record.prevModifiedTime = fieldSetFlags()[8] ? this.prevModifiedTime : (java.lang.Long) defaultValue(fields()[8]);
-        record.protocolStatus = fieldSetFlags()[9] ? this.protocolStatus : (org.apache.nutch.storage.ProtocolStatus) defaultValue(fields()[9]);
-        record.content = fieldSetFlags()[10] ? this.content : (java.nio.ByteBuffer) defaultValue(fields()[10]);
-        record.contentType = fieldSetFlags()[11] ? this.contentType : (java.lang.CharSequence) defaultValue(fields()[11]);
-        record.prevSignature = fieldSetFlags()[12] ? this.prevSignature : (java.nio.ByteBuffer) defaultValue(fields()[12]);
-        record.signature = fieldSetFlags()[13] ? this.signature : (java.nio.ByteBuffer) defaultValue(fields()[13]);
-        record.title = fieldSetFlags()[14] ? this.title : (java.lang.CharSequence) defaultValue(fields()[14]);
-        record.text = fieldSetFlags()[15] ? this.text : (java.lang.CharSequence) defaultValue(fields()[15]);
-        record.parseStatus = fieldSetFlags()[16] ? this.parseStatus : (org.apache.nutch.storage.ParseStatus) defaultValue(fields()[16]);
-        record.score = fieldSetFlags()[17] ? this.score : (java.lang.Float) defaultValue(fields()[17]);
-        record.reprUrl = fieldSetFlags()[18] ? this.reprUrl : (java.lang.CharSequence) defaultValue(fields()[18]);
-        record.headers = fieldSetFlags()[19] ? this.headers : (java.util.Map<java.lang.CharSequence,java.lang.CharSequence>) new org.apache.gora.persistency.impl.DirtyMapWrapper((java.util.Map)defaultValue(fields()[19]));
-        record.outlinks = fieldSetFlags()[20] ? this.outlinks : (java.util.Map<java.lang.CharSequence,java.lang.CharSequence>) new org.apache.gora.persistency.impl.DirtyMapWrapper((java.util.Map)defaultValue(fields()[20]));
-        record.inlinks = fieldSetFlags()[21] ? this.inlinks : (java.util.Map<java.lang.CharSequence,java.lang.CharSequence>) new org.apache.gora.persistency.impl.DirtyMapWrapper((java.util.Map)defaultValue(fields()[21]));
-        record.markers = fieldSetFlags()[22] ? this.markers : (java.util.Map<java.lang.CharSequence,java.lang.CharSequence>) new org.apache.gora.persistency.impl.DirtyMapWrapper((java.util.Map)defaultValue(fields()[22]));
-        record.metadata = fieldSetFlags()[23] ? this.metadata : (java.util.Map<java.lang.CharSequence,java.nio.ByteBuffer>) new org.apache.gora.persistency.impl.DirtyMapWrapper((java.util.Map)defaultValue(fields()[23]));
-        record.batchId = fieldSetFlags()[24] ? this.batchId : (java.lang.CharSequence) defaultValue(fields()[24]);
+        record.baseUrl = fieldSetFlags()[0] ? this.baseUrl : (java.lang.CharSequence) defaultValue(fields()[0]);
+        record.status = fieldSetFlags()[1] ? this.status : (java.lang.Integer) defaultValue(fields()[1]);
+        record.fetchTime = fieldSetFlags()[2] ? this.fetchTime : (java.lang.Long) defaultValue(fields()[2]);
+        record.prevFetchTime = fieldSetFlags()[3] ? this.prevFetchTime : (java.lang.Long) defaultValue(fields()[3]);
+        record.fetchInterval = fieldSetFlags()[4] ? this.fetchInterval : (java.lang.Integer) defaultValue(fields()[4]);
+        record.retriesSinceFetch = fieldSetFlags()[5] ? this.retriesSinceFetch : (java.lang.Integer) defaultValue(fields()[5]);
+        record.modifiedTime = fieldSetFlags()[6] ? this.modifiedTime : (java.lang.Long) defaultValue(fields()[6]);
+        record.prevModifiedTime = fieldSetFlags()[7] ? this.prevModifiedTime : (java.lang.Long) defaultValue(fields()[7]);
+        record.protocolStatus = fieldSetFlags()[8] ? this.protocolStatus : (org.apache.nutch.storage.ProtocolStatus) defaultValue(fields()[8]);
+        record.content = fieldSetFlags()[9] ? this.content : (java.nio.ByteBuffer) defaultValue(fields()[9]);
+        record.contentType = fieldSetFlags()[10] ? this.contentType : (java.lang.CharSequence) defaultValue(fields()[10]);
+        record.prevSignature = fieldSetFlags()[11] ? this.prevSignature : (java.nio.ByteBuffer) defaultValue(fields()[11]);
+        record.signature = fieldSetFlags()[12] ? this.signature : (java.nio.ByteBuffer) defaultValue(fields()[12]);
+        record.title = fieldSetFlags()[13] ? this.title : (java.lang.CharSequence) defaultValue(fields()[13]);
+        record.text = fieldSetFlags()[14] ? this.text : (java.lang.CharSequence) defaultValue(fields()[14]);
+        record.parseStatus = fieldSetFlags()[15] ? this.parseStatus : (org.apache.nutch.storage.ParseStatus) defaultValue(fields()[15]);
+        record.score = fieldSetFlags()[16] ? this.score : (java.lang.Float) defaultValue(fields()[16]);
+        record.reprUrl = fieldSetFlags()[17] ? this.reprUrl : (java.lang.CharSequence) defaultValue(fields()[17]);
+        record.headers = fieldSetFlags()[18] ? this.headers : (java.util.Map<java.lang.CharSequence,java.lang.CharSequence>) new org.apache.gora.persistency.impl.DirtyMapWrapper((java.util.Map)defaultValue(fields()[18]));
+        record.outlinks = fieldSetFlags()[19] ? this.outlinks : (java.util.Map<java.lang.CharSequence,java.lang.CharSequence>) new org.apache.gora.persistency.impl.DirtyMapWrapper((java.util.Map)defaultValue(fields()[19]));
+        record.inlinks = fieldSetFlags()[20] ? this.inlinks : (java.util.Map<java.lang.CharSequence,java.lang.CharSequence>) new org.apache.gora.persistency.impl.DirtyMapWrapper((java.util.Map)defaultValue(fields()[20]));
+        record.markers = fieldSetFlags()[21] ? this.markers : (java.util.Map<java.lang.CharSequence,java.lang.CharSequence>) new org.apache.gora.persistency.impl.DirtyMapWrapper((java.util.Map)defaultValue(fields()[21]));
+        record.metadata = fieldSetFlags()[22] ? this.metadata : (java.util.Map<java.lang.CharSequence,java.nio.ByteBuffer>) new org.apache.gora.persistency.impl.DirtyMapWrapper((java.util.Map)defaultValue(fields()[22]));
+        record.batchId = fieldSetFlags()[23] ? this.batchId : (java.lang.CharSequence) defaultValue(fields()[23]);
         return record;
       } catch (Exception e) {
         throw new org.apache.avro.AvroRuntimeException(e);
@@ -1595,7 +1591,7 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
   
       private Tombstone() { }
   
-	  				  /**
+	  		  /**
 	   * Gets the value of the 'baseUrl' field.
 		   */
 	  public java.lang.CharSequence getBaseUrl() {
@@ -2151,3 +2147,4 @@ public class WebPage extends org.apache.gora.persistency.impl.PersistentBase imp
   }
   
 }
+

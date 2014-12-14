@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.qiwur.scent.jsoup.nodes.Element;
+import org.jsoup.nodes.Element;
 
 public class ScentRule implements Comparable<ScentRule> {
 

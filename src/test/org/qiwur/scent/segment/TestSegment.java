@@ -29,7 +29,7 @@ import org.apache.nutch.storage.WebPage;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.qiwur.scent.jsoup.block.DomSegment;
+import org.jsoup.block.DomSegment;
 import org.qiwur.scent.utils.ScentConfiguration;
 import org.qiwur.scent.utils.SegmentUtil;
 

@@ -7,7 +7,7 @@ import org.apache.hadoop.conf.Configuration;
 import org.qiwur.scent.classifier.RuleBasedBlockClassifier;
 import org.qiwur.scent.data.feature.BlockStatFeature;
 import org.qiwur.scent.data.feature.FeatureManager;
-import org.qiwur.scent.jsoup.block.DomSegment;
+import org.jsoup.block.DomSegment;
 
 public class CodeStructureFeatureClassifier extends RuleBasedBlockClassifier {
 

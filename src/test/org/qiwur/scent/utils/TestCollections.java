@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;
 import org.junit.Test;
-import org.qiwur.scent.jsoup.block.BlockLabel;
-import org.qiwur.scent.jsoup.block.BlockPattern;
-import org.qiwur.scent.jsoup.block.DomSegment;
+import org.jsoup.block.BlockLabel;
+import org.jsoup.block.BlockPattern;
+import org.jsoup.block.DomSegment;
 
 import com.google.common.collect.Lists;
 

@@ -7,8 +7,8 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import org.apache.commons.lang.Validate;
-import org.qiwur.scent.jsoup.nodes.Attribute;
-import org.qiwur.scent.jsoup.nodes.Element;
+import org.jsoup.nodes.Attribute;
+import org.jsoup.nodes.Element;
 
 public class Image {
 

@@ -1,7 +1,7 @@
 package org.qiwur.scent.classifier.statistics;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.qiwur.scent.jsoup.nodes.Indicator;
+import org.jsoup.nodes.Indicator;
 import org.qiwur.scent.utils.StringUtil;
 
 public class StatIndicator {

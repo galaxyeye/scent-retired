@@ -31,8 +31,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.qiwur.scent.jsoup.block.BlockLabel;
-import org.qiwur.scent.jsoup.nodes.Indicator;
+import org.jsoup.block.BlockLabel;
+import org.jsoup.nodes.Indicator;
 
 /**
  * Utility to create Hadoop {@link Configuration}s that include Scent-specific

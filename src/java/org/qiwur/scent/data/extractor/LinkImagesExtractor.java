@@ -6,9 +6,9 @@ import java.util.Set;
 import org.apache.hadoop.conf.Configuration;
 import org.qiwur.scent.data.entity.Link;
 import org.qiwur.scent.data.entity.PageEntity;
-import org.qiwur.scent.jsoup.block.BlockPattern;
-import org.qiwur.scent.jsoup.block.DomSegment;
-import org.qiwur.scent.jsoup.nodes.Element;
+import org.jsoup.block.BlockPattern;
+import org.jsoup.block.DomSegment;
+import org.jsoup.nodes.Element;
 import org.qiwur.scent.utils.StringUtil;
 
 public final class LinkImagesExtractor extends DomSegmentExtractor {

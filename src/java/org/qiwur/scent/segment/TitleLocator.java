@@ -8,21 +8,20 @@ import java.util.TreeMap;
 
 import org.apache.commons.lang.Validate;
 import org.apache.hadoop.conf.Configuration;
+import org.jsoup.block.BlockLabel;
+import org.jsoup.block.DomSegment;
+import org.jsoup.helper.FuzzyProbability;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Indicator;
+import org.jsoup.parser.Tag;
+import org.jsoup.select.ElementTraversor;
+import org.jsoup.select.Elements;
+import org.jsoup.select.InterruptiveElementVisitor;
 import org.qiwur.scent.data.feature.EntityNameFeature;
 import org.qiwur.scent.data.feature.FeatureManager;
 import org.qiwur.scent.data.feature.HtmlTitleFeature;
-import org.qiwur.scent.jsoup.block.BlockLabel;
-import org.qiwur.scent.jsoup.block.DomSegment;
-import org.qiwur.scent.jsoup.nodes.Document;
-import org.qiwur.scent.jsoup.nodes.Element;
-import org.qiwur.scent.jsoup.nodes.Indicator;
-import org.qiwur.scent.jsoup.parser.Tag;
-import org.qiwur.scent.jsoup.select.ElementTraversor;
-import org.qiwur.scent.jsoup.select.Elements;
-import org.qiwur.scent.jsoup.select.InterruptiveElementVisitor;
 import org.qiwur.scent.utils.StringUtil;
-
-import ruc.irm.similarity.FuzzyProbability;
 
 /**
  * 通过比较文本和网页标题的相似度来找到标题

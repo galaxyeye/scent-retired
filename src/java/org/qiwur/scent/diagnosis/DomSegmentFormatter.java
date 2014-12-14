@@ -4,9 +4,9 @@ import java.text.DecimalFormat;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
-import org.qiwur.scent.jsoup.block.DomSegment;
-import org.qiwur.scent.jsoup.nodes.Document;
-import org.qiwur.scent.jsoup.nodes.Indicator;
+import org.jsoup.block.DomSegment;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Indicator;
 
 public class DomSegmentFormatter extends DiagnosisFormatter {
 

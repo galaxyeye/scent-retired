@@ -16,12 +16,12 @@ import org.apache.nutch.storage.WebPage.Field;
 import org.qiwur.scent.data.builder.WebsiteFactory;
 import org.qiwur.scent.data.entity.EntityAttribute;
 import org.qiwur.scent.data.entity.PageEntity;
-import org.qiwur.scent.jsoup.block.BlockLabel;
-import org.qiwur.scent.jsoup.block.BlockPattern;
-import org.qiwur.scent.jsoup.block.DomSegment;
-import org.qiwur.scent.jsoup.block.DomSegments;
-import org.qiwur.scent.jsoup.nodes.Document;
-import org.qiwur.scent.jsoup.select.Elements;
+import org.jsoup.block.BlockLabel;
+import org.jsoup.block.BlockPattern;
+import org.jsoup.block.DomSegment;
+import org.jsoup.block.DomSegments;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 import org.qiwur.scent.learning.EntityAttributeLearner;
 import org.qiwur.scent.utils.NetUtil;
 

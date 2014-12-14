@@ -22,11 +22,11 @@ import org.qiwur.scent.data.entity.EntityAttribute;
 import org.qiwur.scent.data.entity.PageEntity;
 import org.qiwur.scent.data.feature.FeatureManager;
 import org.qiwur.scent.data.feature.LinedFeature;
-import org.qiwur.scent.jsoup.Jsoup;
-import org.qiwur.scent.jsoup.nodes.Attribute;
-import org.qiwur.scent.jsoup.nodes.Attributes;
-import org.qiwur.scent.jsoup.nodes.Document;
-import org.qiwur.scent.jsoup.nodes.Element;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Attribute;
+import org.jsoup.nodes.Attributes;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.qiwur.scent.utils.StringUtil;
 
 import com.google.common.collect.Maps;

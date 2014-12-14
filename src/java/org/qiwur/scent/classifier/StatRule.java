@@ -10,8 +10,8 @@ import javax.script.ScriptException;
 
 import org.apache.commons.lang.Validate;
 import org.qiwur.scent.classifier.statistics.StatIndicator;
-import org.qiwur.scent.jsoup.nodes.Element;
-import org.qiwur.scent.jsoup.nodes.Indicator;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Indicator;
 
 public class StatRule extends ScentRule {
 

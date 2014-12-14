@@ -40,7 +40,7 @@ import org.apache.nutch.storage.Bytes;
 import org.apache.nutch.storage.Nutch;
 import org.apache.nutch.storage.TableUtil;
 import org.apache.nutch.storage.WebPage;
-import org.qiwur.scent.jsoup.block.DomSegment;
+import org.jsoup.block.DomSegment;
 import org.qiwur.scent.storage.PageBlock;
 import org.qiwur.scent.utils.ScentConfiguration;
 import org.qiwur.scent.utils.SegmentUtil;

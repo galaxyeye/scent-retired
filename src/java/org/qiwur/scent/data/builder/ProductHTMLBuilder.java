@@ -8,8 +8,8 @@ import org.apache.commons.lang.Validate;
 import org.apache.hadoop.conf.Configuration;
 import org.qiwur.scent.data.entity.EntityAttribute;
 import org.qiwur.scent.data.entity.PageEntity;
-import org.qiwur.scent.jsoup.nodes.Document;
-import org.qiwur.scent.jsoup.nodes.Element;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.qiwur.scent.utils.StringUtil;
 
 public class ProductHTMLBuilder extends ProductBuilder {

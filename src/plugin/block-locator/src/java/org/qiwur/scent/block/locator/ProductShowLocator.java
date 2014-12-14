@@ -1,9 +1,9 @@
 package org.qiwur.scent.block.locator;
 
 import org.apache.hadoop.conf.Configuration;
-import org.qiwur.scent.jsoup.block.BlockLabel;
-import org.qiwur.scent.jsoup.block.DomSegment;
-import org.qiwur.scent.jsoup.nodes.Document;
+import org.jsoup.block.BlockLabel;
+import org.jsoup.block.DomSegment;
+import org.jsoup.nodes.Document;
 
 /*
  * 商品展示区一般包含一下信息：

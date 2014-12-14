@@ -10,9 +10,9 @@ import org.apache.logging.log4j.Logger;
 import org.qiwur.scent.classifier.BlockRule;
 import org.qiwur.scent.classifier.PhraseRule;
 import org.qiwur.scent.classifier.ScentRule;
-import org.qiwur.scent.jsoup.block.BlockPattern;
-import org.qiwur.scent.jsoup.block.DomSegment;
-import org.qiwur.scent.jsoup.nodes.Element;
+import org.jsoup.block.BlockPattern;
+import org.jsoup.block.DomSegment;
+import org.jsoup.nodes.Element;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;

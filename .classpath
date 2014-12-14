@@ -9,9 +9,9 @@
 	<classpathentry kind="lib" path="src/bin"/>
 	<classpathentry kind="lib" path="build/lib/activation-1.1.jar"/>
 	<classpathentry kind="lib" path="build/lib/aopalliance-1.0.jar"/>
-	<classpathentry kind="lib" path="build/lib/avro-1.7.4.jar"/>
-	<classpathentry kind="lib" path="build/lib/avro-ipc-1.7.4.jar"/>
-	<classpathentry kind="lib" path="build/lib/avro-mapred-1.7.4.jar"/>
+	<classpathentry kind="lib" path="build/lib/avro-1.7.6.jar"/>
+	<classpathentry kind="lib" path="build/lib/avro-ipc-1.7.6.jar"/>
+	<classpathentry kind="lib" path="build/lib/avro-mapred-1.7.6.jar"/>
 	<classpathentry kind="lib" path="build/lib/commons-beanutils-1.6.jar"/>
 	<classpathentry kind="lib" path="build/lib/commons-beanutils-core-1.8.0.jar"/>
 	<classpathentry kind="lib" path="build/lib/commons-cli-1.2.jar"/>
@@ -41,8 +41,9 @@
 	<classpathentry kind="lib" path="build/lib/dom4j-1.6.1.jar"/>
 	<classpathentry kind="lib" path="build/lib/fudannlp.jar"/>
 	<classpathentry kind="lib" path="build/lib/geronimo-javamail_1.4_spec-1.7.1.jar"/>
-	<classpathentry kind="lib" path="build/lib/gora-core-0.4.jar" sourcepath="/gora-core"/>
-	<classpathentry kind="lib" path="build/lib/gora-hbase-0.4.jar"/>
+	<classpathentry kind="lib" path="build/lib/gora-core-0.5.jar"/>
+	<classpathentry kind="lib" path="build/lib/gora-hbase-0.5.jar"/>
+	<classpathentry kind="lib" path="build/lib/gora-shims-distribution-0.5.jar"/>
 	<classpathentry kind="lib" path="build/lib/gson-2.2.4.jar"/>
 	<classpathentry kind="lib" path="build/lib/guava-17.0.jar"/>
 	<classpathentry kind="lib" path="build/lib/hadoop-core-1.0.1.jar"/>
@@ -88,7 +89,7 @@
 	<classpathentry kind="lib" path="build/lib/jsp-api-2.1-6.1.14.jar"/>
 	<classpathentry kind="lib" path="build/lib/jsr311-api-1.1.1.jar"/>
 	<classpathentry kind="lib" path="build/lib/jtidy-4aug2000r7-dev.jar"/>
-	<classpathentry kind="lib" path="build/lib/junit-4.11.jar" sourcepath="/home/vincent/.m2/repository/junit/junit/4.11/junit-4.11-sources.jar"/>
+	<classpathentry kind="lib" path="build/lib/junit-4.11.jar"/>
 	<classpathentry kind="lib" path="build/lib/kfs-0.3.jar"/>
 	<classpathentry kind="lib" path="build/lib/libthrift-0.8.0.jar"/>
 	<classpathentry kind="lib" path="build/lib/log4j-api-2.0-rc1.jar"/>
@@ -96,8 +97,8 @@
 	<classpathentry kind="lib" path="build/lib/log4j-slf4j-impl-2.0-rc1.jar"/>
 	<classpathentry kind="lib" path="build/lib/lucene-analyzers-common-4.6.1.jar"/>
 	<classpathentry kind="lib" path="build/lib/lucene-core-4.6.1.jar"/>
-	<classpathentry kind="lib" path="build/lib/mahout-core-0.9.jar" sourcepath="/mahout-core"/>
-	<classpathentry kind="lib" path="build/lib/mahout-math-0.9.jar" sourcepath="/mahout-math"/>
+	<classpathentry kind="lib" path="build/lib/mahout-core-0.9.jar"/>
+	<classpathentry kind="lib" path="build/lib/mahout-math-0.9.jar"/>
 	<classpathentry kind="lib" path="build/lib/mail-1.4.2.jar"/>
 	<classpathentry kind="lib" path="build/lib/metrics-core-2.1.2.jar"/>
 	<classpathentry kind="lib" path="build/lib/neethi-3.0.1.jar"/>
@@ -116,7 +117,7 @@
 	<classpathentry kind="lib" path="build/lib/servlet-api-2.5-6.1.14.jar"/>
 	<classpathentry kind="lib" path="build/lib/slf4j-api-1.7.6.jar"/>
 	<classpathentry kind="lib" path="build/lib/snakeyaml-1.13.jar"/>
-	<classpathentry kind="lib" path="build/lib/snappy-java-1.0.4.1.jar"/>
+	<classpathentry kind="lib" path="build/lib/snappy-java-1.0.5.jar"/>
 	<classpathentry kind="lib" path="build/lib/solr-commons-csv-3.5.0.jar"/>
 	<classpathentry kind="lib" path="build/lib/spring-aop-3.0.6.RELEASE.jar"/>
 	<classpathentry kind="lib" path="build/lib/spring-asm-3.0.6.RELEASE.jar"/>
@@ -144,5 +145,6 @@
 	<classpathentry kind="lib" path="build/lib/xstream-1.4.4.jar"/>
 	<classpathentry kind="lib" path="build/lib/xz-1.0.jar"/>
 	<classpathentry kind="lib" path="build/lib/zookeeper-3.4.5.jar"/>
+	<classpathentry kind="lib" path="lib/jsoup-1.8.2.jar" sourcepath="/jsoup"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

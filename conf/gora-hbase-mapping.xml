@@ -71,7 +71,7 @@ http://gora.apache.org/current/gora-hbase.html
         <field name="parseStatus" family="p" qualifier="st"/>
         <field name="signature" family="p" qualifier="sig"/>
         <field name="prevSignature" family="p" qualifier="psig"/>
-        
+
         <!-- score fields                                       -->
         <field name="score" family="s" qualifier="s"/>
         <field name="headers" family="h"/>
@@ -90,13 +90,15 @@ http://gora.apache.org/current/gora-hbase.html
     <class table="pageblock" keyClass="java.lang.String" name="org.qiwur.scent.storage.PageBlock">
         <!-- build fields                                       -->
         <field name="baseUrl"       family="b"    qualifier="bas" />
-        <field name="xpath"         family="b"    qualifier="xph" />
         <field name="baseSequence"  family="b"    qualifier="seq" />
+        <field name="cssSelector"   family="b"    qualifier="slt" />
         <field name="name"          family="b"    qualifier="nm" />
         <field name="content"       family="b"    qualifier="cnt" />
-        <field name="contentMD5"    family="b"    qualifier="md5" />
-        <field name="status"        family="b"    qualifier="st" />
-        <field name="buildTime"     family="b"    qualifier="bt" />
+        <field name="text"          family="b"    qualifier="txt" />
+        <field name="codeDigest"    family="b"    qualifier="coddgt" />
+        <field name="textDigest"    family="b"    qualifier="txtdgt" />
+        <field name="textDigest"    family="b"    qualifier="txtdgt" />
+        <field name="indicators"    family="b"    qualifier="indics" />
         <field name="batchId"       family="b"    qualifier="bid" />
 
         <!-- classify fields                                    -->
@@ -104,7 +106,7 @@ http://gora.apache.org/current/gora-hbase.html
         <field name="labelScore"    family="s"    qualifier="ls" />
 
         <!-- extract fields                                     -->
-        <field name="kvpairs"       family="e"    qualifier="kv" />
+        <field name="kvs"       family="e"    qualifier="kv" />
 
         <!-- other fields                                       -->
         <field name="markers"       family="mk" />

@@ -6,14 +6,13 @@
 package org.apache.nutch.storage;  
 @SuppressWarnings("all")
 public class ProtocolStatus extends org.apache.gora.persistency.impl.PersistentBase implements org.apache.avro.specific.SpecificRecord, org.apache.gora.persistency.Persistent {
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"ProtocolStatus\",\"namespace\":\"org.apache.nutch.storage\",\"fields\":[{\"name\":\"__g__dirty\",\"type\":\"bytes\",\"doc\":\"Bytes used to represent weather or not a field is dirty.\",\"default\":\"AA==\"},{\"name\":\"code\",\"type\":\"int\",\"default\":0},{\"name\":\"args\",\"type\":{\"type\":\"array\",\"items\":\"string\"},\"default\":[]},{\"name\":\"lastModified\",\"type\":\"long\",\"default\":0}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"ProtocolStatus\",\"namespace\":\"org.apache.nutch.storage\",\"fields\":[{\"name\":\"code\",\"type\":\"int\",\"default\":0},{\"name\":\"args\",\"type\":{\"type\":\"array\",\"items\":\"string\"},\"default\":[]},{\"name\":\"lastModified\",\"type\":\"long\",\"default\":0}]}");
 
   /** Enum containing all data bean's fields. */
   public static enum Field {
-    __G__DIRTY(0, "__g__dirty"),
-    CODE(1, "code"),
-    ARGS(2, "args"),
-    LAST_MODIFIED(3, "lastModified"),
+    CODE(0, "code"),
+    ARGS(1, "args"),
+    LAST_MODIFIED(2, "lastModified"),
     ;
     /**
      * Field's index.
@@ -52,14 +51,19 @@ public class ProtocolStatus extends org.apache.gora.persistency.impl.PersistentB
   };
 
   public static final String[] _ALL_FIELDS = {
-  "__g__dirty",
   "code",
   "args",
   "lastModified",
   };
 
-  /** Bytes used to represent weather or not a field is dirty. */
-  private java.nio.ByteBuffer __g__dirty = java.nio.ByteBuffer.wrap(new byte[1]);
+  /**
+   * Gets the total field count.
+   * @return int field count
+   */
+  public int getFieldsCount() {
+    return ProtocolStatus._ALL_FIELDS.length;
+  }
+
   private int code;
   private java.util.List<java.lang.CharSequence> args;
   private long lastModified;
@@ -67,10 +71,9 @@ public class ProtocolStatus extends org.apache.gora.persistency.impl.PersistentB
   // Used by DatumWriter.  Applications should not call. 
   public java.lang.Object get(int field$) {
     switch (field$) {
-    case 0: return __g__dirty;
-    case 1: return code;
-    case 2: return args;
-    case 3: return lastModified;
+    case 0: return code;
+    case 1: return args;
+    case 2: return lastModified;
     default: throw new org.apache.avro.AvroRuntimeException("Bad index");
     }
   }
@@ -79,10 +82,9 @@ public class ProtocolStatus extends org.apache.gora.persistency.impl.PersistentB
   @SuppressWarnings(value="unchecked")
   public void put(int field$, java.lang.Object value) {
     switch (field$) {
-    case 0: __g__dirty = (java.nio.ByteBuffer)(value); break;
-    case 1: code = (java.lang.Integer)(value); break;
-    case 2: args = (java.util.List<java.lang.CharSequence>)((value instanceof org.apache.gora.persistency.Dirtyable) ? value : new org.apache.gora.persistency.impl.DirtyListWrapper((java.util.List)value)); break;
-    case 3: lastModified = (java.lang.Long)(value); break;
+    case 0: code = (java.lang.Integer)(value); break;
+    case 1: args = (java.util.List<java.lang.CharSequence>)((value instanceof org.apache.gora.persistency.Dirtyable) ? value : new org.apache.gora.persistency.impl.DirtyListWrapper((java.util.List)value)); break;
+    case 2: lastModified = (java.lang.Long)(value); break;
     default: throw new org.apache.avro.AvroRuntimeException("Bad index");
     }
   }
@@ -100,7 +102,7 @@ public class ProtocolStatus extends org.apache.gora.persistency.impl.PersistentB
    */
   public void setCode(java.lang.Integer value) {
     this.code = value;
-    setDirty(1);
+    setDirty(0);
   }
   
   /**
@@ -108,7 +110,7 @@ public class ProtocolStatus extends org.apache.gora.persistency.impl.PersistentB
    * @param value the value to set.
    */
   public boolean isCodeDirty(java.lang.Integer value) {
-    return isDirty(1);
+    return isDirty(0);
   }
 
   /**
@@ -124,7 +126,7 @@ public class ProtocolStatus extends org.apache.gora.persistency.impl.PersistentB
    */
   public void setArgs(java.util.List<java.lang.CharSequence> value) {
     this.args = (value instanceof org.apache.gora.persistency.Dirtyable) ? value : new org.apache.gora.persistency.impl.DirtyListWrapper(value);
-    setDirty(2);
+    setDirty(1);
   }
   
   /**
@@ -132,7 +134,7 @@ public class ProtocolStatus extends org.apache.gora.persistency.impl.PersistentB
    * @param value the value to set.
    */
   public boolean isArgsDirty(java.util.List<java.lang.CharSequence> value) {
-    return isDirty(2);
+    return isDirty(1);
   }
 
   /**
@@ -148,7 +150,7 @@ public class ProtocolStatus extends org.apache.gora.persistency.impl.PersistentB
    */
   public void setLastModified(java.lang.Long value) {
     this.lastModified = value;
-    setDirty(3);
+    setDirty(2);
   }
   
   /**
@@ -156,7 +158,7 @@ public class ProtocolStatus extends org.apache.gora.persistency.impl.PersistentB
    * @param value the value to set.
    */
   public boolean isLastModifiedDirty(java.lang.Long value) {
-    return isDirty(3);
+    return isDirty(2);
   }
 
   /** Creates a new ProtocolStatus RecordBuilder */
@@ -174,7 +176,7 @@ public class ProtocolStatus extends org.apache.gora.persistency.impl.PersistentB
     return new org.apache.nutch.storage.ProtocolStatus.Builder(other);
   }
   
-  private static java.nio.ByteBuffer deepCopyToWriteOnlyBuffer(
+  private static java.nio.ByteBuffer deepCopyToReadOnlyBuffer(
       java.nio.ByteBuffer input) {
     java.nio.ByteBuffer copy = java.nio.ByteBuffer.allocate(input.capacity());
     int position = input.position();
@@ -203,7 +205,6 @@ public class ProtocolStatus extends org.apache.gora.persistency.impl.PersistentB
   public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<ProtocolStatus>
     implements org.apache.avro.data.RecordBuilder<ProtocolStatus> {
 
-    private java.nio.ByteBuffer __g__dirty;
     private int code;
     private java.util.List<java.lang.CharSequence> args;
     private long lastModified;
@@ -221,21 +222,17 @@ public class ProtocolStatus extends org.apache.gora.persistency.impl.PersistentB
     /** Creates a Builder by copying an existing ProtocolStatus instance */
     private Builder(org.apache.nutch.storage.ProtocolStatus other) {
             super(org.apache.nutch.storage.ProtocolStatus.SCHEMA$);
-      if (isValidValue(fields()[0], other.__g__dirty)) {
-        this.__g__dirty = (java.nio.ByteBuffer) data().deepCopy(fields()[0].schema(), other.__g__dirty);
+      if (isValidValue(fields()[0], other.code)) {
+        this.code = (java.lang.Integer) data().deepCopy(fields()[0].schema(), other.code);
         fieldSetFlags()[0] = true;
       }
-      if (isValidValue(fields()[1], other.code)) {
-        this.code = (java.lang.Integer) data().deepCopy(fields()[1].schema(), other.code);
+      if (isValidValue(fields()[1], other.args)) {
+        this.args = (java.util.List<java.lang.CharSequence>) data().deepCopy(fields()[1].schema(), other.args);
         fieldSetFlags()[1] = true;
       }
-      if (isValidValue(fields()[2], other.args)) {
-        this.args = (java.util.List<java.lang.CharSequence>) data().deepCopy(fields()[2].schema(), other.args);
+      if (isValidValue(fields()[2], other.lastModified)) {
+        this.lastModified = (java.lang.Long) data().deepCopy(fields()[2].schema(), other.lastModified);
         fieldSetFlags()[2] = true;
-      }
-      if (isValidValue(fields()[3], other.lastModified)) {
-        this.lastModified = (java.lang.Long) data().deepCopy(fields()[3].schema(), other.lastModified);
-        fieldSetFlags()[3] = true;
       }
     }
 
@@ -246,20 +243,20 @@ public class ProtocolStatus extends org.apache.gora.persistency.impl.PersistentB
     
     /** Sets the value of the 'code' field */
     public org.apache.nutch.storage.ProtocolStatus.Builder setCode(int value) {
-      validate(fields()[1], value);
+      validate(fields()[0], value);
       this.code = value;
-      fieldSetFlags()[1] = true;
+      fieldSetFlags()[0] = true;
       return this; 
     }
     
     /** Checks whether the 'code' field has been set */
     public boolean hasCode() {
-      return fieldSetFlags()[1];
+      return fieldSetFlags()[0];
     }
     
     /** Clears the value of the 'code' field */
     public org.apache.nutch.storage.ProtocolStatus.Builder clearCode() {
-      fieldSetFlags()[1] = false;
+      fieldSetFlags()[0] = false;
       return this;
     }
     
@@ -270,21 +267,21 @@ public class ProtocolStatus extends org.apache.gora.persistency.impl.PersistentB
     
     /** Sets the value of the 'args' field */
     public org.apache.nutch.storage.ProtocolStatus.Builder setArgs(java.util.List<java.lang.CharSequence> value) {
-      validate(fields()[2], value);
+      validate(fields()[1], value);
       this.args = value;
-      fieldSetFlags()[2] = true;
+      fieldSetFlags()[1] = true;
       return this; 
     }
     
     /** Checks whether the 'args' field has been set */
     public boolean hasArgs() {
-      return fieldSetFlags()[2];
+      return fieldSetFlags()[1];
     }
     
     /** Clears the value of the 'args' field */
     public org.apache.nutch.storage.ProtocolStatus.Builder clearArgs() {
       args = null;
-      fieldSetFlags()[2] = false;
+      fieldSetFlags()[1] = false;
       return this;
     }
     
@@ -295,20 +292,20 @@ public class ProtocolStatus extends org.apache.gora.persistency.impl.PersistentB
     
     /** Sets the value of the 'lastModified' field */
     public org.apache.nutch.storage.ProtocolStatus.Builder setLastModified(long value) {
-      validate(fields()[3], value);
+      validate(fields()[2], value);
       this.lastModified = value;
-      fieldSetFlags()[3] = true;
+      fieldSetFlags()[2] = true;
       return this; 
     }
     
     /** Checks whether the 'lastModified' field has been set */
     public boolean hasLastModified() {
-      return fieldSetFlags()[3];
+      return fieldSetFlags()[2];
     }
     
     /** Clears the value of the 'lastModified' field */
     public org.apache.nutch.storage.ProtocolStatus.Builder clearLastModified() {
-      fieldSetFlags()[3] = false;
+      fieldSetFlags()[2] = false;
       return this;
     }
     
@@ -316,10 +313,9 @@ public class ProtocolStatus extends org.apache.gora.persistency.impl.PersistentB
     public ProtocolStatus build() {
       try {
         ProtocolStatus record = new ProtocolStatus();
-        record.__g__dirty = fieldSetFlags()[0] ? this.__g__dirty : (java.nio.ByteBuffer) java.nio.ByteBuffer.wrap(new byte[1]);
-        record.code = fieldSetFlags()[1] ? this.code : (java.lang.Integer) defaultValue(fields()[1]);
-        record.args = fieldSetFlags()[2] ? this.args : (java.util.List<java.lang.CharSequence>) new org.apache.gora.persistency.impl.DirtyListWrapper((java.util.List)defaultValue(fields()[2]));
-        record.lastModified = fieldSetFlags()[3] ? this.lastModified : (java.lang.Long) defaultValue(fields()[3]);
+        record.code = fieldSetFlags()[0] ? this.code : (java.lang.Integer) defaultValue(fields()[0]);
+        record.args = fieldSetFlags()[1] ? this.args : (java.util.List<java.lang.CharSequence>) new org.apache.gora.persistency.impl.DirtyListWrapper((java.util.List)defaultValue(fields()[1]));
+        record.lastModified = fieldSetFlags()[2] ? this.lastModified : (java.lang.Long) defaultValue(fields()[2]);
         return record;
       } catch (Exception e) {
         throw new org.apache.avro.AvroRuntimeException(e);
@@ -341,7 +337,7 @@ public class ProtocolStatus extends org.apache.gora.persistency.impl.PersistentB
   
       private Tombstone() { }
   
-	  				  /**
+	  		  /**
 	   * Gets the value of the 'code' field.
 		   */
 	  public java.lang.Integer getCode() {
@@ -414,3 +410,4 @@ public class ProtocolStatus extends org.apache.gora.persistency.impl.PersistentB
   }
   
 }
+

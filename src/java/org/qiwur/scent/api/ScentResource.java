@@ -35,7 +35,7 @@ import org.qiwur.scent.data.entity.PageEntity;
 import org.qiwur.scent.data.extractor.DataExtractorNotFound;
 import org.qiwur.scent.data.extractor.PageExtractor;
 import org.qiwur.scent.data.extractor.WebExtractor;
-import org.qiwur.scent.jsoup.nodes.Document;
+import org.jsoup.nodes.Document;
 import org.qiwur.scent.utils.FileUtil;
 import org.restlet.Context;
 import org.restlet.resource.ServerResource;

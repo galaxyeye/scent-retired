@@ -36,7 +36,7 @@ import org.apache.mahout.math.Matrix;
 import org.apache.mahout.math.function.DoubleFunction;
 import org.apache.mahout.math.function.Functions;
 import org.apache.mahout.vectorizer.encoders.Dictionary;
-import org.qiwur.scent.jsoup.nodes.Indicator;
+import org.jsoup.nodes.Indicator;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;

@@ -7,10 +7,10 @@ import org.apache.hadoop.conf.Configuration;
 import org.qiwur.scent.data.entity.PageEntity;
 import org.qiwur.scent.data.feature.CategoryFeature;
 import org.qiwur.scent.data.feature.FeatureManager;
-import org.qiwur.scent.jsoup.block.BlockLabel;
-import org.qiwur.scent.jsoup.block.DomSegment;
-import org.qiwur.scent.jsoup.nodes.Element;
-import org.qiwur.scent.jsoup.nodes.Indicator;
+import org.jsoup.block.BlockLabel;
+import org.jsoup.block.DomSegment;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Indicator;
 import org.qiwur.scent.learning.EntityCategoryLearner;
 
 public class CategoriesExtractor extends DomSegmentExtractor {

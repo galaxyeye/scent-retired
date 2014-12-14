@@ -12,7 +12,7 @@ import org.qiwur.scent.classifier.sgd.LogisticRegressionClassifier;
 import org.qiwur.scent.classifier.statistics.CodeStructureFeatureClassifier;
 import org.qiwur.scent.diagnosis.ClassifierMatrixFormatter;
 import org.qiwur.scent.diagnosis.ScentDiagnoser;
-import org.qiwur.scent.jsoup.block.DomSegment;
+import org.jsoup.block.DomSegment;
 
 public class DomSegmentsClassifier extends BlockClassifier {
 

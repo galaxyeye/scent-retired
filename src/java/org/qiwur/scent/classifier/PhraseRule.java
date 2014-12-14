@@ -2,10 +2,10 @@ package org.qiwur.scent.classifier;
 
 import java.util.Map;
 
-import org.qiwur.scent.jsoup.nodes.Element;
-import org.qiwur.scent.jsoup.nodes.Indicator;
-import org.qiwur.scent.jsoup.select.ElementTraversor;
-import org.qiwur.scent.jsoup.select.InterruptiveElementVisitor;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Indicator;
+import org.jsoup.select.ElementTraversor;
+import org.jsoup.select.InterruptiveElementVisitor;
 import org.qiwur.scent.utils.StringUtil;
 
 public class PhraseRule extends ScentRule {

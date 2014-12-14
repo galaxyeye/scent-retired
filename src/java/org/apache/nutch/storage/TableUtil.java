@@ -135,9 +135,9 @@ public class TableUtil {
   public static String reverseHost(String hostName) {
     StringBuilder buf = new StringBuilder();
     reverseAppendSplits(hostName, buf);
-    return buf.toString();
-    
+    return buf.toString(); 
   }
+
   public static String unreverseHost(String reversedHostName) {
     return reverseHost(reversedHostName); // Reversible
   }

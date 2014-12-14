@@ -1,9 +1,9 @@
 package org.qiwur.scent.diagnosis;
 
 import org.apache.hadoop.conf.Configuration;
-import org.qiwur.scent.jsoup.block.BlockPattern;
-import org.qiwur.scent.jsoup.block.DomSegment;
-import org.qiwur.scent.jsoup.nodes.Document;
+import org.jsoup.block.BlockPattern;
+import org.jsoup.block.DomSegment;
+import org.jsoup.nodes.Document;
 
 public class BlockPatternFormatter extends DiagnosisFormatter {
 
